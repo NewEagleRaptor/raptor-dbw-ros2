@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>pdu</name>
+  <version>1.0.0</version>
+  <description>
+    Interface for the New Eagle Multiplex Power Distribution Module (MPDM)
+    https://store.neweagle.net/product/multiplexed-power-distribution-module-mpdm/
+  </description>
+
+  <maintainer email="neweagleraptorgithub@neweagle.net">New Eagle</maintainer>
+
+  <license>BSD</license>
+
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>can_msgs</depend>
+  <depend>can_dbc_parser</depend>
+  <depend>std_msgs</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+  
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+
+</package>
