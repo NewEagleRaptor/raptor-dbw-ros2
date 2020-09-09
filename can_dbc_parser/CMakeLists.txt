@@ -16,14 +16,10 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # find dependencies
-find_package(ament_cmake REQUIRED)
-find_package(can_msgs REQUIRED)
+find_package(ament_cmake_auto REQUIRED)
+ament_auto_find_build_dependencies()
 
-include_directories(include)
-
-ament_export_include_directories(include)
-
-add_library(
+ament_auto_add_library(
   can_dbc_parser SHARED
   src/DbcMessage.cpp
   src/DbcSignal.cpp
@@ -32,18 +28,10 @@ add_library(
   src/DbcBuilder.cpp
 )
 
-ament_target_dependencies(can_dbc_parser rclcpp can_msgs std_msgs)
+#run colcon test to run linters against code
+if(BUILD_TESTING)
+find_package(ament_lint_auto)
+ament_lint_auto_find_test_dependencies()
+endif()
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION include/${PROJECT_NAME}
-  FILES_MATCHING PATTERN "*.hpp"
-  PATTERN ".git" EXCLUDE
-)
-
-install(TARGETS
-  can_dbc_parser
-  DESTINATION lib/${PROJECT_NAME}
-  PUBLIC_HEADER DESTINATION include/${PROJECT_NAME}/
-)
-
-ament_package()
+ament_auto_package()
