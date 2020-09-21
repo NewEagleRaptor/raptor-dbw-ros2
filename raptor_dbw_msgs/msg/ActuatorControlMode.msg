@@ -1,0 +1,6 @@
+uint8 value
+
+uint8 OPEN_LOOP = 0
+uint8 CLOSED_LOOP_ACTUATOR = 1
+uint8 CLOSED_LOOP_VEHICLE = 2
+uint8 NONE = 255

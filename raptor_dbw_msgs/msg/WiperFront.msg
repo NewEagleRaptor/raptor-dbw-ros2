@@ -1,0 +1,14 @@
+uint8 status
+
+uint8 OFF = 0
+uint8 INTERVAL_1 = 1
+uint8 INTERVAL_2 = 2
+uint8 INTERVAL_3 = 3
+uint8 INTERVAL_4 = 4
+uint8 INTERVAL_5 = 5
+uint8 INTERVAL_6 = 6
+uint8 CONSTANT_LOW = 11
+uint8 CONSTANT_HIGH = 12
+uint8 WASH_BRIEF = 13
+uint8 WASH_CONTINUOUS = 14
+uint8 SNA = 15
