@@ -222,9 +222,11 @@ namespace NewEagle
         parser.SeekSeparator(')');
 
         parser.SeekSeparator('[');
-        double minimum = parser.ReadDouble("minimum");
+        //min value
+        parser.ReadDouble("minimum");
         parser.SeekSeparator('|');
-        double maximum = parser.ReadDouble("maximum");
+        //max value
+        parser.ReadDouble("maximum");
         parser.SeekSeparator(']');
 
         // Need to include Min, Max, DataType, MuxSwitch, Unit, Receiver

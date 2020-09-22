@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>raptor_dbw_can</name>
+  <version>1.0.0</version>
+  <description>
+    Drive-by-wire interface to the New Eagle Raptor DBW kit
+  </description>
+
+  <maintainer email="newagleraptorgithub@neweagle.net">New Eagle</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_auto</buildtool_depend>
+
+
+  <depend>rclcpp</depend>
+  <depend>raptor_dbw_msgs</depend>
+  <depend>can_msgs</depend>
+  <depend>nodelet</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>can_dbc_parser</depend>
+  <depend>pdu</depend>
+  <depend>pdu_msgs</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

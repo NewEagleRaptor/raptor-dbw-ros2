@@ -63,8 +63,6 @@ namespace NewEagle
 
     NewEagle::DbcMessage currentMessage;
 
-    int32_t cnt = 0;
-
     while (std::getline(f, line, '\n'))
     {
       lineNumber++;

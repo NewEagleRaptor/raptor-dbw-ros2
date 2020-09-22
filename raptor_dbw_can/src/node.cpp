@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2018 New Eagle
+ *  Copyright (c) 2020 New Eagle 
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of New Eagle nor the names of its
+ *   * Neither the name of New Eagle, LLC nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -32,14 +32,17 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#include "pdu/pdu.hpp"
+#include "raptor_dbw_can/DbwNode.hpp"
+
 int main(int argc, char **argv)
 {
   rclcpp::init(argc, argv);
   rclcpp::NodeOptions options;
   rclcpp::executors::SingleThreadedExecutor exec;
-  auto node = std::make_shared<NewEagle::pdu>(options);
-  exec.add_node(node);
+
+  // create DbwNode class
+  auto node = std::make_shared<raptor_dbw_can::DbwNode>(options);
+
   // handle callbacks until shut down
   exec.spin();
 
