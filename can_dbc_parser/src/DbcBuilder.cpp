@@ -85,7 +85,6 @@ namespace NewEagle
         try
         {
           currentMessage =  ReadMessage(parser);
-          currentMessage.SetRawText(line);
           dbc.AddMessage(currentMessage.GetName(), currentMessage);
         }
         catch(LineParserExceptionBase& exlp)

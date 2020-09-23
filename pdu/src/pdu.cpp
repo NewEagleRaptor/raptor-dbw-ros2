@@ -47,7 +47,7 @@ namespace NewEagle
   : Node("pdu", options)
   {
     int32_t id;
-    this->declare_parameter<std::string>("dbcFile", pduFile_);
+    this->declare_parameter<std::string>("pdu_dbc_file", pduFile_);
     this->declare_parameter<int>("id", id);
     //priv_nh.getParam("id", id);
     //priv_nh.getParam("pdu_dbc_file", pduFile_);

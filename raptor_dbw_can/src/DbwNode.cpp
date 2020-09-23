@@ -42,7 +42,7 @@ namespace raptor_dbw_can
   : Node("raptor_dbw_can", options)
   {
 
-    this->declare_parameter<std::string>("dbcFile", dbcFile_);
+    this->declare_parameter<std::string>("dbw_dbc_file", dbcFile_);
     //priv_nh.getParam("dbw_dbc_file", dbcFile_);
 
     // Initialize enable state machine

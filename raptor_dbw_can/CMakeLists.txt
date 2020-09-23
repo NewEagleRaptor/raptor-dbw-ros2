@@ -32,9 +32,14 @@ find_package(can_dbc_parser REQUIRED)
 find_package(pdu_msgs REQUIRED)
 
 ament_auto_add_library(
-  raptor_dbw_can_node SHARED
-  src/DbwNode.cpp
+  raptor_dbw_can src/DbwNode.cpp
   src/node.cpp
+)
+
+ament_auto_add_executable(
+  raptor_dbw_can_node src/node.cpp
+  src/DbwNode.cpp
+  
 )
 
 ament_package()
