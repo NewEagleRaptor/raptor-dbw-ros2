@@ -16,30 +16,17 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # find dependencies
-find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
-find_package(rclcpp REQUIRED)
-find_package(rclcpp_components REQUIRED)
-find_package(rclcpp_lifecycle REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(nodelet REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(raptor_dbw_msgs REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(can_msgs REQUIRED)
-find_package(can_dbc_parser REQUIRED)
-find_package(pdu_msgs REQUIRED)
 
-ament_auto_add_library(
-  raptor_dbw_can src/DbwNode.cpp
+ament_auto_add_executable(${PROJECT_NAME}_node
   src/node.cpp
-)
-
-ament_auto_add_executable(
-  raptor_dbw_can_node src/node.cpp
   src/DbwNode.cpp
-  
 )
 
-ament_package()
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+ament_auto_package()

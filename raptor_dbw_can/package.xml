@@ -10,9 +10,7 @@
 
   <license>BSD</license>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
-
 
   <depend>rclcpp</depend>
   <depend>raptor_dbw_msgs</depend>
