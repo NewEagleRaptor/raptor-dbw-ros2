@@ -15,23 +15,17 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
-find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(can_msgs REQUIRED)
-find_package(pdu_msgs REQUIRED)
-find_package(can_dbc_parser REQUIRED)
 
-ament_auto_add_library(
-  pdu src/node.cpp
+ament_auto_add_executable(${PROJECT_NAME}_node
+  src/node.cpp
   src/pdu.cpp
 )
 
-ament_auto_add_executable(
-  pdu_node src/node.cpp
-  src/pdu.cpp
-)
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
 
-ament_package()
+ament_auto_package()
