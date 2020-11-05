@@ -37,6 +37,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <string>
+#include <fstream>
 #include <can_dbc_parser/Dbc.hpp>
 #include <can_dbc_parser/LineParser.hpp>
 

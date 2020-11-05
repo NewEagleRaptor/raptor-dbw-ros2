@@ -40,10 +40,8 @@ int main(int argc, char **argv)
   rclcpp::NodeOptions options;
   rclcpp::executors::SingleThreadedExecutor exec;
 
-  // create DbwNode class
-  auto node = std::make_shared<raptor_dbw_can::DbwNode>(options);
-
-  // handle callbacks until shut down
+  auto node = std::make_shared<raptor_dbw_can::DbwNode>(options);  
+  exec.add_node(node->get_node_base_interface());
   exec.spin();
 
   rclcpp::shutdown();

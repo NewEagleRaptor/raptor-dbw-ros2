@@ -15,7 +15,6 @@
   <depend>rclcpp</depend>
   <depend>raptor_dbw_msgs</depend>
   <depend>can_msgs</depend>
-  <depend>nodelet</depend>
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>sensor_msgs</depend>

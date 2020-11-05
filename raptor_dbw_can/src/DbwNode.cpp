@@ -39,11 +39,10 @@ namespace raptor_dbw_can
 {
 
   DbwNode::DbwNode(const rclcpp::NodeOptions & options)
-  : Node("raptor_dbw_can", options)
+  : Node("raptor_dbw_can_node", options)
   {
 
-    this->declare_parameter<std::string>("dbw_dbc_file", dbcFile_);
-    //priv_nh.getParam("dbw_dbc_file", dbcFile_);
+    dbcFile_ = this->declare_parameter("dbw_dbc_file", "");
 
     // Initialize enable state machine
     prev_enable_ = true;
@@ -103,22 +102,22 @@ namespace raptor_dbw_can
     joint_state_.name[JOINT_SR] = "steer_fr";
 
     // Set up Publishers
-    pub_can_ = this->create_publisher<can_msgs::msg::Frame>("can_tx", 10);
-    pub_brake_ = this->create_publisher<raptor_dbw_msgs::msg::BrakeReport>("brake_report", 2);
-    pub_accel_pedal_ = this->create_publisher<raptor_dbw_msgs::msg::AcceleratorPedalReport>("accelerator_pedal_report", 2);
-    pub_steering_ = this->create_publisher<raptor_dbw_msgs::msg::SteeringReport>("steering_report", 2);
-    pub_gear_ = this->create_publisher<raptor_dbw_msgs::msg::GearReport>("gear_report", 2);
-    pub_wheel_speeds_ = this->create_publisher<raptor_dbw_msgs::msg::WheelSpeedReport>("wheel_speed_report", 2);
-    pub_wheel_positions_ = this->create_publisher<raptor_dbw_msgs::msg::WheelPositionReport>("wheel_position_report", 2);
-    pub_tire_pressure_ = this->create_publisher<raptor_dbw_msgs::msg::TirePressureReport>("tire_pressure_report", 2);
-    pub_surround_ = this->create_publisher<raptor_dbw_msgs::msg::SurroundReport>("surround_report", 2);
+    pub_can_ = this->create_publisher<can_msgs::msg::Frame>("can_tx", 20);
+    pub_brake_ = this->create_publisher<raptor_dbw_msgs::msg::BrakeReport>("brake_report", 20);
+    pub_accel_pedal_ = this->create_publisher<raptor_dbw_msgs::msg::AcceleratorPedalReport>("accelerator_pedal_report", 20);
+    pub_steering_ = this->create_publisher<raptor_dbw_msgs::msg::SteeringReport>("steering_report", 20);
+    pub_gear_ = this->create_publisher<raptor_dbw_msgs::msg::GearReport>("gear_report", 20);
+    pub_wheel_speeds_ = this->create_publisher<raptor_dbw_msgs::msg::WheelSpeedReport>("wheel_speed_report", 20);
+    pub_wheel_positions_ = this->create_publisher<raptor_dbw_msgs::msg::WheelPositionReport>("wheel_position_report", 20);
+    pub_tire_pressure_ = this->create_publisher<raptor_dbw_msgs::msg::TirePressureReport>("tire_pressure_report", 20);
+    pub_surround_ = this->create_publisher<raptor_dbw_msgs::msg::SurroundReport>("surround_report", 20);
 
     pub_low_voltage_system_ = this->create_publisher<raptor_dbw_msgs::msg::LowVoltageSystemReport>("low_voltage_system_report", 2);
 
-    pub_brake_2_report_ = this->create_publisher<raptor_dbw_msgs::msg::Brake2Report>("brake_2_report", 2);
-    pub_steering_2_report_ = this->create_publisher<raptor_dbw_msgs::msg::Steering2Report>("steering_2_report", 2);
-    pub_fault_actions_report_ = this->create_publisher<raptor_dbw_msgs::msg::FaultActionsReport>("fault_actions_report", 2);
-    pub_hmi_global_enable_report_ = this->create_publisher<raptor_dbw_msgs::msg::HmiGlobalEnableReport>("hmi_global_enable_report", 2);
+    pub_brake_2_report_ = this->create_publisher<raptor_dbw_msgs::msg::Brake2Report>("brake_2_report", 20);
+    pub_steering_2_report_ = this->create_publisher<raptor_dbw_msgs::msg::Steering2Report>("steering_2_report", 20);
+    pub_fault_actions_report_ = this->create_publisher<raptor_dbw_msgs::msg::FaultActionsReport>("fault_actions_report", 20);
+    pub_hmi_global_enable_report_ = this->create_publisher<raptor_dbw_msgs::msg::HmiGlobalEnableReport>("hmi_global_enable_report", 20);
 
     pub_imu_ = this->create_publisher<sensor_msgs::msg::Imu>("imu/data_raw", 10);
     pub_joint_states_ = this->create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);

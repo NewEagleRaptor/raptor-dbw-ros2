@@ -33,16 +33,16 @@ def generate_launch_description():
         [
             Node(
                 package='raptor_dbw_can',
-                node_namespace='raptor_dbw_can',
                 node_executable='raptor_dbw_can_node',
                 output='screen',
+                node_namespace='',
                 parameters=[params_file],
             ),
             Node(
                 package='pdu',
-                node_namespace='pdu',
-                output='screen',
                 node_executable='pdu_node',
+                output='screen',
+                node_namespace='',
                 parameters=[params_file],
             ),
             Node(
