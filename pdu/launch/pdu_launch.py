@@ -26,30 +26,18 @@ from launch.substitutions import LaunchConfiguration
 from launch.substitutions import ThisLaunchFileDir
 
 def generate_launch_description():
-    params_file = LaunchConfiguration(
-        'params',
-        default=[ThisLaunchFileDir(), '/launch_params.yaml'])
-
-    #make sure the dbc file gets installed with the launch file
-    dbc_file_path = os.path.dirname(os.path.abspath(__file__)) + "/New_Eagle_DBW_3.3.388.dbc"
+    dbc_file_path = os.path.dirname(os.path.abspath(__file__)) + "/PDU_dbc.dbc"
     
     return LaunchDescription(
         [
             Node(
-                package='raptor_dbw_can',
-                node_executable='raptor_dbw_can_node',
+                package='pdu',
+                node_executable='pdu_node',
                 output='screen',
                 node_namespace='',
                 parameters=[
-                    {"dbw_dbc_file": dbc_file_path}
+                    {"pdu_dbc_file": dbc_file_path}
                 ],
-            ),
-            Node(
-                package='kvaser_interface',
-                node_executable='kvaser_can_bridge',
-                output='screen',
-                node_namespace='',
-                parameters=[params_file],
             ),
         ]
     )

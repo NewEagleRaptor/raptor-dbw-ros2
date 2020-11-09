@@ -1,20 +1,14 @@
 kvaser_reader_node:
   ros__parameters:
-    hardware_id: 32145
+    hardware_id: 11000
     circuit_id: 0
     bit_rate: 500000
     enable_echo: false
 kvaser_writer_node:
   ros__parameters:
-    hardware_id: 32145
+    hardware_id: 11000
     circuit_id: 0
     bit_rate: 500000
     enable_echo: false
-raptor_dbw_can_node:
-  ros__parameters:
-    dbw_dbc_file: /home/neweagle/ros2/src/raptor-dbw-ros2/raptor_dbw_can/New_Eagle_DBW_3.3.388.dbc
-pdu_node:
-  ros__parameters:
-    pdu_dbc_file: "/home/neweagle/ros2/src/raptor-dbw-ros2/pdu/PDU_dbc.dbc"
 
     
