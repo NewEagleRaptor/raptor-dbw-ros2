@@ -19,11 +19,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import os
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import ThisLaunchFileDir
+from ament_index_python import get_package_share_directory
 
 def generate_launch_description():
     params_file = LaunchConfiguration(
@@ -31,7 +31,7 @@ def generate_launch_description():
         default=[ThisLaunchFileDir(), '/launch_params.yaml'])
 
     #make sure the dbc file gets installed with the launch file
-    dbc_file_path = os.path.dirname(os.path.abspath(__file__)) + "/New_Eagle_DBW_3.3.388.dbc"
+    dbc_file_path = get_package_share_directory('raptor_dbw_can') + "/launch/New_Eagle_DBW_3.3.388.dbc"
     
     return LaunchDescription(
         [
@@ -39,7 +39,7 @@ def generate_launch_description():
                 package='raptor_dbw_can',
                 node_executable='raptor_dbw_can_node',
                 output='screen',
-                node_namespace='',
+                node_namespace='raptor_dbw_interface',
                 parameters=[
                     {"dbw_dbc_file": dbc_file_path}
                 ],
@@ -48,7 +48,7 @@ def generate_launch_description():
                 package='kvaser_interface',
                 node_executable='kvaser_can_bridge',
                 output='screen',
-                node_namespace='',
+                node_namespace='can_rx_tx',
                 parameters=[params_file],
             ),
         ]

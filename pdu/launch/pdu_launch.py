@@ -19,22 +19,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import os
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.substitutions import LaunchConfiguration
-from launch.substitutions import ThisLaunchFileDir
+from ament_index_python import get_package_share_directory
 
 def generate_launch_description():
-    dbc_file_path = os.path.dirname(os.path.abspath(__file__)) + "/PDU_dbc.dbc"
-    
+    dbc_file_path = get_package_share_directory('pdu') + "/launch/PDU_dbc.dbc"
+
     return LaunchDescription(
         [
             Node(
                 package='pdu',
                 node_executable='pdu_node',
                 output='screen',
-                node_namespace='',
+                node_namespace='raptor_power_distribution_interface',
                 parameters=[
                     {"pdu_dbc_file": dbc_file_path}
                 ],

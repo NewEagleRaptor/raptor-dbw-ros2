@@ -47,7 +47,7 @@ namespace NewEagle
   : Node("pdu_node", options)
   {
     pduFile_ = this->declare_parameter("pdu_dbc_file", "");
-    id_ = this->declare_parameter("id_", 0x500);
+    id_ = this->declare_parameter("id", 0xA);
 
     relayCommandAddr_ = RELAY_COMMAND_BASE_ADDR + (id_ * 256);
     relayStatusAddr_ = RELAY_STATUS_BASE_ADDR + id_;
