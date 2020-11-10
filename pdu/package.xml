@@ -16,7 +16,6 @@
   <depend>rclcpp</depend>
   <depend>can_msgs</depend>
   <depend>pdu_msgs</depend>
-  <depend>nodelet</depend>
   <depend>can_dbc_parser</depend>
   <depend>std_msgs</depend>
 

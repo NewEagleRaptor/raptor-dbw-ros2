@@ -44,15 +44,10 @@
 namespace NewEagle
 {
   pdu::pdu(const rclcpp::NodeOptions & options) 
-  : Node("pdu", options)
+  : Node("pdu_node", options)
   {
-    int32_t id;
-    this->declare_parameter<std::string>("pdu_dbc_file", pduFile_);
-    this->declare_parameter<int>("id", id);
-    //priv_nh.getParam("id", id);
-    //priv_nh.getParam("pdu_dbc_file", pduFile_);
-
-    id_ = (uint32_t)id;
+    pduFile_ = this->declare_parameter("pdu_dbc_file", "");
+    id_ = this->declare_parameter("id", 0xA);
 
     relayCommandAddr_ = RELAY_COMMAND_BASE_ADDR + (id_ * 256);
     relayStatusAddr_ = RELAY_STATUS_BASE_ADDR + id_;
@@ -63,9 +58,9 @@ namespace NewEagle
 
     count_ = 0;
     // Set up Publishers
-    pub_can_ = this->create_publisher<can_msgs::msg::Frame>("can_tx", 10);
-    relay_report_pub_ = this->create_publisher<pdu_msgs::msg::RelayReport>("relay_report", 2);
-    fuse_report_pub_ = this->create_publisher<pdu_msgs::msg::FuseReport>("fuse_report", 2);
+    pub_can_ = this->create_publisher<can_msgs::msg::Frame>("can_tx", 100);
+    relay_report_pub_ = this->create_publisher<pdu_msgs::msg::RelayReport>("relay_report", 20);
+    fuse_report_pub_ = this->create_publisher<pdu_msgs::msg::FuseReport>("fuse_report", 20);
 
     // Set up Subscribers
     sub_can_ = this->create_subscription<can_msgs::msg::Frame>(

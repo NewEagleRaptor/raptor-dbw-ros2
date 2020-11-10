@@ -1,4 +1,0 @@
-pdu:
-  ros__parameters:
-    id: 0
-    dbcFile: "PDU_dbc.dbc"

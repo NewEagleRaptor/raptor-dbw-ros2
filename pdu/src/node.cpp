@@ -39,7 +39,7 @@ int main(int argc, char **argv)
   rclcpp::NodeOptions options;
   rclcpp::executors::SingleThreadedExecutor exec;
   auto node = std::make_shared<NewEagle::pdu>(options);
-  exec.add_node(node);
+  exec.add_node(node->get_node_base_interface());
   // handle callbacks until shut down
   exec.spin();
 

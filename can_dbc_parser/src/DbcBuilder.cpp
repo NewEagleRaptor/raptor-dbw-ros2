@@ -57,8 +57,14 @@ namespace NewEagle
 
     NewEagle::Dbc dbc;
 
-    std::istringstream f(dbcFile);
+    std::ifstream f(dbcFile);
     std::string line;
+    if(!f.is_open())
+    {
+      std::cout << "Unable to open " << dbcFile << std::endl;
+      return dbc;
+    }
+
     uint32_t lineNumber = 0;
 
     NewEagle::DbcMessage currentMessage;
@@ -66,9 +72,7 @@ namespace NewEagle
     while (std::getline(f, line, '\n'))
     {
       lineNumber++;
-
       NewEagle::LineParser parser(line);
-
 
       std::string identifier;
       try
@@ -90,12 +94,10 @@ namespace NewEagle
         catch(LineParserExceptionBase& exlp)
         {
           //RCLCPP_WARN("LineParser Exception: [%s]", exlp.what());
-          std::cout << "LineParser Exception: " << std::endl << exlp.what() << std::endl;
         }
         catch(std::exception& ex)
         {
           //RCLCPP_ERROR("DBC Message Parser Exception: [%s]", ex.what());
-          std::cout << "DBC Message Parser Exception: " << std::endl << ex.what() << std::endl;
         }
       }
       else if (!SignalToken.compare(identifier))
@@ -110,11 +112,9 @@ namespace NewEagle
         catch(LineParserExceptionBase& exlp)
         {
           //RCLCPP_WARN("LineParser Exception: [%s]", exlp.what());
-          std::cout << "LineParser Exception: " << std::endl << exlp.what() << std::endl;
         }
         catch(std::exception& ex)
         {
-          std::cout << "DBC Signal Parser Exception: " << std::endl << ex.what() << std::endl;
         }
       }
       else if (!CommentToken.compare(identifier))
@@ -166,13 +166,9 @@ namespace NewEagle
         }
         catch(LineParserExceptionBase& exlp)
         {
-          //RCLCPP_WARN("LineParser Exception: [%s]", exlp.what());
-          std::cout << "LineParser Exception: " << std::endl << exlp.what() << std::endl;
         }
         catch(std::exception& ex)
         {
-          //RCLCPP_ERROR("DBC Comment Parser Exception: [%s]", ex.what());
-          std::cout << "DBC Comment Parser Exception: " << std::endl << ex.what() << std::endl;
         }
       }
       else if (!AttributeToken.compare(identifier))
@@ -216,13 +212,9 @@ namespace NewEagle
         }
         catch(LineParserExceptionBase& exlp)
         {
-          //RCLCPP_WARN("LineParser Exception: [%s]", exlp.what());
-          std::cout << "LineParser Exception: " << std::endl << exlp.what() << std::endl;
         }
         catch(std::exception& ex)
         {
-          //RCLCPP_ERROR("DBC Signal Value Type Parser Exception: [%s]", ex.what());
-          std::cout << "DBC Signal Value Type Parser Exception: " << std::endl << ex.what() << std::endl;
         }
       }
       else if (!EnumValueToken.compare(identifier))
@@ -259,19 +251,13 @@ namespace NewEagle
         }
         catch(LineParserExceptionBase& exlp)
         {
-          //RCLCPP_WARN("LineParser Exception: [%s]", exlp.what());
-          std::cout << "LineParser Exception: " << std::endl << exlp.what() << std::endl;
         }
         catch(std::exception& ex)
         {
-          //RCLCPP_ERROR("DBC Signal Value Type Parser Exception: [%s]", ex.what());
-          std::cout << "DBC Signal Value Type Parser Exception: " << std::endl << ex.what() << std::endl;
         }
 
       }
     }
-
-    //RCLCPP_INFO("dbc.size() = %d", dbc.GetMessageCount());
     std::cout << "DBC Size: " << dbc.GetMessageCount() << std::endl;
     return dbc;
   }
