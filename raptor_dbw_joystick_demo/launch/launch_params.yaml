@@ -1,0 +1,25 @@
+kvaser_reader_node:
+  ros__parameters:
+    hardware_id: 11000
+    circuit_id: 0
+    bit_rate: 500000
+    enable_echo: false
+kvaser_writer_node:
+  ros__parameters:
+    hardware_id: 11000
+    circuit_id: 0
+    bit_rate: 500000
+    enable_echo: false
+dbw_joystick_node:
+  ros__parameters:
+      ignore: false
+      enable: true
+      svel: 0.0
+joy_node:
+  ros__parameters:
+      device_id: 0
+      device_name: "/dev/input/js0"
+      deadzone: 0.5
+      autorepeat_rate: 20.0
+      sticky_buttons: false
+      coalesce_interval_ms: 1
