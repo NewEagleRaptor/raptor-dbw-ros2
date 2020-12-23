@@ -37,21 +37,19 @@ def generate_launch_description():
         [
             Node(
                 package='raptor_dbw_can',
-                node_executable='raptor_dbw_can_node',
+                executable='raptor_dbw_can_node',
                 output='screen',
-                node_namespace='raptor_dbw_interface',
+                namespace='raptor_dbw_interface',
                 parameters=[
                     {"dbw_dbc_file": dbc_file_path}
                 ],
             ),
             Node(
                 package='kvaser_interface',
-                node_executable='kvaser_can_bridge',
+                executable='kvaser_can_bridge',
                 output='screen',
-                node_namespace='can_rx_tx',
-                parameters=[params_file],
-            ),
-        ]
-    )
+                namespace='',
+                parameters=[params_file]),
+        ])
 
 generate_launch_description()

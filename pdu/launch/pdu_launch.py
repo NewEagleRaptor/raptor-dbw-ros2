@@ -30,9 +30,9 @@ def generate_launch_description():
         [
             Node(
                 package='pdu',
-                node_executable='pdu_node',
+                executable='pdu_node',
                 output='screen',
-                node_namespace='raptor_power_distribution_interface',
+                namespace='raptor_power_distribution_interface',
                 parameters=[
                     {"pdu_dbc_file": dbc_file_path}
                 ],
