@@ -183,7 +183,9 @@ static NewEagle::DbcSignal ReadSignal(NewEagle::LineParser parser)
       endianness = NewEagle::BIG_END;
       break;
     default:
-      throw std::runtime_error("Synxax Error: Byte Order - Expected 0 or 1, got " + byteOrder);
+      std::string error_msg("Syntax Error: Byte Order - Expected 0 or 1, got ");
+      error_msg.push_back(byteOrder);
+      throw std::runtime_error(error_msg);
   }
 
   char valType = parser.ReadNextChar("value type");
@@ -197,7 +199,9 @@ static NewEagle::DbcSignal ReadSignal(NewEagle::LineParser parser)
       sign = NewEagle::SIGNED;
       break;
     default:
-      throw std::runtime_error("Synxax Error: Value Type - Expected + or -, got " + valType);
+      std::string error_msg("Syntax Error: Value Type - Expected + or -, got ");
+      error_msg.push_back(valType);
+      throw std::runtime_error(error_msg);
   }
 
   // Set the default data type: INT.
