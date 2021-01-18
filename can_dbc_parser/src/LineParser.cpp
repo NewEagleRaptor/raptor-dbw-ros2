@@ -330,7 +330,9 @@ void LineParser::SeekSeparator(char separator)
   char nextChar = ReadNextChar();
 
   if (nextChar == 0x00 || nextChar != separator) {
-    throw std::runtime_error("Synxax Error: Expected : " + separator);
+    std::string error_msg("Syntax Error: Expected : ");
+    error_msg.push_back(separator);
+    throw std::runtime_error(error_msg);
   }
 }
 
