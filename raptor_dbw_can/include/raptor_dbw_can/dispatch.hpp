@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2018-2019 New Eagle 
+ *  Copyright (c) 2018-2019 New Eagle
  *  Copyright (c) 2015-2018, Dataspeed Inc.
  *  All rights reserved.
  *
@@ -39,13 +39,15 @@
 
 namespace raptor_dbw_can
 {
-typedef enum {
+typedef enum
+{
   VIN_MUX_VIN0  = 0x00,
   VIN_MUX_VIN1  = 0x01,
   VIN_MUX_VIN2  = 0x02,
 } VinMux;
 
-typedef enum {
+typedef enum
+{
   WHEEL_SPEED_MUX0  = 0x00,
   WHEEL_SPEED_MUX1  = 0x01,
   WHEEL_SPEED_MUX2  = 0x02,
@@ -53,7 +55,8 @@ typedef enum {
 
 #undef BUILD_ASSERT
 
-enum {
+enum
+{
   ID_BRAKE_CMD                  = 0x2F04,
   ID_BRAKE_REPORT               = 0x1F04,
   ID_ACCELERATOR_PEDAL_CMD      = 0x2F01,

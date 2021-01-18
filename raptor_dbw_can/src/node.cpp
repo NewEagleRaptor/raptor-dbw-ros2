@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2020 New Eagle 
+ *  Copyright (c) 2020 New Eagle
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -34,13 +34,13 @@
 
 #include "raptor_dbw_can/DbwNode.hpp"
 
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
   rclcpp::NodeOptions options;
   rclcpp::executors::SingleThreadedExecutor exec;
 
-  auto node = std::make_shared<raptor_dbw_can::DbwNode>(options);  
+  auto node = std::make_shared<raptor_dbw_can::DbwNode>(options);
   exec.add_node(node->get_node_base_interface());
   exec.spin();
 

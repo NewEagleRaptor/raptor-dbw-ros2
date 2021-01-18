@@ -31,142 +31,142 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
- 
+
 #include <can_dbc_parser/DbcSignal.hpp>
 
 namespace NewEagle
 {
-  DbcSignal::DbcSignal(
-    uint8_t dlc,
-    double gain,
-    double offset,
-    uint8_t startBit,
-    ByteOrder endianness,
-    uint8_t length,
-    SignType sign,
-    std::string name,
-    MultiplexerMode multiplexerMode)
-  {
-    _dlc = dlc;
-    _gain  = gain;
-    _offset = offset;
-    _startBit = startBit;
-    _endianness = endianness;
-    _length = length;
-    _sign = sign;
-    _name = name;
-    _multiplexerMode = multiplexerMode;
-  }
+DbcSignal::DbcSignal(
+  uint8_t dlc,
+  double gain,
+  double offset,
+  uint8_t startBit,
+  ByteOrder endianness,
+  uint8_t length,
+  SignType sign,
+  std::string name,
+  MultiplexerMode multiplexerMode)
+{
+  _dlc = dlc;
+  _gain = gain;
+  _offset = offset;
+  _startBit = startBit;
+  _endianness = endianness;
+  _length = length;
+  _sign = sign;
+  _name = name;
+  _multiplexerMode = multiplexerMode;
+}
 
-  DbcSignal::DbcSignal(
-    uint8_t dlc,
-    double gain,
-    double offset,
-    uint8_t startBit,
-    ByteOrder endianness,
-    uint8_t length,
-    SignType sign,
-    std::string name,
-    MultiplexerMode multiplexerMode,
-    int32_t multiplexerSwitch)
-  {
-    _dlc = dlc;
-    _gain  = gain;
-    _offset = offset;
-    _startBit = startBit;
-    _endianness = endianness;
-    _length = length;
-    _sign = sign;
-    _name = name;
-    _multiplexerMode = multiplexerMode;
-    _multiplexerSwitch = multiplexerSwitch;
-  }
+DbcSignal::DbcSignal(
+  uint8_t dlc,
+  double gain,
+  double offset,
+  uint8_t startBit,
+  ByteOrder endianness,
+  uint8_t length,
+  SignType sign,
+  std::string name,
+  MultiplexerMode multiplexerMode,
+  int32_t multiplexerSwitch)
+{
+  _dlc = dlc;
+  _gain = gain;
+  _offset = offset;
+  _startBit = startBit;
+  _endianness = endianness;
+  _length = length;
+  _sign = sign;
+  _name = name;
+  _multiplexerMode = multiplexerMode;
+  _multiplexerSwitch = multiplexerSwitch;
+}
 
-  DbcSignal::~DbcSignal()
-  {
-  }
+DbcSignal::~DbcSignal()
+{
+}
 
-  uint8_t DbcSignal::GetDlc() const
-  {
-    return _dlc;
-  }
+uint8_t DbcSignal::GetDlc() const
+{
+  return _dlc;
+}
 
-  double DbcSignal::GetResult() const
-  {
-    return _result;
-  }
+double DbcSignal::GetResult() const
+{
+  return _result;
+}
 
-  double DbcSignal::GetGain() const
-  {
-    return _gain;
-  }
+double DbcSignal::GetGain() const
+{
+  return _gain;
+}
 
-  double DbcSignal::GetOffset() const
-  {
-    return _offset;
-  }
+double DbcSignal::GetOffset() const
+{
+  return _offset;
+}
 
-  uint8_t DbcSignal::GetStartBit() const
-  {
-    return _startBit;
-  }
+uint8_t DbcSignal::GetStartBit() const
+{
+  return _startBit;
+}
 
-  ByteOrder DbcSignal::GetEndianness() const
-  {
-    return _endianness;
-  }
+ByteOrder DbcSignal::GetEndianness() const
+{
+  return _endianness;
+}
 
-  uint8_t DbcSignal::GetLength() const
-  {
-    return _length;
-  }
+uint8_t DbcSignal::GetLength() const
+{
+  return _length;
+}
 
-  SignType DbcSignal::GetSign() const
-  {
-    return _sign;
-  }
+SignType DbcSignal::GetSign() const
+{
+  return _sign;
+}
 
-  std::string DbcSignal::GetName() const
-  {
-    return _name;
-  }
+std::string DbcSignal::GetName() const
+{
+  return _name;
+}
 
-  void DbcSignal::SetResult(double result)
-  {
-    _result = result;
-  }
+void DbcSignal::SetResult(double result)
+{
+  _result = result;
+}
 
-  void DbcSignal::SetComment(NewEagle::DbcSignalComment comment)
-  {
-    _comment = comment;
-  }
+void DbcSignal::SetComment(NewEagle::DbcSignalComment comment)
+{
+  _comment = comment;
+}
 
-  void DbcSignal::SetInitialValue(double value)
-  {
-    _initialValue = value;
-  }
-  double DbcSignal::GetInitialValue()
-  {
-    return _initialValue;
-  }
+void DbcSignal::SetInitialValue(double value)
+{
+  _initialValue = value;
+}
+double DbcSignal::GetInitialValue()
+{
+  return _initialValue;
+}
 
-  void DbcSignal::SetDataType(NewEagle::DataType type)
-  {
-    _type = type;
-  }
+void DbcSignal::SetDataType(NewEagle::DataType type)
+{
+  _type = type;
+}
 
-  NewEagle::DataType DbcSignal::GetDataType()
-  {
-    return _type;
-  }
+NewEagle::DataType DbcSignal::GetDataType()
+{
+  return _type;
+}
 
-  NewEagle::MultiplexerMode DbcSignal::GetMultiplexerMode() const
-  {
-    return _multiplexerMode;
-  }
+NewEagle::MultiplexerMode DbcSignal::GetMultiplexerMode() const
+{
+  return _multiplexerMode;
+}
 
-  int32_t DbcSignal::GetMultiplexerSwitch() const
-  {
-    return _multiplexerSwitch;
-  }
+int32_t DbcSignal::GetMultiplexerSwitch() const
+{
+  return _multiplexerSwitch;
+}
 }

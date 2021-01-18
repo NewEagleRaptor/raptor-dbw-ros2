@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
- 
+
 #ifndef NEWEAGLE_PDU_H_
 #define NEWEAGLE_PDU_H_
 
@@ -57,39 +57,41 @@
 
 namespace NewEagle
 {
-  class pdu : public rclcpp::Node
+class pdu : public rclcpp::Node
+{
+  enum
   {
-    enum {
-      RELAY_STATUS_BASE_ADDR = 0x18ffa100,
-      FUSE_STATUS_BASE_ADDR = 0x18ffa000,
-      RELAY_COMMAND_BASE_ADDR = 0x18ef0000
-    };
-
-    public:
-      pdu(const rclcpp::NodeOptions & options);
-    private:
-      uint32_t id_;
-      uint32_t relayCommandAddr_;
-      uint32_t relayStatusAddr_;
-      uint32_t fuseStatusAddr_;
-
-      uint32_t count_;
-
-      NewEagle::Dbc pduDbc_;
-      std::string pduFile_;
-
-      void recvCAN(const can_msgs::msg::Frame::SharedPtr msg);
-      void recvRelayCmd(const pdu_msgs::msg::RelayCommand::SharedPtr msg);
-
-      // Subscribed topics
-      rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr sub_can_;
-      rclcpp::Subscription<pdu_msgs::msg::RelayCommand>::SharedPtr sub_relay_cmd_;
-
-      // Published topics
-      rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr pub_can_;
-      rclcpp::Publisher<pdu_msgs::msg::FuseReport>::SharedPtr fuse_report_pub_;
-      rclcpp::Publisher<pdu_msgs::msg::RelayReport>::SharedPtr relay_report_pub_;
+    RELAY_STATUS_BASE_ADDR = 0x18ffa100,
+    FUSE_STATUS_BASE_ADDR = 0x18ffa000,
+    RELAY_COMMAND_BASE_ADDR = 0x18ef0000
   };
+
+public:
+  pdu(const rclcpp::NodeOptions & options);
+
+private:
+  uint32_t id_;
+  uint32_t relayCommandAddr_;
+  uint32_t relayStatusAddr_;
+  uint32_t fuseStatusAddr_;
+
+  uint32_t count_;
+
+  NewEagle::Dbc pduDbc_;
+  std::string pduFile_;
+
+  void recvCAN(const can_msgs::msg::Frame::SharedPtr msg);
+  void recvRelayCmd(const pdu_msgs::msg::RelayCommand::SharedPtr msg);
+
+  // Subscribed topics
+  rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr sub_can_;
+  rclcpp::Subscription<pdu_msgs::msg::RelayCommand>::SharedPtr sub_relay_cmd_;
+
+  // Published topics
+  rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr pub_can_;
+  rclcpp::Publisher<pdu_msgs::msg::FuseReport>::SharedPtr fuse_report_pub_;
+  rclcpp::Publisher<pdu_msgs::msg::RelayReport>::SharedPtr relay_report_pub_;
+};
 }
 
 #endif /* NEWEAGLE_PDU_H_ */
