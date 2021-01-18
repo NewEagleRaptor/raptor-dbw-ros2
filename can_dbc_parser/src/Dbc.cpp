@@ -36,55 +36,54 @@
 
 namespace NewEagle
 {
-  ////
-  Dbc::Dbc() { }
+////
+Dbc::Dbc() {}
 
-  Dbc::~Dbc() { }
+Dbc::~Dbc() {}
 
-  std::map<std::string, NewEagle::DbcMessage>* Dbc::GetMessages()
-  {
-    return &_messages;
-  }
+std::map<std::string, NewEagle::DbcMessage> * Dbc::GetMessages()
+{
+  return &_messages;
+}
 
-  void Dbc::AddMessage(std::string messageName, NewEagle::DbcMessage message)
-  {
-    _messages.insert(std::pair<std::string, NewEagle::DbcMessage>(message.GetName(), message));
-  }
+void Dbc::AddMessage(std::string messageName, NewEagle::DbcMessage message)
+{
+  _messages.insert(std::pair<std::string, NewEagle::DbcMessage>(message.GetName(), message));
+}
 
-  NewEagle::DbcMessage* Dbc::GetMessage(std::string messageName)
-  {
-    std::map<std::string, NewEagle::DbcMessage>::iterator it;
+NewEagle::DbcMessage * Dbc::GetMessage(std::string messageName)
+{
+  std::map<std::string, NewEagle::DbcMessage>::iterator it;
 
-    it = _messages.find(messageName);
+  it = _messages.find(messageName);
 
-    if (_messages.end() == it)
-    {
-      return NULL;
-    }
-
-    NewEagle::DbcMessage* message = &it->second;
-
-    return message;
-  }
-
-  NewEagle::DbcMessage* Dbc::GetMessageById(uint32_t id)
-  {
-    for(std::map<std::string, NewEagle::DbcMessage>::iterator it = _messages.begin(); it != _messages.end(); it++)
-    {
-      if (it->second.GetId() == id)
-      {
-        NewEagle::DbcMessage* message = &it->second;
-
-        return message;
-      }
-
-    }
-
+  if (_messages.end() == it) {
     return NULL;
   }
 
-  uint16_t Dbc::GetMessageCount()
+  NewEagle::DbcMessage * message = &it->second;
+
+  return message;
+}
+
+NewEagle::DbcMessage * Dbc::GetMessageById(uint32_t id)
+{
+  for (std::map<std::string, NewEagle::DbcMessage>::iterator it = _messages.begin();
+    it != _messages.end(); it++)
   {
-    return _messages.size();
+    if (it->second.GetId() == id) {
+      NewEagle::DbcMessage * message = &it->second;
+
+      return message;
+    }
+
   }
+
+  return NULL;
+}
+
+uint16_t Dbc::GetMessageCount()
+{
+  return _messages.size();
+}
 }

@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
- 
+
 #ifndef _NEW_EAGLE_DBC_MESSAGE_H
 #define _NEW_EAGLE_DBC_MESSAGE_H
 
@@ -41,67 +41,68 @@
 
 namespace NewEagle
 {
-  struct DbcMessageComment
-  {
-    uint32_t Id;
-    std::string Comment;
-  };
+struct DbcMessageComment
+{
+  uint32_t Id;
+  std::string Comment;
+};
 
-  enum IdType
-  {
-    STD = 0,
-    EXT = 1
-  };
+enum IdType
+{
+  STD = 0,
+  EXT = 1
+};
 
-  typedef struct {
-    uint8_t :8;
-    uint8_t :8;
-    uint8_t :8;
-    uint8_t :8;
-    uint8_t :8;
-    uint8_t :8;
-    uint8_t :8;
-    uint8_t :8;
-  } EmptyData;
+typedef struct
+{
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+} EmptyData;
 
-  class DbcMessage
-  {
-    public:
-      DbcMessage();
-      DbcMessage(
-        uint8_t dlc,
-        uint32_t id,
-        IdType idType,
-        std::string name,
-        uint32_t rawId
-     );
+class DbcMessage
+{
+public:
+  DbcMessage();
+  DbcMessage(
+    uint8_t dlc,
+    uint32_t id,
+    IdType idType,
+    std::string name,
+    uint32_t rawId
+  );
 
-     ~DbcMessage();
+  ~DbcMessage();
 
-     uint8_t GetDlc();
-     uint32_t GetId();
-     IdType GetIdType();
-     std::string GetName();
-     can_msgs::msg::Frame GetFrame();
-     uint32_t GetSignalCount();
-     void SetFrame(const can_msgs::msg::Frame::SharedPtr msg);
-     void AddSignal(std::string signalName, NewEagle::DbcSignal signal);
-     NewEagle::DbcSignal* GetSignal(std::string signalName);
-     void SetRawText(std::string rawText);
-     uint32_t GetRawId();
-     void SetComment(NewEagle::DbcMessageComment comment);
-     std::map<std::string, NewEagle::DbcSignal>* GetSignals();
-     bool AnyMultiplexedSignals();
+  uint8_t GetDlc();
+  uint32_t GetId();
+  IdType GetIdType();
+  std::string GetName();
+  can_msgs::msg::Frame GetFrame();
+  uint32_t GetSignalCount();
+  void SetFrame(const can_msgs::msg::Frame::SharedPtr msg);
+  void AddSignal(std::string signalName, NewEagle::DbcSignal signal);
+  NewEagle::DbcSignal * GetSignal(std::string signalName);
+  void SetRawText(std::string rawText);
+  uint32_t GetRawId();
+  void SetComment(NewEagle::DbcMessageComment comment);
+  std::map<std::string, NewEagle::DbcSignal> * GetSignals();
+  bool AnyMultiplexedSignals();
 
-   private:
-     std::map<std::string, NewEagle::DbcSignal> _signals;
-     uint8_t _data[8];
-     uint8_t _dlc;
-     uint32_t _id;
-     IdType _idType;
-     std::string _name;
-     uint32_t _rawId;
-     NewEagle::DbcMessageComment _comment;
-  };
+private:
+  std::map<std::string, NewEagle::DbcSignal> _signals;
+  uint8_t _data[8];
+  uint8_t _dlc;
+  uint32_t _id;
+  IdType _idType;
+  std::string _name;
+  uint32_t _rawId;
+  NewEagle::DbcMessageComment _comment;
+};
 }
 #endif // _NEW_EAGLE_DBC_UTILITIES_H

@@ -44,22 +44,22 @@
 
 namespace NewEagle
 {
-  class Dbc
-  {
-    public:
-      Dbc();
-      ~Dbc();
+class Dbc
+{
+public:
+  Dbc();
+  ~Dbc();
 
-      void AddMessage(std::string messageName, NewEagle::DbcMessage message);
-      NewEagle::DbcMessage* GetMessage(std::string messageName);
-      NewEagle::DbcMessage* GetMessageById(uint32_t id);
-      uint16_t GetMessageCount();
-      std::map<std::string, NewEagle::DbcMessage>* GetMessages();
+  void AddMessage(std::string messageName, NewEagle::DbcMessage message);
+  NewEagle::DbcMessage * GetMessage(std::string messageName);
+  NewEagle::DbcMessage * GetMessageById(uint32_t id);
+  uint16_t GetMessageCount();
+  std::map<std::string, NewEagle::DbcMessage> * GetMessages();
 
-    private:
-      std::map<std::string, NewEagle::DbcMessage> _messages;
+private:
+  std::map<std::string, NewEagle::DbcMessage> _messages;
 
-  };
+};
 }
 
 #endif // _NEW_EAGLE_DBC_H

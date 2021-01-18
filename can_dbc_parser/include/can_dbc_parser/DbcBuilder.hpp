@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
- 
+
 #ifndef _NEW_EAGLE_DBCBUILDER_H
 #define _NEW_EAGLE_DBCBUILDER_H
 
@@ -43,209 +43,207 @@
 
 namespace NewEagle
 {
-  struct DbcSignalValueType
-  {
-    uint32_t Id;
-    std::string SignalName;
-    NewEagle::DataType Type;
-  };
+struct DbcSignalValueType
+{
+  uint32_t Id;
+  std::string SignalName;
+  NewEagle::DataType Type;
+};
 
-  struct DbcAttribute
-  {
-    std::string AttributeName;
-    uint32_t Id;
-    std::string ObjectType;
-    std::string SignalName;
-    std::string Value;
-  };
+struct DbcAttribute
+{
+  std::string AttributeName;
+  uint32_t Id;
+  std::string ObjectType;
+  std::string SignalName;
+  std::string Value;
+};
 
-  class DbcBuilder
-  {
-    public:
-      DbcBuilder();
-      ~DbcBuilder();
+class DbcBuilder
+{
+public:
+  DbcBuilder();
+  ~DbcBuilder();
 
-      NewEagle::Dbc NewDbc(const std::string &dbcFile);
+  NewEagle::Dbc NewDbc(const std::string & dbcFile);
 
-    private:
-      std::string MessageToken;
-      std::string SignalToken;
-      std::string CommentToken;
-      std::string EnumValueToken;
-      std::string AttributeToken;
-      std::string SignalValueTypeToken;
-  };
+private:
+  std::string MessageToken;
+  std::string SignalToken;
+  std::string CommentToken;
+  std::string EnumValueToken;
+  std::string AttributeToken;
+  std::string SignalValueTypeToken;
+};
 
 
-      static NewEagle::DbcSignalValueType ReadSignalValueType(NewEagle::LineParser parser)
-      {
-        NewEagle::DbcSignalValueType signalValueType;
+static NewEagle::DbcSignalValueType ReadSignalValueType(NewEagle::LineParser parser)
+{
+  NewEagle::DbcSignalValueType signalValueType;
 
-        signalValueType.Id = parser.ReadUInt("id");
-        signalValueType.SignalName = parser.ReadCIdentifier();
-        parser.SeekSeparator(':');
-        signalValueType.Type = parser.ReadUInt("DataType") == 1 ? NewEagle::FLOAT : NewEagle::DOUBLE;
+  signalValueType.Id = parser.ReadUInt("id");
+  signalValueType.SignalName = parser.ReadCIdentifier();
+  parser.SeekSeparator(':');
+  signalValueType.Type = parser.ReadUInt("DataType") == 1 ? NewEagle::FLOAT : NewEagle::DOUBLE;
 
-        return signalValueType;
+  return signalValueType;
+}
+
+static NewEagle::DbcAttribute ReadAttribute(NewEagle::LineParser parser)
+{
+  NewEagle::DbcAttribute attribute;
+
+  try {
+    attribute.AttributeName = parser.ReadQuotedString();
+    if (attribute.AttributeName == "GenSigStartValue") {
+      attribute.ObjectType = parser.ReadCIdentifier();
+      attribute.Id = parser.ReadUInt("id");
+      if (attribute.ObjectType == "SG_") {
+        attribute.SignalName = parser.ReadCIdentifier();
+
+        std::ostringstream sstream;
+        sstream << parser.ReadDouble();
+        attribute.Value = sstream.str();
       }
+    }
+  } catch (std::exception & ex) {
+    throw;
+  }
 
-      static NewEagle::DbcAttribute ReadAttribute(NewEagle::LineParser parser)
-      {
-        NewEagle::DbcAttribute attribute;
+  return attribute;
+}
 
-        try
-        {
-          attribute.AttributeName = parser.ReadQuotedString();
-          if (attribute.AttributeName == "GenSigStartValue")
-          {
-              attribute.ObjectType = parser.ReadCIdentifier();
-              attribute.Id = parser.ReadUInt("id");
-              if (attribute.ObjectType == "SG_")
-              {
-                attribute.SignalName = parser.ReadCIdentifier();
+static NewEagle::DbcMessageComment ReadMessageComment(NewEagle::LineParser parser)
+{
+  NewEagle::DbcMessageComment comment;
+  comment.Id = parser.ReadUInt("id");
+  comment.Comment = parser.ReadQuotedString();
 
-                std::ostringstream sstream;
-                sstream << parser.ReadDouble();
-                attribute.Value = sstream.str();
-              }
-          }
-        }
-        catch(std::exception& ex)
-        {
-          throw;
-        }
+  return comment;
+}
 
-        return attribute;
-      }
+static NewEagle::DbcSignalComment ReadSignalComment(NewEagle::LineParser parser)
+{
+  NewEagle::DbcSignalComment comment;
+  comment.Id = parser.ReadUInt("id");
+  comment.SignalName = parser.ReadCIdentifier();
+  comment.Comment = parser.ReadQuotedString();
 
-      static NewEagle::DbcMessageComment ReadMessageComment(NewEagle::LineParser parser)
-      {
-        NewEagle::DbcMessageComment comment;
-        comment.Id = parser.ReadUInt("id");
-        comment.Comment = parser.ReadQuotedString();
+  return comment;
+}
 
-        return comment;
-      }
+static NewEagle::DbcMessage ReadMessage(NewEagle::LineParser parser)
+{
+  uint32_t canId = parser.ReadUInt("message id");
+  IdType idType = ((canId & 0x80000000u) > 0) ? NewEagle::EXT : NewEagle::STD;
+  std::string name(parser.ReadCIdentifier("message name"));
+  parser.SeekSeparator(':');
+  uint8_t dlc = parser.ReadUInt("size");
+  std::string sendingNode(parser.ReadCIdentifier("transmitter"));
+  uint32_t id = (uint32_t)(canId & 0x3FFFFFFFu);
 
-      static NewEagle::DbcSignalComment ReadSignalComment(NewEagle::LineParser parser)
-      {
-        NewEagle::DbcSignalComment comment;
-        comment.Id = parser.ReadUInt("id");
-        comment.SignalName = parser.ReadCIdentifier();
-        comment.Comment = parser.ReadQuotedString();
+  NewEagle::DbcMessage msg(dlc, id, idType, name, canId);
+  return msg;
+}
 
-        return comment;
-      }
+static NewEagle::DbcSignal ReadSignal(NewEagle::LineParser parser)
+{
+  std::string name = parser.ReadCIdentifier();
+  char mux = parser.ReadNextChar("mux");
+  NewEagle::MultiplexerMode multiplexMode = NewEagle::NONE;
+  int32_t muxSwitch = 0;
 
-      static NewEagle::DbcMessage ReadMessage(NewEagle::LineParser parser)
-      {
-        uint32_t canId = parser.ReadUInt("message id");
-        IdType idType = ((canId & 0x80000000u) > 0) ? NewEagle::EXT : NewEagle::STD;
-        std::string name(parser.ReadCIdentifier("message name"));
-        parser.SeekSeparator(':');
-        uint8_t dlc = parser.ReadUInt("size");
-        std::string sendingNode(parser.ReadCIdentifier("transmitter"));
-        uint32_t id = (uint32_t)(canId & 0x3FFFFFFFu);
+  switch (mux) {
+    case ':':
+      multiplexMode = NewEagle::NONE;
+      break;
+    case 'M':
+      multiplexMode = NewEagle::MUX_SWITCH;
+      parser.SeekSeparator(':');
+      break;
+    case 'm':
+      multiplexMode = NewEagle::MUX_SIGNAL;
+      muxSwitch = parser.ReadInt();
+      parser.SeekSeparator(':');
+      break;
+    default:
+      throw std::runtime_error("Synxax Error: Expected \':\' " + parser.GetPosition());
+  }
 
-        NewEagle::DbcMessage msg(dlc, id, idType, name, canId);
-        return msg;
-      }
+  int32_t startBit = parser.ReadUInt("start bit");
 
-      static NewEagle::DbcSignal ReadSignal(NewEagle::LineParser parser)
-      {
-        std::string name = parser.ReadCIdentifier();
-        char mux = parser.ReadNextChar("mux");
-        NewEagle::MultiplexerMode multiplexMode = NewEagle::NONE;
-        int32_t muxSwitch = 0;
+  parser.SeekSeparator('|');
 
-        switch (mux) {
-          case ':':
-            multiplexMode = NewEagle::NONE;
-            break;
-          case 'M':
-            multiplexMode = NewEagle::MUX_SWITCH;
-            parser.SeekSeparator(':');
-            break;
-          case 'm':
-            multiplexMode = NewEagle::MUX_SIGNAL;
-            muxSwitch = parser.ReadInt();
-            parser.SeekSeparator(':');
-            break;
-          default:
-            throw std::runtime_error("Synxax Error: Expected \':\' " + parser.GetPosition());
-        }
+  uint8_t length = (uint8_t)parser.ReadUInt("size");
+  parser.SeekSeparator('@');
 
-        int32_t startBit = parser.ReadUInt("start bit");
+  char byteOrder = parser.ReadNextChar("byte order");
 
-        parser.SeekSeparator('|');
+  NewEagle::ByteOrder endianness;
 
-        uint8_t length = (uint8_t)parser.ReadUInt("size");
-        parser.SeekSeparator('@');
+  switch (byteOrder) {
+    case '1':
+      endianness = NewEagle::LITTLE_END;
+      break;
+    case '0':
+      endianness = NewEagle::BIG_END;
+      break;
+    default:
+      throw std::runtime_error("Synxax Error: Byte Order - Expected 0 or 1, got " + byteOrder);
+  }
 
-        char byteOrder = parser.ReadNextChar("byte order");
+  char valType = parser.ReadNextChar("value type");
+  NewEagle::SignType sign;
 
-        NewEagle::ByteOrder endianness;
+  switch (valType) {
+    case '+':
+      sign = NewEagle::UNSIGNED;
+      break;
+    case '-':
+      sign = NewEagle::SIGNED;
+      break;
+    default:
+      throw std::runtime_error("Synxax Error: Value Type - Expected + or -, got " + valType);
+  }
 
-        switch (byteOrder) {
-          case '1':
-            endianness = NewEagle::LITTLE_END;
-            break;
-          case '0':
-            endianness = NewEagle::BIG_END;
-            break;
-          default:
-            throw std::runtime_error("Synxax Error: Byte Order - Expected 0 or 1, got " + byteOrder);
-        }
-
-        char valType = parser.ReadNextChar("value type");
-        NewEagle::SignType sign;
-
-        switch (valType) {
-          case '+':
-            sign = NewEagle::UNSIGNED;
-            break;
-          case '-':
-            sign = NewEagle::SIGNED;
-            break;
-          default:
-            throw std::runtime_error("Synxax Error: Value Type - Expected + or -, got " + valType);
-        }
-
-        // Set the default data type: INT.
-        //  Might be changed what parsing SIG_VALTYPE_
-        NewEagle::DataType type = NewEagle::INT;
+  // Set the default data type: INT.
+  //  Might be changed what parsing SIG_VALTYPE_
+  NewEagle::DataType type = NewEagle::INT;
 
 
-        parser.SeekSeparator('(');
-        double gain = parser.ReadDouble("factor");
-        parser.SeekSeparator(',');
-        double offset = parser.ReadDouble("offset");
-        parser.SeekSeparator(')');
+  parser.SeekSeparator('(');
+  double gain = parser.ReadDouble("factor");
+  parser.SeekSeparator(',');
+  double offset = parser.ReadDouble("offset");
+  parser.SeekSeparator(')');
 
-        parser.SeekSeparator('[');
-        //min value
-        parser.ReadDouble("minimum");
-        parser.SeekSeparator('|');
-        //max value
-        parser.ReadDouble("maximum");
-        parser.SeekSeparator(']');
+  parser.SeekSeparator('[');
+  //min value
+  parser.ReadDouble("minimum");
+  parser.SeekSeparator('|');
+  //max value
+  parser.ReadDouble("maximum");
+  parser.SeekSeparator(']');
 
-        // Need to include Min, Max, DataType, MuxSwitch, Unit, Receiver
-        // Find a way to include the DLC...
-        NewEagle::DbcSignal* signal;
+  // Need to include Min, Max, DataType, MuxSwitch, Unit, Receiver
+  // Find a way to include the DLC...
+  NewEagle::DbcSignal * signal;
 
-        if (NewEagle::MUX_SIGNAL == multiplexMode) {
-          //NewEagle::DbcSignal signal(8, gain, offset, startBit, endianness, length, sign, name, multiplexMode, muxSwitch);
-          signal = new NewEagle::DbcSignal(8, gain, offset, startBit, endianness, length, sign, name, multiplexMode, muxSwitch);
-        }
-        else {
-          //NewEagle::DbcSignal signal(8, gain, offset, startBit, endianness, length, sign, name, multiplexMode);
-          signal = new NewEagle::DbcSignal(8, gain, offset, startBit, endianness, length, sign, name, multiplexMode);
-        }
+  if (NewEagle::MUX_SIGNAL == multiplexMode) {
+    //NewEagle::DbcSignal signal(8, gain, offset, startBit, endianness, length, sign, name, multiplexMode, muxSwitch);
+    signal = new NewEagle::DbcSignal(
+      8, gain, offset, startBit, endianness, length, sign, name,
+      multiplexMode, muxSwitch);
+  } else {
+    //NewEagle::DbcSignal signal(8, gain, offset, startBit, endianness, length, sign, name, multiplexMode);
+    signal = new NewEagle::DbcSignal(
+      8, gain, offset, startBit, endianness, length, sign, name,
+      multiplexMode);
+  }
 
-        signal->SetDataType(type);
-        return NewEagle::DbcSignal(*signal);
-      }
+  signal->SetDataType(type);
+  return NewEagle::DbcSignal(*signal);
+}
 }
 
 #endif // _NEW_EAGLE_DBCBUILDER_H

@@ -31,404 +31,346 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
- 
+
 #include <can_dbc_parser/LineParser.hpp>
 
 namespace NewEagle
 {
-  LineParser::LineParser(const std::string &line)
-  {
-    _line = line;
-    _position = 0;
+LineParser::LineParser(const std::string & line)
+{
+  _line = line;
+  _position = 0;
+}
+
+LineParser::~LineParser()
+{
+}
+
+int32_t LineParser::GetPosition()
+{
+  return _position;
+}
+
+std::string LineParser::ReadCIdentifier()
+{
+  SkipWhitespace();
+
+  if (AtEOL()) {
+    throw LineParserAtEOLException();
   }
 
-  LineParser::~LineParser()
-  {
+  if (!isalpha(_line[_position]) && _line[_position] != '_') {
+    throw std::runtime_error("ReadCIdentifier: Unexpected character");
   }
 
-  int32_t LineParser::GetPosition()
-  {
-    return _position;
-  }
+  int32_t startIdx = _position;
 
-  std::string LineParser::ReadCIdentifier()
-  {
-    SkipWhitespace();
-
-    if (AtEOL())
-    {
-      throw LineParserAtEOLException();
-    }
-
-    if (!isalpha(_line[_position]) && _line[_position] != '_')
-    {
-      throw std::runtime_error("ReadCIdentifier: Unexpected character");
-    }
-
-    int32_t startIdx = _position;
-
-    for(_position++; !AtEOL(); _position++)
-    {
-      if (!(isalpha(_line[_position]) || isdigit(_line[_position])) && _line[_position] != '_')
-      {
-        int32_t len = _position - startIdx;
-        return _line.substr(startIdx, len);
-      }
-    }
-
-    return _line.substr(startIdx, std::string::npos);
-  }
-
-  std::string LineParser::ReadCIdentifier(std::string fieldName)
-  {
-    std::string val = ReadCIdentifier();
-
-    if (val == std::string())
-    {
-      throw std::runtime_error("Synxax Error: Expected : " + fieldName);
-    }
-
-    return val;
-
-  }
-
-  void LineParser::SkipWhitespace()
-  {
-    while(!AtEOL() && isspace(_line[_position]))
-    {
-      _position++;
+  for (_position++; !AtEOL(); _position++) {
+    if (!(isalpha(_line[_position]) || isdigit(_line[_position])) && _line[_position] != '_') {
+      int32_t len = _position - startIdx;
+      return _line.substr(startIdx, len);
     }
   }
 
-  bool LineParser::AtEOL()
-  {
-    return _position >= _line.length();
+  return _line.substr(startIdx, std::string::npos);
+}
+
+std::string LineParser::ReadCIdentifier(std::string fieldName)
+{
+  std::string val = ReadCIdentifier();
+
+  if (val == std::string()) {
+    throw std::runtime_error("Synxax Error: Expected : " + fieldName);
   }
 
-  char LineParser::ReadNextChar()
-  {
-    SkipWhitespace();
+  return val;
 
-    if (AtEOL())
-    {
-      throw LineParserAtEOLException(); 
-    }
+}
 
-    int32_t idx = _position;
+void LineParser::SkipWhitespace()
+{
+  while (!AtEOL() && isspace(_line[_position])) {
     _position++;
+  }
+}
 
-    return _line[idx];
+bool LineParser::AtEOL()
+{
+  return _position >= _line.length();
+}
 
+char LineParser::ReadNextChar()
+{
+  SkipWhitespace();
+
+  if (AtEOL()) {
+    throw LineParserAtEOLException();
   }
 
-  char LineParser::ReadNextChar(std::string fieldName)
-  {
-    try
-    {
-      char val = ReadNextChar();
-      return val;
-    }
-    catch(LineParserExceptionBase& exlp)
-    {
-      throw;
-    }
+  int32_t idx = _position;
+  _position++;
 
+  return _line[idx];
+
+}
+
+char LineParser::ReadNextChar(std::string fieldName)
+{
+  try {
+    char val = ReadNextChar();
+    return val;
+  } catch (LineParserExceptionBase & exlp) {
+    throw;
   }
 
-  uint32_t LineParser::PeekUInt()
-  {
-    SkipWhitespace();
+}
 
-    if (AtEOL())
-    {
-      throw LineParserAtEOLException(); 
-    }
+uint32_t LineParser::PeekUInt()
+{
+  SkipWhitespace();
 
-    int32_t position = _position;
+  if (AtEOL()) {
+    throw LineParserAtEOLException();
+  }
 
-    int32_t startIdx = position;
-    int32_t len = -1;
+  int32_t position = _position;
 
-    for(; !AtEOL(); position++)
-    {
-      if (!isdigit(_line[position]))
-      {
-        len = position - startIdx;
-        break;
-      }
-    }
+  int32_t startIdx = position;
+  int32_t len = -1;
 
-    if (-1 == len)
-    {
+  for (; !AtEOL(); position++) {
+    if (!isdigit(_line[position])) {
       len = position - startIdx;
+      break;
     }
-
-    if (0 == len)
-    {
-      throw LineParserLenZeroException(); 
-    }
-
-    std::istringstream reader(_line.substr(startIdx, len));
-    uint32_t val;
-    reader >> val;
-
-    return val;
   }
 
-  uint32_t LineParser::ReadUInt()
-  {
-    SkipWhitespace();
+  if (-1 == len) {
+    len = position - startIdx;
+  }
 
-    if (AtEOL())
-    {
-      throw LineParserAtEOLException(); 
-    }
+  if (0 == len) {
+    throw LineParserLenZeroException();
+  }
 
-    int32_t startIdx = _position;
-    int32_t len = -1;
+  std::istringstream reader(_line.substr(startIdx, len));
+  uint32_t val;
+  reader >> val;
 
-    for(; !AtEOL(); _position++)
-    {
-      if (!isdigit(_line[_position]))
-      {
-        len = _position - startIdx;
-        break;
-      }
-    }
+  return val;
+}
 
-    if (-1 == len)
-    {
+uint32_t LineParser::ReadUInt()
+{
+  SkipWhitespace();
+
+  if (AtEOL()) {
+    throw LineParserAtEOLException();
+  }
+
+  int32_t startIdx = _position;
+  int32_t len = -1;
+
+  for (; !AtEOL(); _position++) {
+    if (!isdigit(_line[_position])) {
       len = _position - startIdx;
+      break;
     }
+  }
 
-    if (0 == len)
-    {
-      throw LineParserLenZeroException(); 
-    }
+  if (-1 == len) {
+    len = _position - startIdx;
+  }
 
-    std::istringstream reader(_line.substr(startIdx, len));
-    uint32_t val;
-    reader >> val;
+  if (0 == len) {
+    throw LineParserLenZeroException();
+  }
 
+  std::istringstream reader(_line.substr(startIdx, len));
+  uint32_t val;
+  reader >> val;
+
+  return val;
+}
+
+uint32_t LineParser::ReadUInt(std::string fieldName)
+{
+  try {
+    uint32_t val = ReadUInt();
     return val;
+  } catch (LineParserExceptionBase & exlp) {
+    throw;
+  }
+}
+
+int32_t LineParser::ReadInt()
+{
+  SkipWhitespace();
+
+  if (AtEOL()) {
+    throw LineParserAtEOLException();
   }
 
-  uint32_t LineParser::ReadUInt(std::string fieldName)
-  {
-    try
-    {
-      uint32_t val = ReadUInt();
-      return val;
-    }
-    catch(LineParserExceptionBase& exlp)
-    {
-      throw;
-    }
+  if (!isdigit(_line[_position]) && _line[_position] != '-' && _line[_position] != '+') {
+    throw LineParserInvalidCharException();
   }
 
-  int32_t LineParser::ReadInt()
-  {
-    SkipWhitespace();
+  int32_t startIdx = _position;
+  int32_t len = -1;
 
-    if (AtEOL())
-    {
-      throw LineParserAtEOLException(); 
-    }
-
-    if (!isdigit(_line[_position]) && _line[_position] != '-' && _line[_position] != '+')
-    {
-      throw LineParserInvalidCharException(); 
-    }
-
-    int32_t startIdx = _position;
-    int32_t len = -1;
-
-    for(_position++; !AtEOL(); _position++)
-    {
-      if (!isdigit(_line[_position]))
-      {
-        len = _position - startIdx;
-        break;
-      }
-    }
-
-    if (-1 == len)
-    {
+  for (_position++; !AtEOL(); _position++) {
+    if (!isdigit(_line[_position])) {
       len = _position - startIdx;
+      break;
     }
-
-    if (0 == len)
-    {
-      throw LineParserLenZeroException(); 
-    }
-
-    std::istringstream reader(_line.substr(startIdx, len));
-    int32_t val;
-    reader >> val;
-
-    return val;
-
   }
 
-  double LineParser::ReadDouble()
-  {
-    SkipWhitespace();
+  if (-1 == len) {
+    len = _position - startIdx;
+  }
 
-    if (AtEOL())
-    {
-      throw LineParserAtEOLException(); 
-    }
+  if (0 == len) {
+    throw LineParserLenZeroException();
+  }
 
-    if (!isdigit(_line[_position]) && _line[_position] != '-' && _line[_position] != '+')
-    {
-      throw LineParserInvalidCharException(); 
-    }
+  std::istringstream reader(_line.substr(startIdx, len));
+  int32_t val;
+  reader >> val;
 
-    int32_t startIdx = _position;
-    int32_t len = -1;
+  return val;
 
-    NewEagle::ReadDoubleState state = NewEagle::READING_WHOLE_NUMBER;
+}
 
-    for(_position++; !AtEOL(); _position++)
-    {
-      char c = _line[_position];
+double LineParser::ReadDouble()
+{
+  SkipWhitespace();
 
-      switch (state) {
-        case NewEagle::READING_WHOLE_NUMBER:
-          if ('E' == c || 'e' == c)
-          {
-            state = NewEagle::READ_E;
-          }
-          else if('.' == c)
-          {
-            state = NewEagle::READING_FRACTION;
-          }
-          else if (!isdigit(c))
-          {
-            goto DoneReading;
-          }
-          break;
-        case NewEagle::READING_FRACTION:
-          if ('E' == c || 'e' == c)
-          {
-            state = NewEagle::READ_E;
-          }
-          else if(!isdigit(c))
-          {
-            goto DoneReading;
-          }
-          break;
-        case NewEagle::READ_E:
-          if ('+' == c || '-' == c)
-          {
-            state = NewEagle::READ_SIGN;
-          }
-          else if (isdigit(c))
-          {
-            state = NewEagle::READING_EXP;
-          }
-          break;
-        case NewEagle::READ_SIGN:
-          if (!isdigit(c))
-          {
-            throw LineParserInvalidCharException();
-          }
-          else
-          {
-            state = NewEagle::READING_EXP;
-          }
+  if (AtEOL()) {
+    throw LineParserAtEOLException();
+  }
 
-          break;
-        case NewEagle::READING_EXP:
-          if (!isdigit(c))
-          {
-            goto DoneReading;
-          }
-          break;
-        default:
-          break;
+  if (!isdigit(_line[_position]) && _line[_position] != '-' && _line[_position] != '+') {
+    throw LineParserInvalidCharException();
+  }
 
-      }
+  int32_t startIdx = _position;
+  int32_t len = -1;
+
+  NewEagle::ReadDoubleState state = NewEagle::READING_WHOLE_NUMBER;
+
+  for (_position++; !AtEOL(); _position++) {
+    char c = _line[_position];
+
+    switch (state) {
+      case NewEagle::READING_WHOLE_NUMBER:
+        if ('E' == c || 'e' == c) {
+          state = NewEagle::READ_E;
+        } else if ('.' == c) {
+          state = NewEagle::READING_FRACTION;
+        } else if (!isdigit(c)) {
+          goto DoneReading;
+        }
+        break;
+      case NewEagle::READING_FRACTION:
+        if ('E' == c || 'e' == c) {
+          state = NewEagle::READ_E;
+        } else if (!isdigit(c)) {
+          goto DoneReading;
+        }
+        break;
+      case NewEagle::READ_E:
+        if ('+' == c || '-' == c) {
+          state = NewEagle::READ_SIGN;
+        } else if (isdigit(c)) {
+          state = NewEagle::READING_EXP;
+        }
+        break;
+      case NewEagle::READ_SIGN:
+        if (!isdigit(c)) {
+          throw LineParserInvalidCharException();
+        } else {
+          state = NewEagle::READING_EXP;
+        }
+
+        break;
+      case NewEagle::READING_EXP:
+        if (!isdigit(c)) {
+          goto DoneReading;
+        }
+        break;
+      default:
+        break;
 
     }
+
+  }
 
 DoneReading:
-    len = _position - startIdx;
+  len = _position - startIdx;
 
-    if (0 == len)
-    {
-      throw LineParserLenZeroException(); 
-    }
+  if (0 == len) {
+    throw LineParserLenZeroException();
+  }
 
-    std::istringstream reader(_line.substr(startIdx, len));
-    double val;
-    reader >> val;
+  std::istringstream reader(_line.substr(startIdx, len));
+  double val;
+  reader >> val;
 
+  return val;
+
+}
+
+double LineParser::ReadDouble(std::string fieldName)
+{
+  try {
+    double val = ReadDouble();
     return val;
-
+  } catch (LineParserExceptionBase & exlp) {
+    throw;
   }
 
-  double LineParser::ReadDouble(std::string fieldName)
-  {
-    try
-    {
-      double val = ReadDouble();
-     return val;
-    }
-    catch(LineParserExceptionBase& exlp)
-    {
-      throw;
-    }
+}
 
+void LineParser::SeekSeparator(char separator)
+{
+  char nextChar = ReadNextChar();
+
+  if (nextChar == 0x00 || nextChar != separator) {
+    throw std::runtime_error("Synxax Error: Expected : " + separator);
+  }
+}
+
+std::string LineParser::ReadQuotedString()
+{
+  SkipWhitespace();
+
+  if (AtEOL()) {
+    throw LineParserAtEOLException();
   }
 
-  void LineParser::SeekSeparator(char separator)
-  {
-    char nextChar = ReadNextChar();
+  if (_line[_position] != '"') {
+    throw std::runtime_error("ReadQuotedString: Missing Quote");
+  }
 
-    if (nextChar == 0x00 || nextChar != separator)
-    {
-      throw std::runtime_error("Synxax Error: Expected : " + separator);
+  int32_t startIdx = ++_position;
+  int32_t len = -1;
+
+  for (; _position < _line.size(); _position++) {
+    if (_line[_position] == '"') {
+      len = _position - startIdx;
+      _position++;
+      break;
     }
   }
 
-  std::string LineParser::ReadQuotedString()
-  {
-    SkipWhitespace();
-
-    if (AtEOL())
-    {
-      throw LineParserAtEOLException(); 
-    }
-
-    if (_line[_position] != '"')
-    {
-      throw std::runtime_error("ReadQuotedString: Missing Quote");
-    }
-
-    int32_t startIdx = ++_position;
-    int32_t len  = -1;
-
-    for (; _position < _line.size(); _position++)
-    {
-      if (_line[_position] == '"')
-      {
-        len = _position - startIdx;
-        _position++;
-        break;
-      }
-    }
-
-    if (-1 == len)
-    {
-      throw LineParserLenZeroException();
-    }
-
-    if (0 == len)
-    {
-      throw LineParserLenZeroException(); 
-    }
-
-    return _line.substr(startIdx, len);
+  if (-1 == len) {
+    throw LineParserLenZeroException();
   }
+
+  if (0 == len) {
+    throw LineParserLenZeroException();
+  }
+
+  return _line.substr(startIdx, len);
+}
 }
