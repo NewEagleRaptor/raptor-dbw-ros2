@@ -5,15 +5,13 @@
   <description>
     DBC file interface.  Read a DBC file, unpack CAN messages and convert to engineering units, pack values into CAN messages for publishing.
   </description>
-
-  
   <maintainer email="neweagleraptorgithub@neweagle.net">New Eagle</maintainer>
-
   <license>BSD</license>
 
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
 
   <depend>can_msgs</depend>
+  <depend>rclcpp</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
