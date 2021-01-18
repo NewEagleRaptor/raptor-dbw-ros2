@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
- 
+
 #ifndef _NEW_EAGLE_LINEPARSER_H
 #define _NEW_EAGLE_LINEPARSER_H
 
@@ -43,70 +43,70 @@
 
 namespace NewEagle
 {
-  class LineParserExceptionBase: public std::exception
+class LineParserExceptionBase : public std::exception
+{
+};
+
+class LineParserAtEOLException : public LineParserExceptionBase
+{
+  virtual const char * what() const throw()
   {
-  };
+    return "Unexpected end of line.";
+  }
+};
 
-  class LineParserAtEOLException: public LineParserExceptionBase
+class LineParserLenZeroException : public LineParserExceptionBase
+{
+  virtual const char * what() const throw()
   {
-    virtual const char* what() const throw()
-    {
-      return "Unexpected end of line.";
-    }
-  };
+    return "Nothing found in search space.";
+  }
+};
 
-  class LineParserLenZeroException: public LineParserExceptionBase
+class LineParserInvalidCharException : public LineParserExceptionBase
+{
+  virtual const char * what() const throw()
   {
-    virtual const char* what() const throw()
-    {
-      return "Nothing found in search space.";
-    }
-  };
+    return "Invalid character(s) search space.";
+  }
+};
 
-  class LineParserInvalidCharException: public LineParserExceptionBase
-  {
-    virtual const char* what() const throw()
-    {
-      return "Invalid character(s) search space.";
-    }
-  };
+enum ReadDoubleState
+{
+  READING_WHOLE_NUMBER = 0,
+  READING_FRACTION = 1,
+  READ_E = 2,
+  READ_SIGN = 3,
+  READING_EXP = 4
+};
 
-  enum ReadDoubleState
-  {
-    READING_WHOLE_NUMBER = 0,
-    READING_FRACTION = 1,
-    READ_E = 2,
-    READ_SIGN = 3,
-    READING_EXP = 4
-  };
+class LineParser
+{
+public:
+  LineParser(const std::string & line);
+  ~LineParser();
 
-  class LineParser
-  {
-    public:
-      LineParser(const std::string &line);
-      ~LineParser();
+  int32_t GetPosition();
+  std::string ReadCIdentifier();
+  std::string ReadCIdentifier(std::string fieldName);
+  uint32_t ReadUInt();
+  uint32_t ReadUInt(std::string fieldName);
+  void SeekSeparator(char separator);
+  char ReadNextChar(std::string fieldName);
+  int32_t ReadInt();
+  double ReadDouble();
+  double ReadDouble(std::string fieldName);
+  std::string ReadQuotedString();
+  uint32_t PeekUInt();
 
-      int32_t GetPosition();
-      std::string ReadCIdentifier();
-      std::string ReadCIdentifier(std::string fieldName);
-      uint32_t ReadUInt();
-      uint32_t ReadUInt(std::string fieldName);
-      void SeekSeparator(char separator);
-      char ReadNextChar(std::string fieldName);
-      int32_t ReadInt();
-      double ReadDouble();
-      double ReadDouble(std::string fieldName);
-      std::string ReadQuotedString();
-      uint32_t PeekUInt();
+private:
+  int32_t _position;
+  std::string _line;
 
-    private:
-      int32_t _position;
-      std::string _line;
-
-      void SkipWhitespace();
-      bool AtEOL();
-      char ReadNextChar();
-  };
+  void SkipWhitespace();
+  bool AtEOL();
+  char ReadNextChar();
+};
 }
 
 #endif // _NEW_EAGLE_LINEPARSER_H

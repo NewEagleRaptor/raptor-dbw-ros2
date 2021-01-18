@@ -38,227 +38,167 @@
 
 namespace NewEagle
 {
-  DbcBuilder::DbcBuilder()
-  {
-    MessageToken = std::string("BO_");
-    SignalToken = std::string("SG_");
-    CommentToken = std::string("CM_");
-    EnumValueToken = std::string("VAL_");
-    AttributeToken = std::string("BA_");
-    SignalValueTypeToken = std::string("SIG_VALTYPE_");
-  }
+DbcBuilder::DbcBuilder()
+{
+  MessageToken = std::string("BO_");
+  SignalToken = std::string("SG_");
+  CommentToken = std::string("CM_");
+  EnumValueToken = std::string("VAL_");
+  AttributeToken = std::string("BA_");
+  SignalValueTypeToken = std::string("SIG_VALTYPE_");
+}
 
-  DbcBuilder::~DbcBuilder()
-  {
-  }
+DbcBuilder::~DbcBuilder()
+{
+}
 
-  NewEagle::Dbc DbcBuilder::NewDbc(const std::string &dbcFile)
-  {
+NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
+{
 
-    NewEagle::Dbc dbc;
+  NewEagle::Dbc dbc;
 
-    std::ifstream f(dbcFile);
-    std::string line;
-    if(!f.is_open())
-    {
-      std::cout << "Unable to open " << dbcFile << std::endl;
-      return dbc;
-    }
-
-    uint32_t lineNumber = 0;
-
-    NewEagle::DbcMessage currentMessage;
-
-    while (std::getline(f, line, '\n'))
-    {
-      lineNumber++;
-      NewEagle::LineParser parser(line);
-
-      std::string identifier;
-      try
-      {
-        identifier = parser.ReadCIdentifier();
-      }
-      catch(std::exception& ex)
-      {
-        identifier = std::string();
-      }
-
-      if (!MessageToken.compare(identifier))
-      {
-        try
-        {
-          currentMessage =  ReadMessage(parser);
-          dbc.AddMessage(currentMessage.GetName(), currentMessage);
-        }
-        catch(LineParserExceptionBase& exlp)
-        {
-          //RCLCPP_WARN("LineParser Exception: [%s]", exlp.what());
-        }
-        catch(std::exception& ex)
-        {
-          //RCLCPP_ERROR("DBC Message Parser Exception: [%s]", ex.what());
-        }
-      }
-      else if (!SignalToken.compare(identifier))
-      {
-        try
-        {
-          NewEagle::DbcSignal signal = ReadSignal(parser);
-
-          NewEagle::DbcMessage* msg = dbc.GetMessage(currentMessage.GetName());
-          msg->AddSignal(signal.GetName(), signal);
-        }
-        catch(LineParserExceptionBase& exlp)
-        {
-          //RCLCPP_WARN("LineParser Exception: [%s]", exlp.what());
-        }
-        catch(std::exception& ex)
-        {
-        }
-      }
-      else if (!CommentToken.compare(identifier))
-      {
-        try
-        {
-          std::string token = parser.ReadCIdentifier();
-
-          if (!MessageToken.compare(token))
-          {
-            NewEagle::DbcMessageComment dbcMessageComment = ReadMessageComment(parser);
-
-            std::map<std::string, NewEagle::DbcMessage>::iterator it;
-            int32_t ttt = 0;
-
-            for (it = dbc.GetMessages()->begin(); it != dbc.GetMessages()->end(); ++it)
-            {
-              ttt++;
-              if (it->second.GetRawId() == dbcMessageComment.Id)
-              {
-                it->second.SetComment(dbcMessageComment);
-                break;
-              }
-            }
-          }
-          else if (!SignalToken.compare(token))
-          {
-            NewEagle::DbcSignalComment dbcSignalComment = ReadSignalComment(parser);
-
-            std::map<std::string, NewEagle::DbcMessage>::iterator it;
-            for (it = dbc.GetMessages()->begin(); it != dbc.GetMessages()->end(); ++it)
-            {
-              if (it->second.GetRawId() == dbcSignalComment.Id)
-              {
-                DbcMessage msg = it->second;
-                std::map<std::string, NewEagle::DbcSignal>::iterator its;
-
-                for (its = msg.GetSignals()->begin(); its != msg.GetSignals()->end(); ++its)
-                {
-                  if (its->second.GetName() == dbcSignalComment.SignalName)
-                  {
-                    its->second.SetComment(dbcSignalComment);
-                    break;
-                  }
-                }
-              }
-            }
-          }
-        }
-        catch(LineParserExceptionBase& exlp)
-        {
-        }
-        catch(std::exception& ex)
-        {
-        }
-      }
-      else if (!AttributeToken.compare(identifier))
-      {
-        try
-        {
-          NewEagle::DbcAttribute dbcAttribute = ReadAttribute(parser);
-
-          if (dbc.GetMessageCount() > 0)
-          {
-            std::map<std::string, NewEagle::DbcMessage>::iterator it;
-            for (it = dbc.GetMessages()->begin(); it != dbc.GetMessages()->end(); ++it)
-            {
-              if (it->second.GetRawId() == dbcAttribute.Id)
-              {
-                std::map<std::string, NewEagle::DbcSignal>::iterator its;
-                DbcMessage msg = it->second;
-                for (its = msg.GetSignals()->begin(); its != msg.GetSignals()->end(); ++its)
-                {
-                  if (its->second.GetName() == dbcAttribute.SignalName)
-                  {
-                    NewEagle::DbcSignal sig = its->second;
-
-                    double gain = sig.GetGain();
-                    double offset = sig.GetOffset();
-
-                    double f = 0.0;
-
-                    std::stringstream ss;
-                    ss << dbcAttribute.Value;
-                    ss >> f;
-
-                    double val = gain * f + offset;
-                    sig.SetInitialValue(val);
-                    break;
-                  }
-                }
-              }
-            }
-          }
-        }
-        catch(LineParserExceptionBase& exlp)
-        {
-        }
-        catch(std::exception& ex)
-        {
-        }
-      }
-      else if (!EnumValueToken.compare(identifier))
-      {
-        // Empty for now.
-      }
-      else if (!SignalValueTypeToken.compare(identifier))
-      {
-        try
-        {
-          NewEagle::DbcSignalValueType dbcSignalValueType = ReadSignalValueType(parser);
-
-          if (dbc.GetMessageCount() > 0)
-          {
-            std::map<std::string, NewEagle::DbcMessage>::iterator it;
-            for (it = dbc.GetMessages()->begin(); it != dbc.GetMessages()->end(); ++it)
-            {
-              if (it->second.GetRawId() == dbcSignalValueType.Id)
-              {
-                std::map<std::string, NewEagle::DbcSignal>::iterator its;
-                DbcMessage msg = it->second;
-                for (its = msg.GetSignals()->begin(); its != msg.GetSignals()->end(); ++its)
-                {
-                  if (its->second.GetName() == dbcSignalValueType.SignalName)
-                  {
-                    NewEagle::DbcSignal sig = its->second;
-                    sig.SetDataType(dbcSignalValueType.Type);
-                    break;
-                  }
-                }
-              }
-            }
-          }
-        }
-        catch(LineParserExceptionBase& exlp)
-        {
-        }
-        catch(std::exception& ex)
-        {
-        }
-
-      }
-    }
-    std::cout << "DBC Size: " << dbc.GetMessageCount() << std::endl;
+  std::ifstream f(dbcFile);
+  std::string line;
+  if (!f.is_open()) {
+    std::cout << "Unable to open " << dbcFile << std::endl;
     return dbc;
   }
+
+  uint32_t lineNumber = 0;
+
+  NewEagle::DbcMessage currentMessage;
+
+  while (std::getline(f, line, '\n')) {
+    lineNumber++;
+    NewEagle::LineParser parser(line);
+
+    std::string identifier;
+    try {
+      identifier = parser.ReadCIdentifier();
+    } catch (std::exception & ex) {
+      identifier = std::string();
+    }
+
+    if (!MessageToken.compare(identifier)) {
+      try {
+        currentMessage = ReadMessage(parser);
+        dbc.AddMessage(currentMessage.GetName(), currentMessage);
+      } catch (LineParserExceptionBase & exlp) {
+        //RCLCPP_WARN("LineParser Exception: [%s]", exlp.what());
+      } catch (std::exception & ex) {
+        //RCLCPP_ERROR("DBC Message Parser Exception: [%s]", ex.what());
+      }
+    } else if (!SignalToken.compare(identifier)) {
+      try {
+        NewEagle::DbcSignal signal = ReadSignal(parser);
+
+        NewEagle::DbcMessage * msg = dbc.GetMessage(currentMessage.GetName());
+        msg->AddSignal(signal.GetName(), signal);
+      } catch (LineParserExceptionBase & exlp) {
+        //RCLCPP_WARN("LineParser Exception: [%s]", exlp.what());
+      } catch (std::exception & ex) {
+      }
+    } else if (!CommentToken.compare(identifier)) {
+      try {
+        std::string token = parser.ReadCIdentifier();
+
+        if (!MessageToken.compare(token)) {
+          NewEagle::DbcMessageComment dbcMessageComment = ReadMessageComment(parser);
+
+          std::map<std::string, NewEagle::DbcMessage>::iterator it;
+          int32_t ttt = 0;
+
+          for (it = dbc.GetMessages()->begin(); it != dbc.GetMessages()->end(); ++it) {
+            ttt++;
+            if (it->second.GetRawId() == dbcMessageComment.Id) {
+              it->second.SetComment(dbcMessageComment);
+              break;
+            }
+          }
+        } else if (!SignalToken.compare(token)) {
+          NewEagle::DbcSignalComment dbcSignalComment = ReadSignalComment(parser);
+
+          std::map<std::string, NewEagle::DbcMessage>::iterator it;
+          for (it = dbc.GetMessages()->begin(); it != dbc.GetMessages()->end(); ++it) {
+            if (it->second.GetRawId() == dbcSignalComment.Id) {
+              DbcMessage msg = it->second;
+              std::map<std::string, NewEagle::DbcSignal>::iterator its;
+
+              for (its = msg.GetSignals()->begin(); its != msg.GetSignals()->end(); ++its) {
+                if (its->second.GetName() == dbcSignalComment.SignalName) {
+                  its->second.SetComment(dbcSignalComment);
+                  break;
+                }
+              }
+            }
+          }
+        }
+      } catch (LineParserExceptionBase & exlp) {
+      } catch (std::exception & ex) {
+      }
+    } else if (!AttributeToken.compare(identifier)) {
+      try {
+        NewEagle::DbcAttribute dbcAttribute = ReadAttribute(parser);
+
+        if (dbc.GetMessageCount() > 0) {
+          std::map<std::string, NewEagle::DbcMessage>::iterator it;
+          for (it = dbc.GetMessages()->begin(); it != dbc.GetMessages()->end(); ++it) {
+            if (it->second.GetRawId() == dbcAttribute.Id) {
+              std::map<std::string, NewEagle::DbcSignal>::iterator its;
+              DbcMessage msg = it->second;
+              for (its = msg.GetSignals()->begin(); its != msg.GetSignals()->end(); ++its) {
+                if (its->second.GetName() == dbcAttribute.SignalName) {
+                  NewEagle::DbcSignal sig = its->second;
+
+                  double gain = sig.GetGain();
+                  double offset = sig.GetOffset();
+
+                  double f = 0.0;
+
+                  std::stringstream ss;
+                  ss << dbcAttribute.Value;
+                  ss >> f;
+
+                  double val = gain * f + offset;
+                  sig.SetInitialValue(val);
+                  break;
+                }
+              }
+            }
+          }
+        }
+      } catch (LineParserExceptionBase & exlp) {
+      } catch (std::exception & ex) {
+      }
+    } else if (!EnumValueToken.compare(identifier)) {
+      // Empty for now.
+    } else if (!SignalValueTypeToken.compare(identifier)) {
+      try {
+        NewEagle::DbcSignalValueType dbcSignalValueType = ReadSignalValueType(parser);
+
+        if (dbc.GetMessageCount() > 0) {
+          std::map<std::string, NewEagle::DbcMessage>::iterator it;
+          for (it = dbc.GetMessages()->begin(); it != dbc.GetMessages()->end(); ++it) {
+            if (it->second.GetRawId() == dbcSignalValueType.Id) {
+              std::map<std::string, NewEagle::DbcSignal>::iterator its;
+              DbcMessage msg = it->second;
+              for (its = msg.GetSignals()->begin(); its != msg.GetSignals()->end(); ++its) {
+                if (its->second.GetName() == dbcSignalValueType.SignalName) {
+                  NewEagle::DbcSignal sig = its->second;
+                  sig.SetDataType(dbcSignalValueType.Type);
+                  break;
+                }
+              }
+            }
+          }
+        }
+      } catch (LineParserExceptionBase & exlp) {
+      } catch (std::exception & ex) {
+      }
+
+    }
+  }
+  std::cout << "DBC Size: " << dbc.GetMessageCount() << std::endl;
+  return dbc;
+}
 }
