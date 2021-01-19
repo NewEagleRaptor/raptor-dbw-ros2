@@ -24,6 +24,8 @@ ament_auto_add_executable(${PROJECT_NAME}_node
   src/DbwNode.cpp
 )
 
+target_compile_options(${PROJECT_NAME}_node PRIVATE -Wno-unused-function)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
