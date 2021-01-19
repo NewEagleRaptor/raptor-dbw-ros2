@@ -30,6 +30,9 @@
 #include <can_dbc_parser/DbcMessage.hpp>
 #include <can_dbc_parser/DbcSignal.hpp>
 
+#include <map>
+#include <string>
+
 namespace NewEagle
 {
 DbcBuilder::DbcBuilder()
@@ -48,7 +51,6 @@ DbcBuilder::~DbcBuilder()
 
 NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
 {
-
   NewEagle::Dbc dbc;
 
   std::ifstream f(dbcFile);
@@ -78,9 +80,7 @@ NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
         currentMessage = ReadMessage(parser);
         dbc.AddMessage(currentMessage.GetName(), currentMessage);
       } catch (LineParserExceptionBase & exlp) {
-        //RCLCPP_WARN("LineParser Exception: [%s]", exlp.what());
       } catch (std::exception & ex) {
-        //RCLCPP_ERROR("DBC Message Parser Exception: [%s]", ex.what());
       }
     } else if (!SignalToken.compare(identifier)) {
       try {
@@ -89,7 +89,6 @@ NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
         NewEagle::DbcMessage * msg = dbc.GetMessage(currentMessage.GetName());
         msg->AddSignal(signal.GetName(), signal);
       } catch (LineParserExceptionBase & exlp) {
-        //RCLCPP_WARN("LineParser Exception: [%s]", exlp.what());
       } catch (std::exception & ex) {
       }
     } else if (!CommentToken.compare(identifier)) {
@@ -189,10 +188,9 @@ NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
       } catch (LineParserExceptionBase & exlp) {
       } catch (std::exception & ex) {
       }
-
     }
   }
   std::cout << "DBC Size: " << dbc.GetMessageCount() << std::endl;
   return dbc;
 }
-}
+}  // namespace NewEagle

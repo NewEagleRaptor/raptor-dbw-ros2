@@ -28,6 +28,10 @@
 
 #include <can_dbc_parser/Dbc.hpp>
 
+#include <map>
+#include <string>
+#include <utility>
+
 namespace NewEagle
 {
 ////
@@ -70,7 +74,6 @@ NewEagle::DbcMessage * Dbc::GetMessageById(uint32_t id)
 
       return message;
     }
-
   }
 
   return NULL;
@@ -80,4 +83,4 @@ uint16_t Dbc::GetMessageCount()
 {
   return _messages.size();
 }
-}
+}  // namespace NewEagle
