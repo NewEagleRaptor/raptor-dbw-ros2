@@ -26,14 +26,15 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef _NEW_EAGLE_DBCBUILDER_H
-#define _NEW_EAGLE_DBCBUILDER_H
+#ifndef CAN_DBC_PARSER__DBCBUILDER_HPP_
+#define CAN_DBC_PARSER__DBCBUILDER_HPP_
 
-#include <rclcpp/rclcpp.hpp>
-#include <string>
-#include <fstream>
 #include <can_dbc_parser/Dbc.hpp>
 #include <can_dbc_parser/LineParser.hpp>
+#include <rclcpp/rclcpp.hpp>
+
+#include <string>
+#include <fstream>
 
 namespace NewEagle
 {
@@ -216,10 +217,10 @@ static NewEagle::DbcSignal ReadSignal(NewEagle::LineParser parser)
   parser.SeekSeparator(')');
 
   parser.SeekSeparator('[');
-  //min value
+  // min value
   parser.ReadDouble("minimum");
   parser.SeekSeparator('|');
-  //max value
+  // max value
   parser.ReadDouble("maximum");
   parser.SeekSeparator(']');
 
@@ -228,20 +229,20 @@ static NewEagle::DbcSignal ReadSignal(NewEagle::LineParser parser)
   NewEagle::DbcSignal * signal;
 
   if (NewEagle::MUX_SIGNAL == multiplexMode) {
-    //NewEagle::DbcSignal signal(8, gain, offset, startBit, endianness, length, sign, name, multiplexMode, muxSwitch);
     signal = new NewEagle::DbcSignal(
-      8, gain, offset, startBit, endianness, length, sign, name,
+      8, gain, offset, startBit, endianness,
+      length, sign, name,
       multiplexMode, muxSwitch);
   } else {
-    //NewEagle::DbcSignal signal(8, gain, offset, startBit, endianness, length, sign, name, multiplexMode);
     signal = new NewEagle::DbcSignal(
-      8, gain, offset, startBit, endianness, length, sign, name,
+      8, gain, offset, startBit, endianness,
+      length, sign, name,
       multiplexMode);
   }
 
   signal->SetDataType(type);
   return NewEagle::DbcSignal(*signal);
 }
-}
+}  // namespace NewEagle
 
-#endif // _NEW_EAGLE_DBCBUILDER_H
+#endif  // CAN_DBC_PARSER__DBCBUILDER_HPP_

@@ -26,15 +26,15 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef _NEW_EAGLE_DBC_H
-#define _NEW_EAGLE_DBC_H
-
-#include <rclcpp/rclcpp.hpp>
-
-#include <string>
-#include <ctype.h>
+#ifndef CAN_DBC_PARSER__DBC_HPP_
+#define CAN_DBC_PARSER__DBC_HPP_
 
 #include <can_dbc_parser/DbcMessage.hpp>
+#include <rclcpp/rclcpp.hpp>
+
+#include <cctype>
+#include <map>
+#include <string>
 
 namespace NewEagle
 {
@@ -52,8 +52,7 @@ public:
 
 private:
   std::map<std::string, NewEagle::DbcMessage> _messages;
-
 };
-}
+}  // namespace NewEagle
 
-#endif // _NEW_EAGLE_DBC_H
+#endif  // CAN_DBC_PARSER__DBC_HPP_
