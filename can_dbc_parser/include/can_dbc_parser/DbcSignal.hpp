@@ -26,8 +26,8 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef _NEW_EAGLE_DBC_SIGNAL_H
-#define _NEW_EAGLE_DBC_SIGNAL_H
+#ifndef CAN_DBC_PARSER__DBCSIGNAL_HPP_
+#define CAN_DBC_PARSER__DBCSIGNAL_HPP_
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -130,6 +130,6 @@ private:
   MultiplexerMode _multiplexerMode;
   int32_t _multiplexerSwitch;
 };
-}
+}  // namespace NewEagle
 
-#endif // _NEW_EAGLE_DBC_SIGNAL_H
+#endif  // CAN_DBC_PARSER__DBCSIGNAL_HPP_

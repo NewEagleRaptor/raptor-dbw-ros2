@@ -26,14 +26,14 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef _NEW_EAGLE_LINEPARSER_H
-#define _NEW_EAGLE_LINEPARSER_H
+#ifndef CAN_DBC_PARSER__LINEPARSER_HPP_
+#define CAN_DBC_PARSER__LINEPARSER_HPP_
 
 #include <rclcpp/rclcpp.hpp>
 
-#include <string>
+#include <cctype>
 #include <exception>
-#include <ctype.h>
+#include <string>
 
 namespace NewEagle
 {
@@ -77,7 +77,7 @@ enum ReadDoubleState
 class LineParser
 {
 public:
-  LineParser(const std::string & line);
+  explicit LineParser(const std::string & line);
   ~LineParser();
 
   int32_t GetPosition();
@@ -101,6 +101,6 @@ private:
   bool AtEOL();
   char ReadNextChar();
 };
-}
+}  // namespace NewEagle
 
-#endif // _NEW_EAGLE_LINEPARSER_H
+#endif  // CAN_DBC_PARSER__LINEPARSER_HPP_
