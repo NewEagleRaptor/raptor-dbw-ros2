@@ -42,16 +42,16 @@ DbcSignal::DbcSignal(
   SignType sign,
   std::string name,
   MultiplexerMode multiplexerMode)
+: _dlc(dlc),
+  _gain(gain),
+  _offset(offset),
+  _startBit(startBit),
+  _endianness(endianness),
+  _length(length),
+  _sign(sign),
+  _name(name),
+  _multiplexerMode(multiplexerMode)
 {
-  _dlc = dlc;
-  _gain = gain;
-  _offset = offset;
-  _startBit = startBit;
-  _endianness = endianness;
-  _length = length;
-  _sign = sign;
-  _name = name;
-  _multiplexerMode = multiplexerMode;
 }
 
 DbcSignal::DbcSignal(
@@ -65,21 +65,10 @@ DbcSignal::DbcSignal(
   std::string name,
   MultiplexerMode multiplexerMode,
   int32_t multiplexerSwitch)
+: DbcSignal(dlc, gain, offset, startBit, endianness,
+    length, sign, name, multiplexerMode)
 {
-  _dlc = dlc;
-  _gain = gain;
-  _offset = offset;
-  _startBit = startBit;
-  _endianness = endianness;
-  _length = length;
-  _sign = sign;
-  _name = name;
-  _multiplexerMode = multiplexerMode;
   _multiplexerSwitch = multiplexerSwitch;
-}
-
-DbcSignal::~DbcSignal()
-{
 }
 
 uint8_t DbcSignal::GetDlc() const

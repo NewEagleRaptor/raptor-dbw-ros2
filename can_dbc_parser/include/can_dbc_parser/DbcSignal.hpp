@@ -94,8 +94,6 @@ public:
     MultiplexerMode multiplexerMode,
     int32_t multiplexerSwitch);
 
-  ~DbcSignal();
-
   uint8_t GetDlc() const;
   double GetResult() const;
   double GetGain() const;

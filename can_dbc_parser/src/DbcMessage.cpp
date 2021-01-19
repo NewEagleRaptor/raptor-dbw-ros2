@@ -53,10 +53,6 @@ DbcMessage::DbcMessage(
   _rawId = rawId;
 }
 
-DbcMessage::~DbcMessage()
-{
-}
-
 uint8_t DbcMessage::GetDlc()
 {
   return _dlc;

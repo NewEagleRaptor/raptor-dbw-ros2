@@ -58,7 +58,6 @@ class DbcBuilder
 {
 public:
   DbcBuilder();
-  ~DbcBuilder();
 
   NewEagle::Dbc NewDbc(const std::string & dbcFile);
 

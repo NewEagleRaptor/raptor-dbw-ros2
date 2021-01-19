@@ -73,8 +73,6 @@ public:
     uint32_t rawId
   );
 
-  ~DbcMessage();
-
   uint8_t GetDlc();
   uint32_t GetId();
   IdType GetIdType();

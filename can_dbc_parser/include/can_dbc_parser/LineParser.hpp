@@ -78,7 +78,6 @@ class LineParser
 {
 public:
   explicit LineParser(const std::string & line);
-  ~LineParser();
 
   int32_t GetPosition();
   std::string ReadCIdentifier();
