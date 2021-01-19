@@ -38,10 +38,6 @@ LineParser::LineParser(const std::string & line)
   _position = 0;
 }
 
-LineParser::~LineParser()
-{
-}
-
 int32_t LineParser::GetPosition()
 {
   return _position;
@@ -91,7 +87,7 @@ void LineParser::SkipWhitespace()
 
 bool LineParser::AtEOL()
 {
-  return _position >= _line.length();
+  return _position >= static_cast<int32_t>(_line.length());
 }
 
 char LineParser::ReadNextChar()
@@ -108,7 +104,7 @@ char LineParser::ReadNextChar()
   return _line[idx];
 }
 
-char LineParser::ReadNextChar(std::string fieldName)
+char LineParser::ReadNextChar(std::string /*fieldName*/)
 {
   try {
     char val = ReadNextChar();
@@ -186,7 +182,7 @@ uint32_t LineParser::ReadUInt()
   return val;
 }
 
-uint32_t LineParser::ReadUInt(std::string fieldName)
+uint32_t LineParser::ReadUInt(std::string /*fieldName*/)
 {
   try {
     uint32_t val = ReadUInt();
@@ -309,7 +305,7 @@ DoneReading:
   return val;
 }
 
-double LineParser::ReadDouble(std::string fieldName)
+double LineParser::ReadDouble(std::string /*fieldName*/)
 {
   try {
     double val = ReadDouble();
@@ -345,7 +341,7 @@ std::string LineParser::ReadQuotedString()
   int32_t startIdx = ++_position;
   int32_t len = -1;
 
-  for (; _position < _line.size(); _position++) {
+  for (; _position < static_cast<int32_t>(_line.size()); _position++) {
     if (_line[_position] == '"') {
       len = _position - startIdx;
       _position++;

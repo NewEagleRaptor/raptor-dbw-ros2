@@ -34,17 +34,13 @@
 
 namespace NewEagle
 {
-////
-Dbc::Dbc() {}
-
-Dbc::~Dbc() {}
 
 std::map<std::string, NewEagle::DbcMessage> * Dbc::GetMessages()
 {
   return &_messages;
 }
 
-void Dbc::AddMessage(std::string messageName, NewEagle::DbcMessage message)
+void Dbc::AddMessage(NewEagle::DbcMessage message)
 {
   _messages.insert(std::pair<std::string, NewEagle::DbcMessage>(message.GetName(), message));
 }
