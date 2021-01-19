@@ -26,28 +26,27 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef NEWEAGLE_PDU_H_
-#define NEWEAGLE_PDU_H_
+#ifndef PDU__PDU_HPP_
+#define PDU__PDU_HPP_
 
 #include <rclcpp/rclcpp.hpp>
 
 // ROS messages
+#include <can_msgs/msg/frame.hpp>
 #include <pdu_msgs/msg/fuse_report.hpp>
-#include <pdu_msgs/msg/relay_report.hpp>
 #include <pdu_msgs/msg/relay_command.hpp>
-#include <std_msgs/msg/empty.hpp>
+#include <pdu_msgs/msg/relay_report.hpp>
 #include <std_msgs/msg/bool.hpp>
+#include <std_msgs/msg/empty.hpp>
 #include <std_msgs/msg/string.hpp>
 
-#include <can_msgs/msg/frame.hpp>
-
-#include <can_dbc_parser/DbcMessage.hpp>
-#include <can_dbc_parser/DbcSignal.hpp>
 #include <can_dbc_parser/Dbc.hpp>
 #include <can_dbc_parser/DbcBuilder.hpp>
+#include <can_dbc_parser/DbcMessage.hpp>
 #include <can_dbc_parser/DbcSignal.hpp>
 #include <can_dbc_parser/LineParser.hpp>
 
+#include <string>
 
 namespace NewEagle
 {
@@ -61,7 +60,7 @@ class pdu : public rclcpp::Node
   };
 
 public:
-  pdu(const rclcpp::NodeOptions & options);
+  explicit pdu(const rclcpp::NodeOptions & options);
 
 private:
   uint32_t id_;
@@ -86,6 +85,6 @@ private:
   rclcpp::Publisher<pdu_msgs::msg::FuseReport>::SharedPtr fuse_report_pub_;
   rclcpp::Publisher<pdu_msgs::msg::RelayReport>::SharedPtr relay_report_pub_;
 };
-}
+}  // namespace NewEagle
 
-#endif /* NEWEAGLE_PDU_H_ */
+#endif  // PDU__PDU_HPP_
