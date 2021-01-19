@@ -26,62 +26,63 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef _DBW_NODE_H_
-#define _DBW_NODE_H_
+#ifndef RAPTOR_DBW_CAN__DBWNODE_HPP_
+#define RAPTOR_DBW_CAN__DBWNODE_HPP_
 
 #include <rclcpp/rclcpp.hpp>
-#include "raptor_dbw_can/dispatch.hpp"
-#include  <math.h>
 
 // ROS messages
 #include <can_msgs/msg/frame.hpp>
-#include <raptor_dbw_msgs/msg/brake_cmd.hpp>
-#include <raptor_dbw_msgs/msg/brake_report.hpp>
+#include <geometry_msgs/msg/twist_stamped.hpp>
+#include <pdu_msgs/msg/relay_command.hpp>
+#include <pdu_msgs/msg/relay_state.hpp>
 #include <raptor_dbw_msgs/msg/accelerator_pedal_cmd.hpp>
 #include <raptor_dbw_msgs/msg/accelerator_pedal_report.hpp>
-#include <raptor_dbw_msgs/msg/steering_cmd.hpp>
-#include <raptor_dbw_msgs/msg/steering_report.hpp>
-#include <raptor_dbw_msgs/msg/gear_cmd.hpp>
-#include <raptor_dbw_msgs/msg/gear_report.hpp>
-#include <raptor_dbw_msgs/msg/misc_cmd.hpp>
-#include <raptor_dbw_msgs/msg/misc_report.hpp>
-#include <raptor_dbw_msgs/msg/wheel_position_report.hpp>
-#include <raptor_dbw_msgs/msg/wheel_speed_report.hpp>
-#include <raptor_dbw_msgs/msg/tire_pressure_report.hpp>
-#include <raptor_dbw_msgs/msg/surround_report.hpp>
-#include <raptor_dbw_msgs/msg/driver_input_report.hpp>
-#include <raptor_dbw_msgs/msg/low_voltage_system_report.hpp>
 #include <raptor_dbw_msgs/msg/actuator_control_mode.hpp>
 #include <raptor_dbw_msgs/msg/brake2_report.hpp>
-#include <raptor_dbw_msgs/msg/steering2_report.hpp>
-#include <raptor_dbw_msgs/msg/global_enable_cmd.hpp>
+#include <raptor_dbw_msgs/msg/brake_cmd.hpp>
+#include <raptor_dbw_msgs/msg/brake_report.hpp>
+#include <raptor_dbw_msgs/msg/driver_input_report.hpp>
 #include <raptor_dbw_msgs/msg/fault_actions_report.hpp>
+#include <raptor_dbw_msgs/msg/gear_cmd.hpp>
+#include <raptor_dbw_msgs/msg/gear_report.hpp>
+#include <raptor_dbw_msgs/msg/global_enable_cmd.hpp>
 #include <raptor_dbw_msgs/msg/hmi_global_enable_report.hpp>
-
+#include <raptor_dbw_msgs/msg/low_voltage_system_report.hpp>
+#include <raptor_dbw_msgs/msg/misc_cmd.hpp>
+#include <raptor_dbw_msgs/msg/misc_report.hpp>
+#include <raptor_dbw_msgs/msg/steering2_report.hpp>
+#include <raptor_dbw_msgs/msg/steering_cmd.hpp>
+#include <raptor_dbw_msgs/msg/steering_report.hpp>
+#include <raptor_dbw_msgs/msg/surround_report.hpp>
+#include <raptor_dbw_msgs/msg/tire_pressure_report.hpp>
+#include <raptor_dbw_msgs/msg/wheel_position_report.hpp>
+#include <raptor_dbw_msgs/msg/wheel_speed_report.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <sensor_msgs/msg/joint_state.hpp>
-#include <geometry_msgs/msg/twist_stamped.hpp>
-#include <std_msgs/msg/empty.hpp>
 #include <std_msgs/msg/bool.hpp>
+#include <std_msgs/msg/empty.hpp>
 #include <std_msgs/msg/string.hpp>
 
-//#include <can_dbc_parser/DbcUtilities.hpp>
 #include <can_dbc_parser/DbcMessage.hpp>
 #include <can_dbc_parser/DbcSignal.hpp>
 #include <can_dbc_parser/Dbc.hpp>
 #include <can_dbc_parser/DbcBuilder.hpp>
 
-#include <pdu_msgs/msg/relay_command.hpp>
-#include <pdu_msgs/msg/relay_state.hpp>
+#include <cmath>
+#include <string>
+#include <vector>
 
-using namespace std::chrono_literals;
+#include "raptor_dbw_can/dispatch.hpp"
+
+using namespace std::chrono_literals;  // NOLINT
 
 namespace raptor_dbw_can
 {
 class DbwNode : public rclcpp::Node
 {
 public:
-  DbwNode(const rclcpp::NodeOptions & options);
+  explicit DbwNode(const rclcpp::NodeOptions & options);
   ~DbwNode();
 
 private:
@@ -208,7 +209,8 @@ private:
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_vin_;
   rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr pub_sys_enable_;
   rclcpp::Publisher<raptor_dbw_msgs::msg::DriverInputReport>::SharedPtr pub_driver_input_;
-  rclcpp::Publisher<raptor_dbw_msgs::msg::LowVoltageSystemReport>::SharedPtr pub_low_voltage_system_;
+  rclcpp::Publisher<raptor_dbw_msgs::msg::LowVoltageSystemReport>::SharedPtr
+    pub_low_voltage_system_;
 
   rclcpp::Publisher<raptor_dbw_msgs::msg::Brake2Report>::SharedPtr pub_brake_2_report_;
   rclcpp::Publisher<raptor_dbw_msgs::msg::Steering2Report>::SharedPtr pub_steering_2_report_;
@@ -224,6 +226,6 @@ private:
   uint32_t count_;
 };
 
-} // raptor_dbw_can
+}  // namespace raptor_dbw_can
 
-#endif // _DBW_NODE_H_
+#endif  // RAPTOR_DBW_CAN__DBWNODE_HPP_
