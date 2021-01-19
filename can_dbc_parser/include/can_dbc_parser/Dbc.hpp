@@ -41,10 +41,9 @@ namespace NewEagle
 class Dbc
 {
 public:
-  Dbc();
-  ~Dbc();
+  Dbc() = default;
 
-  void AddMessage(std::string messageName, NewEagle::DbcMessage message);
+  void AddMessage(NewEagle::DbcMessage message);
   NewEagle::DbcMessage * GetMessage(std::string messageName);
   NewEagle::DbcMessage * GetMessageById(uint32_t id);
   uint16_t GetMessageCount();

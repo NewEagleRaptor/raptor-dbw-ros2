@@ -45,10 +45,6 @@ DbcBuilder::DbcBuilder()
   SignalValueTypeToken = std::string("SIG_VALTYPE_");
 }
 
-DbcBuilder::~DbcBuilder()
-{
-}
-
 NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
 {
   NewEagle::Dbc dbc;
@@ -78,9 +74,11 @@ NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
     if (!MessageToken.compare(identifier)) {
       try {
         currentMessage = ReadMessage(parser);
-        dbc.AddMessage(currentMessage.GetName(), currentMessage);
+        dbc.AddMessage(currentMessage);
       } catch (LineParserExceptionBase & exlp) {
+        // TODO(NewEagle): Add warning.
       } catch (std::exception & ex) {
+        // TODO(NewEagle): Add warning.
       }
     } else if (!SignalToken.compare(identifier)) {
       try {
@@ -89,7 +87,9 @@ NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
         NewEagle::DbcMessage * msg = dbc.GetMessage(currentMessage.GetName());
         msg->AddSignal(signal.GetName(), signal);
       } catch (LineParserExceptionBase & exlp) {
+        // TODO(NewEagle): Add warning.
       } catch (std::exception & ex) {
+        // TODO(NewEagle): Add warning.
       }
     } else if (!CommentToken.compare(identifier)) {
       try {
