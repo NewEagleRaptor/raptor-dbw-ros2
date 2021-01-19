@@ -28,6 +28,8 @@
 
 #include <can_dbc_parser/DbcSignal.hpp>
 
+#include <string>
+
 namespace NewEagle
 {
 DbcSignal::DbcSignal(
@@ -163,4 +165,4 @@ int32_t DbcSignal::GetMultiplexerSwitch() const
 {
   return _multiplexerSwitch;
 }
-}
+}  // namespace NewEagle
