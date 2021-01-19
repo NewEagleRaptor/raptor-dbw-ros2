@@ -28,6 +28,8 @@
 
 #include <can_dbc_parser/LineParser.hpp>
 
+#include <string>
+
 namespace NewEagle
 {
 LineParser::LineParser(const std::string & line)
@@ -78,7 +80,6 @@ std::string LineParser::ReadCIdentifier(std::string fieldName)
   }
 
   return val;
-
 }
 
 void LineParser::SkipWhitespace()
@@ -105,7 +106,6 @@ char LineParser::ReadNextChar()
   _position++;
 
   return _line[idx];
-
 }
 
 char LineParser::ReadNextChar(std::string fieldName)
@@ -116,7 +116,6 @@ char LineParser::ReadNextChar(std::string fieldName)
   } catch (LineParserExceptionBase & exlp) {
     throw;
   }
-
 }
 
 uint32_t LineParser::PeekUInt()
@@ -232,7 +231,6 @@ int32_t LineParser::ReadInt()
   reader >> val;
 
   return val;
-
 }
 
 double LineParser::ReadDouble()
@@ -294,9 +292,7 @@ double LineParser::ReadDouble()
         break;
       default:
         break;
-
     }
-
   }
 
 DoneReading:
@@ -311,7 +307,6 @@ DoneReading:
   reader >> val;
 
   return val;
-
 }
 
 double LineParser::ReadDouble(std::string fieldName)
@@ -322,7 +317,6 @@ double LineParser::ReadDouble(std::string fieldName)
   } catch (LineParserExceptionBase & exlp) {
     throw;
   }
-
 }
 
 void LineParser::SeekSeparator(char separator)
@@ -369,4 +363,4 @@ std::string LineParser::ReadQuotedString()
 
   return _line.substr(startIdx, len);
 }
-}
+}  // namespace NewEagle

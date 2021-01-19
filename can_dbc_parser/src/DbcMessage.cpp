@@ -29,6 +29,10 @@
 #include <can_dbc_parser/DbcMessage.hpp>
 #include <can_dbc_parser/DbcUtilities.hpp>
 
+#include <map>
+#include <string>
+#include <utility>
+
 namespace NewEagle
 {
 DbcMessage::DbcMessage()
@@ -86,7 +90,7 @@ can_msgs::msg::Frame DbcMessage::GetFrame()
   frame.dlc = _dlc;
   frame.is_extended = _idType == EXT;
 
-  uint8_t * ptr = (uint8_t *)frame.data._M_elems;
+  uint8_t * ptr = static_cast<uint8_t *>(frame.data._M_elems);
   memset(ptr, 0x00, 8);
 
   if (!AnyMultiplexedSignals()) {
@@ -121,7 +125,6 @@ can_msgs::msg::Frame DbcMessage::GetFrame()
         if (muxSwitch->GetResult() == it->second.GetMultiplexerSwitch()) {
           Pack(ptr, it->second);
         }
-
       }
     }
   }
@@ -131,7 +134,7 @@ can_msgs::msg::Frame DbcMessage::GetFrame()
 
 void DbcMessage::SetFrame(const can_msgs::msg::Frame::SharedPtr msg)
 {
-  uint8_t * ptr = (uint8_t *)msg->data._M_elems;
+  uint8_t * ptr = static_cast<uint8_t *>(msg->data._M_elems);
 
   if (!AnyMultiplexedSignals()) {
     for (std::map<std::string, NewEagle::DbcSignal>::iterator it = _signals.begin();
@@ -169,11 +172,9 @@ void DbcMessage::SetFrame(const can_msgs::msg::Frame::SharedPtr msg)
           double res = Unpack(ptr, it->second);
           it->second.SetResult(res);
         }
-
       }
     }
   }
-
 }
 
 void DbcMessage::AddSignal(std::string signalName, NewEagle::DbcSignal signal)
@@ -223,4 +224,4 @@ bool DbcMessage::AnyMultiplexedSignals()
 
   return false;
 }
-}
+}  // namespace NewEagle
