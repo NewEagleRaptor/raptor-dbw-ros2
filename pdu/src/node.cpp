@@ -26,7 +26,10 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+#include <memory>
+
 #include "pdu/pdu.hpp"
+
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
