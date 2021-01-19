@@ -26,12 +26,14 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef _NEW_EAGLE_DBC_MESSAGE_H
-#define _NEW_EAGLE_DBC_MESSAGE_H
+#ifndef CAN_DBC_PARSER__DBCMESSAGE_HPP_
+#define CAN_DBC_PARSER__DBCMESSAGE_HPP_
 
-#include <string>
 #include <can_msgs/msg/frame.hpp>
 #include <can_dbc_parser/DbcSignal.hpp>
+
+#include <map>
+#include <string>
 
 namespace NewEagle
 {
@@ -98,5 +100,6 @@ private:
   uint32_t _rawId;
   NewEagle::DbcMessageComment _comment;
 };
-}
-#endif // _NEW_EAGLE_DBC_UTILITIES_H
+}  // namespace NewEagle
+
+#endif  // CAN_DBC_PARSER__DBCMESSAGE_HPP_

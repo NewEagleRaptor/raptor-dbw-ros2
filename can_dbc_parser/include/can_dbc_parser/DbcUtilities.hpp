@@ -26,16 +26,17 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef _NEW_EAGLE_DBC_UTILITIES_H
-#define _NEW_EAGLE_DBC_UTILITIES_H
-
-#include <rclcpp/rclcpp.hpp>
-#include <map>
-#include <sstream>      // std::istringstream
-#include <string>
+#ifndef CAN_DBC_PARSER__DBCUTILITIES_HPP_
+#define CAN_DBC_PARSER__DBCUTILITIES_HPP_
 
 #include <can_dbc_parser/DbcSignal.hpp>
 #include <can_dbc_parser/DbcMessage.hpp>
+#include <rclcpp/rclcpp.hpp>
+
+#include <limits>
+#include <map>
+#include <sstream>
+#include <string>
 
 namespace NewEagle
 {
@@ -56,7 +57,6 @@ static int32_t ConvertToMTBitOrdering(uint32_t bit, uint32_t dlc)
 static int32_t ConvertToMTBitOrdering(uint32_t bit)
 {
   return ConvertToMTBitOrdering(bit, 8);
-
 }
 
 static double Unpack(uint8_t * data, const NewEagle::DbcSignal & signal)
@@ -78,8 +78,8 @@ static double Unpack(uint8_t * data, const NewEagle::DbcSignal & signal)
   bool isExactlyByte = ((bit + signal.GetLength()) % 8 == 0);
   uint32_t numBytes = (isExactlyByte ? 0 : 1) + ((bit + (int32_t)signal.GetLength()) / 8);
 
-  int32_t b = (int32_t)wordSize - ((int)startBit / 8) - 1;
-  int32_t w = (int)signal.GetLength();
+  int32_t b = static_cast<int32_t>(wordSize) - (static_cast<int>(startBit) / 8) - 1;
+  int32_t w = static_cast<int>(signal.GetLength());
   int32_t maskShift = bit;
   int32_t rightShift = 0;
 
@@ -111,22 +111,21 @@ static double Unpack(uint8_t * data, const NewEagle::DbcSignal & signal)
     w -= ( 8 - maskShift);
     rightShift += maskShift;
     maskShift = 0;
-
   }
 
   double result = 0;
   if (signal.GetSign() == NewEagle::SIGNED) {
-    if ((unsignedResult & (1 << ((int32_t)signal.GetLength() - 1))) != 0) {
+    if ((unsignedResult & (1 << (static_cast<int32_t>(signal.GetLength()) - 1))) != 0) {
       if (signal.GetLength() < 32) {
-        uint32_t signExtension = (0xFFFFFFFF << (int32_t)signal.GetLength());
+        uint32_t signExtension = (0xFFFFFFFF << static_cast<int32_t>(signal.GetLength()));
         unsignedResult |= signExtension;
       }
     }
 
-    result = (double)((int32_t)unsignedResult);
+    result = static_cast<double>(static_cast<int32_t>(unsignedResult));
 
   } else if (signal.GetSign() == NewEagle::UNSIGNED) {
-    result = (double)(unsignedResult);
+    result = static_cast<double>(unsignedResult);
   }
 
   if ((signal.GetGain() != 1) || (signal.GetOffset() != 0)) {
@@ -149,8 +148,8 @@ static void Pack(uint8_t * data, const NewEagle::DbcSignal & signal)
   }
 
   if (signal.GetSign() == NewEagle::SIGNED) {
-    int32_t i = (int32_t)tmp;
-    uint32_t u = (uint)i;
+    int32_t i = static_cast<int32_t>(tmp);
+    uint32_t u = static_cast<uint32_t>(i);
 
     result = u;
   } else {
@@ -158,7 +157,7 @@ static void Pack(uint8_t * data, const NewEagle::DbcSignal & signal)
   }
 
   int8_t wordSize = sizeof(data);
-  int8_t startBit = (int)signal.GetStartBit();
+  int8_t startBit = static_cast<int8_t>(signal.GetStartBit());
 
   if (signal.GetEndianness() == NewEagle::LITTLE_END) {
     startBit = ConvertToMTBitOrdering(signal.GetStartBit(), signal.GetDlc());
@@ -166,16 +165,17 @@ static void Pack(uint8_t * data, const NewEagle::DbcSignal & signal)
     startBit =
       ConvertToMTBitOrdering(
       signal.GetStartBit(),
-      signal.GetDlc()) - ((int32_t)signal.GetLength() - 1);
+      signal.GetDlc()) - (static_cast<int32_t>(signal.GetLength()) - 1);
   }
 
-  int32_t bit = (int32_t)(startBit % 8);
+  int32_t bit = static_cast<int32_t>(startBit % 8);
 
   bool isExactlyByte = ((bit + signal.GetLength()) % 8 == 0);
-  uint32_t numBytes = (isExactlyByte ? 0 : 1) + ((bit + (int32_t)signal.GetLength()) / 8);
+  uint32_t numBytes =
+    (isExactlyByte ? 0 : 1) + ((bit + static_cast<int32_t>(signal.GetLength())) / 8);
 
-  int32_t b = (int32_t)wordSize - ((int)startBit / 8) - 1;
-  int32_t w = (int)signal.GetLength();
+  int32_t b = static_cast<int32_t>(wordSize) - (static_cast<int32_t>(startBit) / 8) - 1;
+  int32_t w = static_cast<int32_t>(signal.GetLength());
   int32_t maskShift = bit;
   int32_t rightShift = 0;
 
@@ -183,7 +183,7 @@ static void Pack(uint8_t * data, const NewEagle::DbcSignal & signal)
   uint32_t extractedByte;
 
   for (uint32_t i = 0; i < numBytes; i++) {
-    if ((b < 0 || (b >= (int32_t)sizeof(data)))) {
+    if ((b < 0 || (b >= static_cast<int32_t>(sizeof(data))))) {
       return;
     }
 
@@ -197,8 +197,8 @@ static void Pack(uint8_t * data, const NewEagle::DbcSignal & signal)
 
     extractedByte = (result >> (8 * i - rightShift)) & 0xFF;
 
-    data[b] = (uint32_t)(data[b] & ~mask);
-    data[b] |= (uint8_t)((extractedByte << maskShift) & mask);
+    data[b] = static_cast<uint32_t>(data[b] & ~mask);
+    data[b] |= static_cast<uint8_t>((extractedByte << maskShift) & mask);
 
     if (signal.GetEndianness() == NewEagle::BIG_END) {
       if ((b % wordSize) == 0) {
@@ -214,9 +214,7 @@ static void Pack(uint8_t * data, const NewEagle::DbcSignal & signal)
     rightShift += maskShift;
     maskShift = 0;
   }
-
 }
+}  // namespace NewEagle
 
-}
-
-#endif // _NEW_EAGLE_DBC_UTILITIES_H
+#endif  // CAN_DBC_PARSER__DBCUTILITIES_HPP_
