@@ -26,8 +26,9 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef _RAPTOR_DBW_CAN_DISPATCH_H
-#define _RAPTOR_DBW_CAN_DISPATCH_H
+#ifndef RAPTOR_DBW_CAN__DISPATCH_HPP_
+#define RAPTOR_DBW_CAN__DISPATCH_HPP_
+
 #include <stdint.h>
 
 namespace raptor_dbw_can
@@ -74,6 +75,6 @@ enum
   ID_HMI_GLOBAL_ENABLE_REPORT   = 0x3f01,
 };
 
-} //raptor_dbw_can
+}  // namespace raptor_dbw_can
 
-#endif // _RAPTOR_DBW_CAN_DISPATCH_H
+#endif  // RAPTOR_DBW_CAN__DISPATCH_HPP_
