@@ -28,10 +28,12 @@ ament_auto_add_library(
   src/DbcBuilder.cpp
 )
 
+target_compile_options(can_dbc_parser PRIVATE -Wno-unused-function)
+
 #run colcon test to run linters against code
 if(BUILD_TESTING)
-find_package(ament_lint_auto)
-ament_lint_auto_find_test_dependencies()
+  find_package(ament_lint_auto)
+  ament_lint_auto_find_test_dependencies()
 endif()
 
 ament_auto_package()
