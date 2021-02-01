@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2018-2019 New Eagle 
+ *  Copyright (c) 2018-2019 New Eagle
  *  Copyright (c) 2015-2018, Dataspeed Inc.
  *  All rights reserved.
  *
@@ -35,14 +35,14 @@
 
 #include "JoystickDemo.hpp"
 
-int main(int argc, char** argv)
+int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
   rclcpp::NodeOptions options;
   rclcpp::executors::SingleThreadedExecutor exec;
 
   // Create JoystickDemo class
-  auto node = std::make_shared<joystick_demo::JoystickDemo>(options);  
+  auto node = std::make_shared<joystick_demo::JoystickDemo>(options);
   exec.add_node(node->get_node_base_interface());
   exec.spin();
 

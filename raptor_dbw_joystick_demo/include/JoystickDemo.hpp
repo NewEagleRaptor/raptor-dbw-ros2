@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2018-2019 New Eagle 
+ *  Copyright (c) 2018-2019 New Eagle
  *  Copyright (c) 2015-2018, Dataspeed Inc.
  *  All rights reserved.
  *
@@ -53,66 +53,70 @@ using namespace std::chrono_literals;
 
 namespace joystick_demo
 {
-  typedef struct {
-    std::chrono::time_point<std::chrono::steady_clock> stamp;
-    float brake_joy;
-    float accelerator_pedal_joy;
-    float steering_joy;
-    bool steering_mult;
-    int gear_cmd;
-    int turn_signal_cmd;
-    bool joy_accelerator_pedal_valid;
-    bool joy_brake_valid;
-  } JoystickDataStruct;
+typedef struct
+{
+  std::chrono::time_point<std::chrono::steady_clock> stamp;
+  float brake_joy;
+  float accelerator_pedal_joy;
+  float steering_joy;
+  bool steering_mult;
+  int gear_cmd;
+  int turn_signal_cmd;
+  bool joy_accelerator_pedal_valid;
+  bool joy_brake_valid;
+} JoystickDataStruct;
 
-  class JoystickDemo : public rclcpp::Node{
-    public:
-      JoystickDemo(const rclcpp::NodeOptions & options);
-    private:
-      void recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg);
-      void cmdCallback();
+class JoystickDemo : public rclcpp::Node
+{
+public:
+  JoystickDemo(const rclcpp::NodeOptions & options);
 
-      // Topics
-      rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr sub_joy_;
+private:
+  void recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg);
+  void cmdCallback();
 
-      rclcpp::Publisher<raptor_dbw_msgs::msg::AcceleratorPedalCmd>::SharedPtr pub_accelerator_pedal_;
-      rclcpp::Publisher<raptor_dbw_msgs::msg::BrakeCmd>::SharedPtr pub_brake_;
-      rclcpp::Publisher<raptor_dbw_msgs::msg::SteeringCmd>::SharedPtr pub_steering_;
-      rclcpp::Publisher<raptor_dbw_msgs::msg::GearCmd>::SharedPtr pub_gear_;
-      rclcpp::Publisher<raptor_dbw_msgs::msg::MiscCmd>::SharedPtr pub_misc_;
-      rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr pub_enable_;
-      rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr pub_disable_;
-      rclcpp::Publisher<raptor_dbw_msgs::msg::GlobalEnableCmd>::SharedPtr pub_global_enable_;
+  // Topics
+  rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr sub_joy_;
 
-      // Parameters
-      bool ignore_; // Ignore driver overrides
-      bool enable_; // Use enable and disable buttons
-      double svel_; // Steering command speed
+  rclcpp::Publisher<raptor_dbw_msgs::msg::AcceleratorPedalCmd>::SharedPtr pub_accelerator_pedal_;
+  rclcpp::Publisher<raptor_dbw_msgs::msg::BrakeCmd>::SharedPtr pub_brake_;
+  rclcpp::Publisher<raptor_dbw_msgs::msg::SteeringCmd>::SharedPtr pub_steering_;
+  rclcpp::Publisher<raptor_dbw_msgs::msg::GearCmd>::SharedPtr pub_gear_;
+  rclcpp::Publisher<raptor_dbw_msgs::msg::MiscCmd>::SharedPtr pub_misc_;
+  rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr pub_enable_;
+  rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr pub_disable_;
+  rclcpp::Publisher<raptor_dbw_msgs::msg::GlobalEnableCmd>::SharedPtr pub_global_enable_;
 
-      // Variables
-      rclcpp::TimerBase::SharedPtr timer_;
-      JoystickDataStruct data_;
-      sensor_msgs::msg::Joy joy_;
-      uint8_t counter_;
+  // Parameters
+  bool ignore_;     // Ignore driver overrides
+  bool enable_;     // Use enable and disable buttons
+  double svel_;     // Steering command speed
 
-      enum {
-        BTN_PARK = 3,
-        BTN_REVERSE = 1,
-        BTN_NEUTRAL = 2,
-        BTN_DRIVE = 0,
-        BTN_ENABLE = 5,
-        BTN_DISABLE = 4,
-        BTN_STEER_MULT_1 = 6,
-        BTN_STEER_MULT_2 = 7,
-        BTN_COUNT = 11,
-        AXIS_ACCELERATOR_PEDAL = 5,
-        AXIS_BRAKE = 2,
-        AXIS_STEER_1 = 0,
-        AXIS_STEER_2 = 3,
-        AXIS_TURN_SIG = 6,
-        AXIS_COUNT = 8,
-      };
+  // Variables
+  rclcpp::TimerBase::SharedPtr timer_;
+  JoystickDataStruct data_;
+  sensor_msgs::msg::Joy joy_;
+  uint8_t counter_;
+
+  enum
+  {
+    BTN_PARK = 3,
+    BTN_REVERSE = 1,
+    BTN_NEUTRAL = 2,
+    BTN_DRIVE = 0,
+    BTN_ENABLE = 5,
+    BTN_DISABLE = 4,
+    BTN_STEER_MULT_1 = 6,
+    BTN_STEER_MULT_2 = 7,
+    BTN_COUNT = 11,
+    AXIS_ACCELERATOR_PEDAL = 5,
+    AXIS_BRAKE = 2,
+    AXIS_STEER_1 = 0,
+    AXIS_STEER_2 = 3,
+    AXIS_TURN_SIG = 6,
+    AXIS_COUNT = 8,
   };
+};
 }
 
 #endif /* JOYSTICKDEMO_H_ */

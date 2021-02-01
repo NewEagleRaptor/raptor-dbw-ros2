@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2018-2019 New Eagle 
+ *  Copyright (c) 2018-2019 New Eagle
  *  Copyright (c) 2015-2018, Dataspeed Inc.
  *  All rights reserved.
  *
@@ -39,7 +39,7 @@ namespace joystick_demo
 {
 
 JoystickDemo::JoystickDemo(const rclcpp::NodeOptions & options)
-  : Node("dbw_joystick_node", options)
+: Node("dbw_joystick_node", options)
 {
   ignore_ = false;
   enable_ = true;
@@ -63,11 +63,13 @@ JoystickDemo::JoystickDemo(const rclcpp::NodeOptions & options)
   sub_joy_ = this->create_subscription<sensor_msgs::msg::Joy>(
     "joy", 600, std::bind(&JoystickDemo::recvJoy, this, std::placeholders::_1));
 
-  pub_accelerator_pedal_ = this->create_publisher<raptor_dbw_msgs::msg::AcceleratorPedalCmd>("accelerator_pedal_cmd", 1);
+  pub_accelerator_pedal_ = this->create_publisher<raptor_dbw_msgs::msg::AcceleratorPedalCmd>(
+    "accelerator_pedal_cmd", 1);
   pub_brake_ = this->create_publisher<raptor_dbw_msgs::msg::BrakeCmd>("brake_cmd", 1);
   pub_misc_ = this->create_publisher<raptor_dbw_msgs::msg::MiscCmd>("misc_cmd", 1);
   pub_steering_ = this->create_publisher<raptor_dbw_msgs::msg::SteeringCmd>("steering_cmd", 1);
-  pub_global_enable_ = this->create_publisher<raptor_dbw_msgs::msg::GlobalEnableCmd>("global_enable_cmd", 1);
+  pub_global_enable_ = this->create_publisher<raptor_dbw_msgs::msg::GlobalEnableCmd>(
+    "global_enable_cmd", 1);
   pub_gear_ = this->create_publisher<raptor_dbw_msgs::msg::GearCmd>("gear_cmd", 1);
   if (enable_) {
     pub_enable_ = this->create_publisher<std_msgs::msg::Empty>("enable", 1);
@@ -79,22 +81,22 @@ JoystickDemo::JoystickDemo(const rclcpp::NodeOptions & options)
 
 void JoystickDemo::cmdCallback()
 {
-  
+
   // Detect joy timeouts and reset
   double message_timeout_sec = 0.1;
   std::chrono::steady_clock::duration dt = std::chrono::steady_clock::now() - data_.stamp;
-  double seconds_passed = double(dt.count()) * std::chrono::steady_clock::period::num  / std::chrono::steady_clock::period::den;
-  
+  double seconds_passed = double(dt.count()) * std::chrono::steady_clock::period::num /
+    std::chrono::steady_clock::period::den;
+
   if (seconds_passed > message_timeout_sec) {
     data_.joy_accelerator_pedal_valid = false;
     data_.joy_brake_valid = false;
     return;
   }
-  
+
   // watchdog counter
   counter_++;
-  if (counter_ > 15)
-  {
+  if (counter_ > 15) {
     counter_ = 0;
   }
 
@@ -195,7 +197,9 @@ void JoystickDemo::recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg)
   }
 
   // Steering
-  data_.steering_joy = 470.0 * M_PI / 180.0 * ((fabs(msg->axes[AXIS_STEER_1]) > fabs(msg->axes[AXIS_STEER_2])) ? msg->axes[AXIS_STEER_1] : msg->axes[AXIS_STEER_2]);
+  data_.steering_joy = 470.0 * M_PI / 180.0 *
+    ((fabs(msg->axes[AXIS_STEER_1]) >
+    fabs(msg->axes[AXIS_STEER_2])) ? msg->axes[AXIS_STEER_1] : msg->axes[AXIS_STEER_2]);
   data_.steering_mult = msg->buttons[BTN_STEER_MULT_1] || msg->buttons[BTN_STEER_MULT_2];
 
   // Turn signal
@@ -235,7 +239,7 @@ void JoystickDemo::recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg)
       pub_disable_->publish(empty);
     }
   }
-  
+
   data_.stamp = std::chrono::steady_clock::now();
   joy_ = *msg;
 }
