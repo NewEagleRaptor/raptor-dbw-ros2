@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>raptor_dbw_can</name>
-  <version>1.0.0</version>
-  <description>
-    Drive-by-wire interface to the New Eagle Raptor DBW kit
-  </description>
+  <version>0.0.1</version>
+  <description>CAN translator for drive-by-wire interface to the New Eagle Raptor DBW kit</description>
 
   <maintainer email="newagleraptorgithub@neweagle.net">New Eagle</maintainer>
 
