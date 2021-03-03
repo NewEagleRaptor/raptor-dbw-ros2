@@ -35,6 +35,8 @@
 
 #include "raptor_dbw_joystick.hpp"
 
+#include <cmath>
+
 namespace raptor_dbw_joystick
 {
 
