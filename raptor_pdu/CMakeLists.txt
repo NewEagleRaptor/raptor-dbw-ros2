@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(raptor_dbw_can)
+project(raptor_pdu)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -15,13 +15,12 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
 find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 
 ament_auto_add_executable(${PROJECT_NAME}_node
-  src/raptor_dbw_can_node.cpp
-  src/raptor_dbw_can.cpp
+  src/raptor_pdu_node.cpp
+  src/raptor_pdu.cpp
 )
 
 target_compile_options(${PROJECT_NAME}_node PRIVATE -Wno-unused-function)

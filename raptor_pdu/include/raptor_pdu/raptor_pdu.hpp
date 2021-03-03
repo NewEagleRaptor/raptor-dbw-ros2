@@ -1,0 +1,90 @@
+// Copyright (c) 2020 New Eagle, All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// * Redistributions of source code must retain the above copyright
+//   notice, this list of conditions and the following disclaimer.
+//
+// * Redistributions in binary form must reproduce the above copyright
+//   notice, this list of conditions and the following disclaimer in the
+//   documentation and/or other materials provided with the distribution.
+//
+// * Neither the name of the {copyright_holder} nor the names of its
+//   contributors may be used to endorse or promote products derived from
+//   this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+
+#ifndef PDU__PDU_HPP_
+#define PDU__PDU_HPP_
+
+#include <rclcpp/rclcpp.hpp>
+
+// ROS messages
+#include <can_msgs/msg/frame.hpp>
+#include <raptor_pdu_msgs/msg/fuse_report.hpp>
+#include <raptor_pdu_msgs/msg/relay_command.hpp>
+#include <raptor_pdu_msgs/msg/relay_report.hpp>
+#include <std_msgs/msg/bool.hpp>
+#include <std_msgs/msg/empty.hpp>
+#include <std_msgs/msg/string.hpp>
+
+#include <raptor_can_dbc_parser/Dbc.hpp>
+#include <raptor_can_dbc_parser/DbcBuilder.hpp>
+#include <raptor_can_dbc_parser/DbcMessage.hpp>
+#include <raptor_can_dbc_parser/DbcSignal.hpp>
+#include <raptor_can_dbc_parser/LineParser.hpp>
+
+#include <string>
+
+namespace NewEagle
+{
+class raptor_pdu : public rclcpp::Node
+{
+  enum
+  {
+    RELAY_STATUS_BASE_ADDR = 0x18ffa100,
+    FUSE_STATUS_BASE_ADDR = 0x18ffa000,
+    RELAY_COMMAND_BASE_ADDR = 0x18ef0000
+  };
+
+public:
+  explicit raptor_pdu(const rclcpp::NodeOptions & options);
+
+private:
+  uint32_t id_;
+  uint32_t relayCommandAddr_;
+  uint32_t relayStatusAddr_;
+  uint32_t fuseStatusAddr_;
+
+  uint32_t count_;
+
+  NewEagle::Dbc pduDbc_;
+  std::string pduFile_;
+
+  void recvCAN(const can_msgs::msg::Frame::SharedPtr msg);
+  void recvRelayCmd(const raptor_pdu_msgs::msg::RelayCommand::SharedPtr msg);
+
+  // Subscribed topics
+  rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr sub_can_;
+  rclcpp::Subscription<raptor_pdu_msgs::msg::RelayCommand>::SharedPtr sub_relay_cmd_;
+
+  // Published topics
+  rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr pub_can_;
+  rclcpp::Publisher<raptor_pdu_msgs::msg::FuseReport>::SharedPtr fuse_report_pub_;
+  rclcpp::Publisher<raptor_pdu_msgs::msg::RelayReport>::SharedPtr relay_report_pub_;
+};
+}  // namespace NewEagle
+
+#endif  // PDU__PDU_HPP_

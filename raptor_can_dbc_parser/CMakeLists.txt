@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(raptor_dbw_can)
+project(raptor_can_dbc_parser)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -19,19 +19,21 @@ endif()
 find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 
-ament_auto_add_executable(${PROJECT_NAME}_node
-  src/raptor_dbw_can_node.cpp
-  src/raptor_dbw_can.cpp
+ament_auto_add_library(
+  raptor_can_dbc_parser SHARED
+  src/DbcMessage.cpp
+  src/DbcSignal.cpp
+  src/Dbc.cpp
+  src/LineParser.cpp
+  src/DbcBuilder.cpp
 )
 
-target_compile_options(${PROJECT_NAME}_node PRIVATE -Wno-unused-function)
+target_compile_options(raptor_can_dbc_parser PRIVATE -Wno-unused-function)
 
+#run colcon test to run linters against code
 if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
+  find_package(ament_lint_auto)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-ament_auto_package(
-  INSTALL_TO_SHARE
-    launch
-)
+ament_auto_package()

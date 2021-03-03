@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>raptor_dbw_can</name>
+  <name>raptor_dbw_joystick</name>
   <version>1.0.0</version>
   <description>
-    Drive-by-wire interface to the New Eagle Raptor DBW kit
+    Joystick controller that interfaces with raptor_dbw_can node
   </description>
 
   <maintainer email="newagleraptorgithub@neweagle.net">New Eagle</maintainer>
@@ -14,13 +14,8 @@
 
   <depend>rclcpp</depend>
   <depend>raptor_dbw_msgs</depend>
-  <depend>can_msgs</depend>
   <depend>std_msgs</depend>
-  <depend>geometry_msgs</depend>
   <depend>sensor_msgs</depend>
-  <depend>raptor_can_dbc_parser</depend>
-  <depend>raptor_pdu</depend>
-  <depend>raptor_pdu_msgs</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
