@@ -1,39 +1,36 @@
-/*********************************************************************
- * Software License Agreement (BSD License)
- *
- *  Copyright (c) 2018-2019 New Eagle 
- *  Copyright (c) 2015-2018, Dataspeed Inc.
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of Dataspeed Inc. nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *********************************************************************/
+// Copyright (c) 2018-2019 New Eagle, Copyright (c) 2015-2018, Dataspeed Inc.
+// All rights reserved.
+//
+// Software License Agreement (BSD License 2.0)
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+//
+//  * Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+//  * Redistributions in binary form must reproduce the above
+//    copyright notice, this list of conditions and the following
+//    disclaimer in the documentation and/or other materials provided
+//    with the distribution.
+//  * Neither the name of {copyright_holder} nor the names of its
+//    contributors may be used to endorse or promote products derived
+//    from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+// COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+// BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+// LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+// ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
 
-#include "raptor_dbw_joystick.hpp"
+#include "raptor_dbw_joystick/raptor_dbw_joystick.hpp"
 
 #include <cmath>
 
@@ -65,11 +62,13 @@ RaptorDbwJoystick::RaptorDbwJoystick(const rclcpp::NodeOptions & options)
   sub_joy_ = this->create_subscription<sensor_msgs::msg::Joy>(
     "joy", 600, std::bind(&RaptorDbwJoystick::recvJoy, this, std::placeholders::_1));
 
-  pub_accelerator_pedal_ = this->create_publisher<raptor_dbw_msgs::msg::AcceleratorPedalCmd>("accelerator_pedal_cmd", 1);
+  pub_accelerator_pedal_ = this->create_publisher<raptor_dbw_msgs::msg::AcceleratorPedalCmd>(
+    "accelerator_pedal_cmd", 1);
   pub_brake_ = this->create_publisher<raptor_dbw_msgs::msg::BrakeCmd>("brake_cmd", 1);
   pub_misc_ = this->create_publisher<raptor_dbw_msgs::msg::MiscCmd>("misc_cmd", 1);
   pub_steering_ = this->create_publisher<raptor_dbw_msgs::msg::SteeringCmd>("steering_cmd", 1);
-  pub_global_enable_ = this->create_publisher<raptor_dbw_msgs::msg::GlobalEnableCmd>("global_enable_cmd", 1);
+  pub_global_enable_ = this->create_publisher<raptor_dbw_msgs::msg::GlobalEnableCmd>(
+    "global_enable_cmd", 1);
   pub_gear_ = this->create_publisher<raptor_dbw_msgs::msg::GearCmd>("gear_cmd", 1);
   if (enable_) {
     pub_enable_ = this->create_publisher<std_msgs::msg::Empty>("enable", 1);
@@ -81,22 +80,22 @@ RaptorDbwJoystick::RaptorDbwJoystick(const rclcpp::NodeOptions & options)
 
 void RaptorDbwJoystick::cmdCallback()
 {
-  
+
   // Detect joy timeouts and reset
   double message_timeout_sec = 0.1;
   std::chrono::steady_clock::duration dt = std::chrono::steady_clock::now() - data_.stamp;
-  double seconds_passed = double(dt.count()) * std::chrono::steady_clock::period::num  / std::chrono::steady_clock::period::den;
-  
+  double seconds_passed = double(dt.count()) * std::chrono::steady_clock::period::num /
+    std::chrono::steady_clock::period::den;
+
   if (seconds_passed > message_timeout_sec) {
     data_.joy_accelerator_pedal_valid = false;
     data_.joy_brake_valid = false;
     return;
   }
-  
+
   // watchdog counter
   counter_++;
-  if (counter_ > 15)
-  {
+  if (counter_ > 15) {
     counter_ = 0;
   }
 
@@ -197,7 +196,9 @@ void RaptorDbwJoystick::recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg)
   }
 
   // Steering
-  data_.steering_joy = 470.0 * M_PI / 180.0 * ((fabs(msg->axes[AXIS_STEER_1]) > fabs(msg->axes[AXIS_STEER_2])) ? msg->axes[AXIS_STEER_1] : msg->axes[AXIS_STEER_2]);
+  data_.steering_joy = 470.0 * M_PI / 180.0 *
+    ((fabs(msg->axes[AXIS_STEER_1]) >
+    fabs(msg->axes[AXIS_STEER_2])) ? msg->axes[AXIS_STEER_1] : msg->axes[AXIS_STEER_2]);
   data_.steering_mult = msg->buttons[BTN_STEER_MULT_1] || msg->buttons[BTN_STEER_MULT_2];
 
   // Turn signal
@@ -237,7 +238,7 @@ void RaptorDbwJoystick::recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg)
       pub_disable_->publish(empty);
     }
   }
-  
+
   data_.stamp = std::chrono::steady_clock::now();
   joy_ = *msg;
 }
