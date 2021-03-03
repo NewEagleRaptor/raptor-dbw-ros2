@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(raptor_dbw_can)
+project(raptor_dbw_joystick)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -20,11 +20,9 @@ find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 
 ament_auto_add_executable(${PROJECT_NAME}_node
-  src/raptor_dbw_can_node.cpp
-  src/raptor_dbw_can.cpp
+  src/raptor_dbw_joystick_node.cpp
+  src/raptor_dbw_joystick.cpp
 )
-
-target_compile_options(${PROJECT_NAME}_node PRIVATE -Wno-unused-function)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
