@@ -33,8 +33,6 @@
 #ifndef RAPTOR_DBW_JOYSTICK__RAPTOR_DBW_JOYSTICK_HPP_
 #define RAPTOR_DBW_JOYSTICK__RAPTOR_DBW_JOYSTICK_HPP_
 
-#include <chrono>
-
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/joy.hpp>
 #include <std_msgs/msg/empty.hpp>
@@ -46,7 +44,9 @@
 #include <raptor_dbw_msgs/msg/misc_cmd.hpp>
 #include <raptor_dbw_msgs/msg/global_enable_cmd.hpp>
 
-using namespace std::chrono_literals;
+#include <chrono>
+
+using namespace std::chrono_literals;  // NOLINT
 
 namespace raptor_dbw_joystick
 {
@@ -66,7 +66,7 @@ typedef struct
 class RaptorDbwJoystick : public rclcpp::Node
 {
 public:
-  RaptorDbwJoystick(const rclcpp::NodeOptions & options);
+  explicit RaptorDbwJoystick(const rclcpp::NodeOptions & options);
 
 private:
   void recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg);
@@ -85,9 +85,9 @@ private:
   rclcpp::Publisher<raptor_dbw_msgs::msg::GlobalEnableCmd>::SharedPtr pub_global_enable_;
 
   // Parameters
-  bool ignore_; // Ignore driver overrides
-  bool enable_; // Use enable and disable buttons
-  double svel_; // Steering command speed
+  bool ignore_;  // Ignore driver overrides
+  bool enable_;  // Use enable and disable buttons
+  double svel_;  // Steering command speed
 
   // Variables
   rclcpp::TimerBase::SharedPtr timer_;
@@ -114,6 +114,6 @@ private:
     AXIS_COUNT = 8,
   };
 };
-}
+}  // namespace raptor_dbw_joystick
 
 #endif  // RAPTOR_DBW_JOYSTICK__RAPTOR_DBW_JOYSTICK_HPP_

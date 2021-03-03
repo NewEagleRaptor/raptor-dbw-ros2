@@ -80,12 +80,11 @@ RaptorDbwJoystick::RaptorDbwJoystick(const rclcpp::NodeOptions & options)
 
 void RaptorDbwJoystick::cmdCallback()
 {
-
   // Detect joy timeouts and reset
   double message_timeout_sec = 0.1;
   std::chrono::steady_clock::duration dt = std::chrono::steady_clock::now() - data_.stamp;
-  double seconds_passed = double(dt.count()) * std::chrono::steady_clock::period::num /
-    std::chrono::steady_clock::period::den;
+  double seconds_passed = static_cast<double>(dt.count()) *
+    std::chrono::steady_clock::period::num / std::chrono::steady_clock::period::den;
 
   if (seconds_passed > message_timeout_sec) {
     data_.joy_accelerator_pedal_valid = false;
@@ -155,12 +154,10 @@ void RaptorDbwJoystick::recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg)
   // Check for expected sizes
   if (msg->axes.size() != (size_t)AXIS_COUNT) {
     RCLCPP_ERROR(this->get_logger(), "Axis count is wrong.");
-    //ROS_ERROR("Expected %zu joy axis count, received %zu", (size_t)AXIS_COUNT, msg->axes.size());
     return;
   }
   if (msg->buttons.size() != (size_t)BTN_COUNT) {
     RCLCPP_ERROR(this->get_logger(), "Button count is wrong");
-    //ROS_ERROR("Expected %zu joy button count, received %zu", (size_t)BTN_COUNT, msg->buttons.size());
     return;
   }
 
@@ -243,4 +240,4 @@ void RaptorDbwJoystick::recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg)
   joy_ = *msg;
 }
 
-}
+}  // namespace raptor_dbw_joystick

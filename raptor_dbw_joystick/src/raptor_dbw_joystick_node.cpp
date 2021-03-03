@@ -32,6 +32,8 @@
 
 #include "raptor_dbw_joystick/raptor_dbw_joystick.hpp"
 
+#include <memory>
+
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);

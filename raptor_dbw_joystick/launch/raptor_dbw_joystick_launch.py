@@ -56,13 +56,16 @@ from launch.substitutions import LaunchConfiguration
 from launch.substitutions import ThisLaunchFileDir
 from ament_index_python import get_package_share_directory
 
+
 def generate_launch_description():
+
     params_file = LaunchConfiguration(
         'params',
         default=[ThisLaunchFileDir(), '/launch_params.yaml'])
 
-    #make sure the dbc file gets installed with the launch file
-    dbc_file_path = get_package_share_directory('raptor_dbw_can') + "/launch/New_Eagle_DBW_3.3.388.dbc"
+    # make sure the dbc file gets installed with the launch file
+    dbc_file_path = get_package_share_directory('raptor_dbw_can') + \
+        "/launch/New_Eagle_DBW_3.3.388.dbc"
 
     return LaunchDescription(
         [
@@ -95,5 +98,5 @@ def generate_launch_description():
             )
         ])
 
+
 generate_launch_description()
-                                     

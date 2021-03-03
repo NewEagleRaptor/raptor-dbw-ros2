@@ -58,6 +58,7 @@ from ament_index_python import get_package_share_directory
 
 
 def generate_launch_description():
+
     params_file = LaunchConfiguration(
         'params',
         default=[ThisLaunchFileDir(), '/launch_params.yaml'])
@@ -86,5 +87,6 @@ def generate_launch_description():
             ),
         ]
     )
+
 
 generate_launch_description()

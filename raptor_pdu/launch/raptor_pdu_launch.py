@@ -61,13 +61,8 @@ def generate_launch_description():
     return LaunchDescription(
         [
             Node(
-<<<<<<< HEAD:pdu/launch/pdu_launch.py
-                package='pdu',
-                node_executable='pdu_node',
-=======
                 package='raptor_pdu',
-                executable='pdu_node',
->>>>>>> c0fbe13... Renaming files & folders to conform to ROS build farm naming standards:raptor_pdu/launch/raptor_pdu_launch.py
+                node_executable='pdu_node',
                 output='screen',
                 node_namespace='raptor_power_distribution_interface',
                 parameters=[
