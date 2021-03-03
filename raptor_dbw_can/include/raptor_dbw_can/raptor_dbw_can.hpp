@@ -30,8 +30,8 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef RAPTOR_DBW_CAN__DBWNODE_HPP_
-#define RAPTOR_DBW_CAN__DBWNODE_HPP_
+#ifndef RAPTOR_DBW_CAN__RAPTOR_DBW_CAN_HPP_
+#define RAPTOR_DBW_CAN__RAPTOR_DBW_CAN_HPP_
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -232,4 +232,4 @@ private:
 
 }  // namespace raptor_dbw_can
 
-#endif  // RAPTOR_DBW_CAN__DBWNODE_HPP_
+#endif  // RAPTOR_DBW_CAN__RAPTOR_DBW_CAN_HPP_
