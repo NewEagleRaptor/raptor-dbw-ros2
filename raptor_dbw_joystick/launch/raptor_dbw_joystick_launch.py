@@ -46,11 +46,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
-from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import ThisLaunchFileDir
-from ament_index_python import get_package_share_directory
+from launch_ros.actions import Node
 
 
 def generate_launch_description():
@@ -60,7 +60,7 @@ def generate_launch_description():
 
     # make sure the dbc file gets installed with the launch file
     dbc_file_path = get_package_share_directory('raptor_dbw_can') + \
-        "/launch/New_Eagle_DBW_3.3.388.dbc"
+        '/launch/New_Eagle_DBW_3.3.388.dbc'
 
     return LaunchDescription(
         [
@@ -70,7 +70,7 @@ def generate_launch_description():
                 output='screen',
                 namespace='raptor_dbw_interface',
                 parameters=[
-                    {"dbw_dbc_file": dbc_file_path}
+                    {'dbw_dbc_file': dbc_file_path}
                 ],
             ),
             Node(
