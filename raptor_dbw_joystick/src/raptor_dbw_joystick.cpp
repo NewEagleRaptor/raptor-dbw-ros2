@@ -33,7 +33,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#include "raptor_dbw_joystick.hpp"
+#include "raptor_dbw_joystick/raptor_dbw_joystick.hpp"
 
 namespace raptor_dbw_joystick
 {

@@ -26,8 +26,8 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef PDU__PDU_HPP_
-#define PDU__PDU_HPP_
+#ifndef RAPTOR_PDU__RAPTOR_PDU_HPP_
+#define RAPTOR_PDU__RAPTOR_PDU_HPP_
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -87,4 +87,4 @@ private:
 };
 }  // namespace NewEagle
 
-#endif  // PDU__PDU_HPP_
+#endif  // RAPTOR_PDU__RAPTOR_PDU_HPP_

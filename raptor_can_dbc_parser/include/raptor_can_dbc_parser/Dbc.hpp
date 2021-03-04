@@ -26,8 +26,8 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CAN_DBC_PARSER__DBC_HPP_
-#define CAN_DBC_PARSER__DBC_HPP_
+#ifndef RAPTOR_CAN_DBC_PARSER__DBC_HPP_
+#define RAPTOR_CAN_DBC_PARSER__DBC_HPP_
 
 #include <raptor_can_dbc_parser/DbcMessage.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -54,4 +54,4 @@ private:
 };
 }  // namespace NewEagle
 
-#endif  // CAN_DBC_PARSER__DBC_HPP_
+#endif  // RAPTOR_CAN_DBC_PARSER__DBC_HPP_

@@ -33,8 +33,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#ifndef JOYSTICKDEMO_H_
-#define JOYSTICKDEMO_H_
+#ifndef RAPTOR_DBW_JOYSTICK__RAPTOR_DBW_JOYSTICK_HPP_
+#define RAPTOR_DBW_JOYSTICK__RAPTOR_DBW_JOYSTICK_HPP_
 
 #include <chrono>
 
@@ -119,4 +119,4 @@ private:
 };
 }
 
-#endif /* JOYSTICKDEMO_H_ */
+#endif  // RAPTOR_DBW_JOYSTICK__RAPTOR_DBW_JOYSTICK_HPP_
