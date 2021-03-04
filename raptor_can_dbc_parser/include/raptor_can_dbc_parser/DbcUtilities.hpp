@@ -183,9 +183,6 @@ static void Pack(uint8_t * data, const NewEagle::DbcSignal & signal)
   uint32_t extractedByte;
 
   for (uint32_t i = 0; i < numBytes; i++) {
-    if ((b < 0 || (b >= static_cast<int32_t>(sizeof(data))))) {
-    }
-
     mask = 0xFF;
 
     if (w < 8) {
