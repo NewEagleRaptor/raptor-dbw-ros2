@@ -28,6 +28,7 @@
 
 #include <raptor_can_dbc_parser/LineParser.hpp>
 
+#include <sstream>
 #include <string>
 
 namespace NewEagle

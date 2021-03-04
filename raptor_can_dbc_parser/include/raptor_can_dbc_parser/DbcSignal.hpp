@@ -29,8 +29,6 @@
 #ifndef RAPTOR_CAN_DBC_PARSER__DBCSIGNAL_HPP_
 #define RAPTOR_CAN_DBC_PARSER__DBCSIGNAL_HPP_
 
-#include <rclcpp/rclcpp.hpp>
-
 #include <string>
 
 namespace NewEagle

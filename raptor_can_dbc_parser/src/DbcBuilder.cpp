@@ -30,6 +30,8 @@
 #include <raptor_can_dbc_parser/DbcMessage.hpp>
 #include <raptor_can_dbc_parser/DbcSignal.hpp>
 
+#include <cstring>
+#include <iostream>
 #include <map>
 #include <string>
 

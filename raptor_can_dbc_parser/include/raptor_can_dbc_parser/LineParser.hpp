@@ -29,10 +29,8 @@
 #ifndef RAPTOR_CAN_DBC_PARSER__LINEPARSER_HPP_
 #define RAPTOR_CAN_DBC_PARSER__LINEPARSER_HPP_
 
-#include <rclcpp/rclcpp.hpp>
-
 #include <cctype>
-#include <exception>
+#include <stdexcept>
 #include <string>
 
 namespace NewEagle

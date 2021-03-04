@@ -31,7 +31,6 @@
 
 #include <raptor_can_dbc_parser/DbcSignal.hpp>
 #include <raptor_can_dbc_parser/DbcMessage.hpp>
-#include <rclcpp/rclcpp.hpp>
 
 #include <limits>
 #include <map>

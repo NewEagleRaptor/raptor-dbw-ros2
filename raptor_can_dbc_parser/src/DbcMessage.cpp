@@ -29,6 +29,7 @@
 #include <raptor_can_dbc_parser/DbcMessage.hpp>
 #include <raptor_can_dbc_parser/DbcUtilities.hpp>
 
+#include <cstring>
 #include <map>
 #include <string>
 #include <utility>
