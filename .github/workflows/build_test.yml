@@ -1,0 +1,34 @@
+name: ROS2 CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - 'dashing'
+
+jobs:
+  test_environment:
+    runs-on: [ubuntu-latest]
+    strategy:
+      fail-fast: false
+    container:
+      image: rostooling/setup-ros-docker:ubuntu-bionic-ros-dashing-ros-base-latest
+    steps:
+      - name: setup directories
+        run: mkdir -p ros_ws/src
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          path: ros_ws/src
+      - name: build and test
+        uses: ros-tooling/action-ros-ci@master
+        with:
+          package-name: |
+            raptor_can_dbc_parser
+            raptor_dbw_can
+            raptor_dbw_joystick
+            raptor_dbw_msgs
+            raptor_pdu
+            raptor_pdu_msgs
+          target-ros2-distro: dashing
+          vcs-repo-file-url: ""
