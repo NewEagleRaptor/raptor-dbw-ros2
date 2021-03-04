@@ -50,13 +50,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from ament_index_python import get_package_share_directory
 
 
 def generate_launch_description():
-    dbc_file_path = get_package_share_directory('raptor_pdu') + "/launch/raptor_PDU_dbc.dbc"
+    dbc_file_path = get_package_share_directory('raptor_pdu') + '/launch/raptor_PDU_dbc.dbc'
 
     return LaunchDescription(
         [
@@ -66,7 +66,7 @@ def generate_launch_description():
                 output='screen',
                 node_namespace='raptor_power_distribution_interface',
                 parameters=[
-                    {"pdu_dbc_file": dbc_file_path}
+                    {'pdu_dbc_file': dbc_file_path}
                 ],
             ),
         ]
