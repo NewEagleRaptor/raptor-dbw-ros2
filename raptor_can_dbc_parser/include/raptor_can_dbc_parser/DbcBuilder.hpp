@@ -35,8 +35,8 @@
 
 #include <raptor_can_dbc_parser/Dbc.hpp>
 #include <raptor_can_dbc_parser/LineParser.hpp>
-#include <rclcpp/rclcpp.hpp>
 
+#include <sstream>
 #include <string>
 #include <fstream>
 

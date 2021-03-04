@@ -34,7 +34,6 @@
 #define RAPTOR_CAN_DBC_PARSER__DBC_HPP_
 
 #include <raptor_can_dbc_parser/DbcMessage.hpp>
-#include <rclcpp/rclcpp.hpp>
 
 #include <cctype>
 #include <map>
