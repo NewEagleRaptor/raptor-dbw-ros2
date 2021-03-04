@@ -91,7 +91,6 @@ void RaptorDbwJoystick::cmdCallback()
   if (seconds_passed > message_timeout_sec) {
     data_.joy_accelerator_pedal_valid = false;
     data_.joy_brake_valid = false;
-    return;
   }
 
   // watchdog counter
@@ -157,12 +156,10 @@ void RaptorDbwJoystick::recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg)
   if (msg->axes.size() != (size_t)AXIS_COUNT) {
     RCLCPP_ERROR(this->get_logger(), "Axis count is wrong.");
     //ROS_ERROR("Expected %zu joy axis count, received %zu", (size_t)AXIS_COUNT, msg->axes.size());
-    return;
   }
   if (msg->buttons.size() != (size_t)BTN_COUNT) {
     RCLCPP_ERROR(this->get_logger(), "Button count is wrong");
     //ROS_ERROR("Expected %zu joy button count, received %zu", (size_t)BTN_COUNT, msg->buttons.size());
-    return;
   }
 
   // Handle joystick startup

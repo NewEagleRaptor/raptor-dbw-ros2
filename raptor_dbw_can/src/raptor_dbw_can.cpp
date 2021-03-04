@@ -159,9 +159,12 @@ RaptorDbwCAN::RaptorDbwCAN(const rclcpp::NodeOptions & options)
     "misc_cmd", 1, std::bind(&RaptorDbwCAN::recvMiscCmd, this, std::placeholders::_1));
 
   sub_global_enable_ = this->create_subscription<raptor_dbw_msgs::msg::GlobalEnableCmd>(
-    "global_enable_cmd", 1, std::bind(&RaptorDbwCAN::recvGlobalEnableCmd, this, std::placeholders::_1));
+    "global_enable_cmd", 1,
+    std::bind(&RaptorDbwCAN::recvGlobalEnableCmd, this, std::placeholders::_1));
 
-  pdu1_relay_pub_ = this->create_publisher<raptor_pdu_msgs::msg::RelayCommand>("/pduB/relay_cmd", 1000);
+  pdu1_relay_pub_ = this->create_publisher<raptor_pdu_msgs::msg::RelayCommand>(
+    "/pduB/relay_cmd",
+    1000);
   count_ = 0;
 
   dbwDbc_ = NewEagle::DbcBuilder().NewDbc(dbcFile_);
