@@ -39,7 +39,6 @@ BU_: DBW AKit Pacifica MPDM_Master MPDM_Requester HMI
 BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
  SG_ DBW_GpsLong : 0|32@1+ (0.301749,0) [-648000000|648000000] "mas" Vector__XXX
  SG_ DBW_GpsLat : 32|32@1+ (0.301749,0) [-324000000|324000000] "mas" Vector__XXX
- SG_ NewSignal_0001 : 40|8@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 2147491585 DBW_Misc: 8 DBW
  SG_ DBW_MiscByWireEnabled : 0|1@1+ (1,0) [0|1] "Bool" Vector__XXX
@@ -67,8 +66,8 @@ BO_ 2147491586 DBW_AccelPdlReport: 8 DBW
  SG_ DBW_AccelCtrlType : 46|2@1+ (1,0) [0|3] "Enum" Vector__XXX
 
 BO_ 2147491587 DBW_SteeringReport: 8 DBW
- SG_ DBW_SteeringWhlAngleAct : 0|14@1- (0.1,0) [-800|800] "deg" Vector__XXX
- SG_ DBW_SteeringWhlAngleDes : 16|14@1- (0.1,0) [-800|800] "deg" Vector__XXX
+ SG_ DBW_SteeringWhlAngleAct : 0|14@1- (0.1,0) [-819.2|819.1] "deg" Vector__XXX
+ SG_ DBW_SteeringWhlAngleDes : 16|14@1- (0.1,0) [-819.2|819.1] "deg" Vector__XXX
  SG_ DBW_SteeringWhlPcntTrqCmd : 32|14@1- (0.02,0) [-100|100] "%-torque" Vector__XXX
  SG_ DBW_SteeringEnabled : 48|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_SteeringDriverActivity : 49|1@1+ (1,0) [0|1] "Bool" Vector__XXX
@@ -85,8 +84,6 @@ BO_ 2147491588 DBW_BrakeReport: 8 DBW
  SG_ DBW_BrakeDriverActivity : 50|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_BrakeFault : 51|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_BrakeRollingCntr : 56|4@1+ (1,0) [0|15] "" Vector__XXX
- SG_ DBW_BrakeFault_Ch1 : 54|1@1+ (1,0) [0|1] "Bool" Vector__XXX
- SG_ DBW_BrakeFault_Ch2 : 55|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_BrakePcntTorqueActual : 32|14@1+ (0.1,0) [0|100] "%-torque" Vector__XXX
  SG_ DBW_BrakeParkingBrkStatus : 52|2@1+ (1,0) [0|3] "Enum" Vector__XXX
  SG_ DBW_BrakeInterventionActv : 62|1@1+ (1,0) [0|1] "Bool" Vector__XXX
@@ -99,6 +96,8 @@ BO_ 2147491589 DBW_PrndReport: 8 DBW
  SG_ DBW_PrndDriverActivity : 12|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_PrndFault : 16|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_PrndCtrlEnabled : 48|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ DBW_TransCurGear : 4|4@1+ (1,0) [0|15] "uint8" Vector__XXX
+ SG_ DBW_PrndMismatchFlash : 9|1@1+ (1,0) [0|1] "Bool" Vector__XXX
 
 BO_ 2147491590 DBW_WheelPositionReport: 8 DBW
  SG_ DBW_WhlPulseCnt_FL : 0|8@1+ (1,0) [0|254] "Count" Vector__XXX
@@ -112,7 +111,7 @@ BO_ 2147495682 AKit_AccelPdlRequest: 8 AKit
  SG_ AKit_AccelPdlEnblReq : 52|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ Akit_AccelPdlIgnoreDriverOvrd : 53|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ AKit_AccelPdlRollingCntr : 48|4@1+ (1,0) [0|15] "" Vector__XXX
- SG_ AKit_AccelReqType M : 54|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ AKit_AccelReqType M : 40|3@0+ (1,0) [0|7] "Enum" Vector__XXX
  SG_ AKit_AccelPcntTorqueReq m1 : 0|14@1+ (0.1,0) [0|100] "%-torque" Vector__XXX
  SG_ AKit_SpeedReq m2 : 0|14@1+ (0.005,0) [0|81.915] "m/s" Vector__XXX
  SG_ AKit_SpeedModeRoadSlope m2 : 32|8@1- (0.2,0) [-25.5|25.5] "degrees" Vector__XXX
@@ -143,15 +142,16 @@ BO_ 2147495686 AKit_OtherActuators: 8 AKit
  SG_ AKit_OtherChecksum : 56|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ AKit_HornReq : 12|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ AKit_LowBeamReq : 30|2@1+ (1,0) [0|2] "Enum" Vector__XXX
+ SG_ AKit_DoorLockReq : 0|2@1+ (1,0) [0|2] "Enum" Vector__XXX
 
 BO_ 2147495683 AKit_SteeringRequest: 8 AKit
- SG_ AKit_SteeringWhlAngleReq m1 : 0|14@1- (0.1,0) [-500|500] "deg" Vector__XXX
+ SG_ AKit_SteeringWhlAngleReq m1 : 0|14@1- (0.1,0) [-819.2|819.1] "deg" Vector__XXX
  SG_ AKit_SteeringWhlAngleVelocityLim : 16|7@1+ (10,0) [0|1270] "deg/s" Vector__XXX
  SG_ AKit_SteerCtrlEnblReq : 52|1@1+ (1,0) [0|0] "" Vector__XXX
  SG_ AKit_SteerRollingCntr : 48|4@1+ (1,0) [0|15] "" Vector__XXX
  SG_ AKit_SteeringWhlIgnoreDriverOvrd : 53|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ AKit_SteeringWhlPcntTrqReq m0 : 0|14@1- (0.02,0) [-100|100] "%-torque" Vector__XXX
- SG_ AKit_SteeringReqType M : 54|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ AKit_SteeringReqType M : 40|3@0+ (1,0) [0|7] "Enum" Vector__XXX
  SG_ AKit_SteeringVehCurvatureReq m2 : 0|14@1- (0.0001,0) [-0.8192|0.8191] "1/m" Vector__XXX
  SG_ AKit_SteeringChecksum : 56|8@1+ (1,0) [0|255] "" Vector__XXX
 
@@ -159,14 +159,15 @@ BO_ 2147495684 AKit_BrakeRequest: 8 AKit
  SG_ AKit_BrakePedalReq m0 : 0|14@1+ (0.1,0) [0|100] "%-pedal" Vector__XXX
  SG_ AKit_BrakeRollingCntr : 48|4@1+ (1,0) [0|15] "" Vector__XXX
  SG_ AKit_BrakeCtrlEnblReq : 52|1@1+ (1,0) [0|1] "Bool" Vector__XXX
- SG_ AKit_BrakeCtrlReqType M : 54|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ AKit_BrakeCtrlReqType M : 40|3@0+ (1,0) [0|7] "Enum" Vector__XXX
  SG_ AKit_BrakePcntTorqueReq m1 : 0|14@1+ (0.1,0) [0|100] "%-torque" Vector__XXX
  SG_ AKit_SpeedModeDecelLim m2 : 16|8@1+ (0.1,0) [0|25.5] "m/s^2" Vector__XXX
  SG_ AKit_BrakeChecksum : 56|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ AKit_SpeedModeNegJerkLim m2 : 24|8@1+ (0.1,0) [0|25.5] "m/s^3" Vector__XXX
+ SG_ AKit_ParkingBrkReq : 14|2@1+ (1,0) [0|2] "Enum" Vector__XXX
 
 BO_ 2147495685 AKit_PrndRequest: 8 AKit
- SG_ AKit_PrndStateReq : 0|4@1+ (1,0) [0|5] "Enum" Vector__XXX
+ SG_ AKit_PrndStateReq : 0|4@1+ (1,0) [0|15] "Enum" Vector__XXX
  SG_ AKit_PrndRollingCntr : 48|4@1+ (1,0) [0|15] "" Vector__XXX
  SG_ AKit_PrndCtrlEnblReq : 52|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ AKit_PrndChecksum : 56|8@1+ (1,0) [0|255] "" Vector__XXX
@@ -186,6 +187,11 @@ BO_ 2147491599 DBW_DriverInputs: 8 DBW
  SG_ DBW_DrvInptHiBeam : 32|2@1+ (1,0) [0|3] "enum" Vector__XXX
  SG_ DBW_DrvInptTurnSignal : 34|2@1+ (1,0) [0|3] "enum" Vector__XXX
  SG_ DBW_DrvInptWiper : 36|4@1+ (1,0) [0|15] "enum" Vector__XXX
+ SG_ DBW_DrvInputStrWhlBtnA : 17|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ DBW_DrvInputStrWhlBtnB : 18|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ DBW_DrvInputStrWhlBtnC : 19|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ DBW_DrvInputStrWhlBtnD : 20|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ DBW_DrvInputStrWhlBtnE : 21|1@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 2147491591 DBW_TirePressReport: 8 DBW
  SG_ DBW_TirePressRR : 0|8@1+ (6.89476,0) [0|868.739] "kPa" Vector__XXX
@@ -299,9 +305,9 @@ BO_ 1807 DBW_FaultText: 8 DBW
 BO_ 2147491601 DBW_LowVoltSysReport: 8 DBW
  SG_ DBW_LvDbwBattVlt : 0|8@1+ (0.1,0) [0|25.5] "V" Vector__XXX
  SG_ DBW_LvVehBattVlt : 8|8@1+ (0.1,0) [0|25.5] "V" Vector__XXX
- SG_ DBW_LvBattCurr : 16|8@1+ (1,0) [0|255] "A" Vector__XXX
- SG_ DBW_LvDcdcCurr : 24|8@1+ (1,0) [0|255] "A" Vector__XXX
- SG_ DBW_LvAlternatorCurr : 32|8@1+ (1,0) [0|255] "A" Vector__XXX
+ SG_ DBW_LvBattCurr : 16|8@1+ (2,-256) [-256|254] "A" Vector__XXX
+ SG_ DBW_LvDcdcCurr : 24|8@1+ (2,-256) [-256|254] "A" Vector__XXX
+ SG_ DBW_LvAlternatorCurr : 32|8@1+ (2,-256) [-256|254] "A" Vector__XXX
  SG_ DBW_LvInvtrContactorCmd : 60|1@1+ (1,0) [0|1] "Bool" Vector__XXX
 
 BO_ 2147491602 DBW_BrakeReport2: 8 DBW
@@ -314,27 +320,39 @@ BO_ 2147491603 DBW_SteeringReport2: 8 DBW
  SG_ DBW_SteerTrq_Driver : 40|11@1- (0.1,0) [-100|100] "%-Torque" Vector__XXX
  SG_ DBW_SteerTrq_Motor : 28|12@1- (0.05,0) [-100|100] "%-Torque" Vector__XXX
  SG_ DBW_PacificaSteerTrq : 16|11@1+ (0.0078125,-8) [-8|7.99219] "Nm" Vector__XXX
+ SG_ DBW_SteerTrq_DriverExpectedValue : 51|8@1- (0.78125,0) [-100|100] "%-Torque" Vector__XXX
 
 BO_ 2147491604 DBW_OtherActuatorsReport: 8 DBW
- SG_ DBW_TurnSignalState : 4|3@1+ (1,0) [0|0] "Enum" Vector__XXX
- SG_ DBW_RightRearDoorState : 8|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_HighBeamState : 28|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_FrontWiperState : 16|4@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_RearWiperState : 20|4@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_IgnitionState : 24|3@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_LeftRearDoorState : 10|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_LiftgateDoorState : 32|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_HornState : 12|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_LowBeamState : 30|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_OtherActRollingCntr : 56|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ DBW_TurnSignalState : 4|3@1+ (1,0) [0|7] "Enum" Vector__XXX
+ SG_ DBW_RightRearDoorState : 8|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ DBW_HighBeamState : 28|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ DBW_FrontWiperState : 16|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ DBW_RearWiperState : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ DBW_IgnitionState : 24|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ DBW_LeftRearDoorState : 10|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ DBW_LiftgateDoorState : 32|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ DBW_HornState : 12|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ DBW_LowBeamState : 30|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ DBW_OtherActRollingCntr : 56|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ DBW_DoorLockState : 0|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ DBW_TurnSignalSyncBit : 7|1@1+ (1,0) [0|1] "Bool" Vector__XXX
 
 BO_ 2147491605 DBW_FaultActionsReport: 8 DBW
- SG_ DBW_FltAct_AutonDsblNoBrakes : 0|1@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_FltAct_AutonDsblApplyBrakes : 1|1@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_FltAct_CANGatewayDsbl : 2|1@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_FltAct_InvtrCntctrDsbl : 3|1@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_FltAct_PreventEnterAutonMode : 4|1@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_FltAct_WarnDriverOnly : 5|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ DBW_FltAct_AutonDsblNoBrakes : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ DBW_FltAct_AutonDsblApplyBrakes : 1|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ DBW_FltAct_CANGatewayDsbl : 2|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ DBW_FltAct_InvtrCntctrDsbl : 3|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ DBW_FltAct_PreventEnterAutonMode : 4|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ DBW_FltAct_WarnDriverOnly : 5|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ DBW_FltAct_Chime_FcwBeeps : 12|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 2147491606 DBW_GpsReference: 8 DBW
+ SG_ DBW_GpsRefLat : 0|16@1- (0.005,0) [-90|-90] "deg" Vector__XXX
+ SG_ DBW_GpsRefLong : 16|16@1- (0.005,0) [-180|-180] "deg" Vector__XXX
+
+BO_ 2147491607 DBW_GpsRemainder: 8 DBW
+ SG_ DBW_GpsRemainderLat : 0|24@1- (0.001,0) [-8388.607|8388.608] "m" Vector__XXX
+ SG_ DBW_GpsRemainderLong : 32|24@1- (0.001,0) [-8388.607|8388.61] "m" Vector__XXX
 
 
 
@@ -535,16 +553,6 @@ CM_ SG_ 2147491588 DBW_BrakeRollingCntr "Watchdog alive rolling counter
 
 ROS Attribute: rolling_counter
 ";
-CM_ SG_ 2147491588 DBW_BrakeFault_Ch1 "VCU has detected hardware fault on brake sig 1
-
-
-ROS Attribute: fault_ch1
-";
-CM_ SG_ 2147491588 DBW_BrakeFault_Ch2 "VCU has detected hardware fault on brake sig 2
-
-
-ROS Attribute: fault_ch2
-";
 CM_ SG_ 2147491588 DBW_BrakePcntTorqueActual "actual brake torque. This value is in % of a fixed reference value. This reference value depends only on the type of vehicle. Contact New Eagle to determine the reference value for your vehicle make/model.
 
 100% reference values for each vehicle platform:
@@ -599,6 +607,10 @@ CM_ SG_ 2147491589 DBW_PrndCtrlEnabled "PRND select system is under by-wire cont
 
 ROS Attribute: enabled
 ";
+CM_ SG_ 2147491589 DBW_TransCurGear "Numeric gear number for step-gear (non hybrid) transmissions. This signal is just to allow the AKit to perform autostick (pseudo-manual) gear selection. 0 could be Park or Neutral. 1 could be Drive or Reverse. See DBW_PrndStateActual for P-R-N-D info.
+
+For eCVT hybrids or single-speed EVs, this will only ever be 0 or 1.";
+CM_ SG_ 2147491589 DBW_PrndMismatchFlash "If the shift lever is in Park and a driver overrides autonomous mode while the transmission is actually in Drive, the by-wire system will hold Drive until the safety driver synchronizes the lever with the transmission by moving the lever to Drive, then the by-wire system will follow the lever command once it's syncronized. This bit tells the HMI to flash a message to the safety driver letting them know the lever is out of sync and that they should shift the lever to match DBW_PrndStateActual to sync it.";
 CM_ BO_ 2147491590 "ROS Topic: /vehicle/wheel_position_report";
 CM_ SG_ 2147491590 DBW_WhlPulseCnt_FL "Wheel pulse counter
 
@@ -620,7 +632,7 @@ CM_ SG_ 2147491590 DBW_WhlPulseCnt_RR "Wheel pulse counter
 
 ROS Attribute: rear_right
 ";
-CM_ SG_ 2147491590 DBW_WhlPulsesPerRev "Number of wheel pulses in one revolution (96 for the Pacifica)
+CM_ SG_ 2147491590 DBW_WhlPulsesPerRev "Number of wheel pulses in one revolution (96 for the Pacifica & Grand Cherokee)
 
 
 ROS Attribute: wheel_pulses_per_rev
@@ -663,12 +675,12 @@ This value is in % of a fixed reference value. This reference value depends only
 Note that the reference value is the same in the braking and AccelPdl control logic. Because any given vehicle's braking system is usually more powerful than it's acceleration system (powertrain), the DBW system will typically reach the max pedal position when only roughly 50% accel torque is requested, again depending on the make/model of the vehicle.
 
 100% reference values for each vehicle platform:
-Chrylser Pacifica: 100% = 9.8 m/s^2 acceleration on flat ground at curb weight.
-Volvo VNR:\t  100% = 9.8 m/s^2 acceleration on flat ground at curb weight.
-Toyota Prius:\t  100% = 6.0 m/s^2 acceleration on flat ground at curb weight.
+Chrylser Pacifica: \t100% = 9.8 m/s^2 acceleration on flat ground at curb weight.
+Volvo VNR:\t  \t100% = 9.8 m/s^2 acceleration on flat ground at curb weight.
+Toyota Prius:\t  \t100% = 6.0 m/s^2 acceleration on flat ground at curb weight.
+Jeep Grand Cherokee:\t100% = 8.1 m/s^2 acceleration on flat ground at curb weight.
 
-ROS Attribute: torque_cmd
-";
+ROS A";
 CM_ SG_ 2147495682 AKit_SpeedReq "Used when AKit_AccelReqType = 2 AND Kit_BrakeCtrllReqType = 2. Both must be 2 because speed control will use both the gas and brake (although a test engineer can leave one of those 2 actuators in manual mode by setting it's ***EnbReq flag to zero, just like in other ***ReqType modes).
 
 
@@ -685,13 +697,15 @@ ROS Attribute: road_slope
 ";
 CM_ SG_ 2147495682 AKit_AccelPdlChecksum "J1850 checksum (initial value 0xFF, polynomial 0x11D)";
 CM_ SG_ 2147495682 AKit_SpeedModeAccelLim "0 = infinite (no limit). When AKit_AccelReqType = 2 (speed control), the DBW will limit acceleration to this value.
-If vehicle is in reverse, this signal will still limit the accelerator pedal value (not the brake)
+If vehicle is in reverse, this signal will still limit the accelerator pedal value (not the brake).
+For normal driving (non-emergency maneuvers), 1 m/s^2  is the suggested starting value.
 
 
 ROS Attribute: accel_limit
 ";
 CM_ SG_ 2147495682 AKit_SpeedModePosJerkLim "0 = infinite (no limit). When AKit_AccelReqType = 2 (speed control), the DBW will limit jerk (rate-of-change of torque) to this value.
-If vehicle is in reverse, this signal will still limit the accelerator pedal value (not the brake)
+If vehicle is in reverse, this signal will still limit the accelerator pedal value (not the brake).
+For normal driving (non-emergency maneuvers), 1 m/s^3  is the suggested starting value.
 
 
 ROS Attribute: ";
@@ -747,7 +761,9 @@ CM_ SG_ 2147495686 AKit_RearWiperReq "Only if a rear wiper is equipped on the ve
 
 ROS Attribute: rear_wiper_cmd
 ";
-CM_ SG_ 2147495686 AKit_IgnitionReq "Currently supported by Volvo only. Contact New Eagle if you are interested in adding support for Ignition on a Pacifica or Prius vehicle.
+CM_ SG_ 2147495686 AKit_IgnitionReq "Currently supported by the Volvo base kit, and the Pacifica add-on option. Contact New Eagle if you are interested in adding support for Ignition on a Pacifica or Prius vehicle.
+
+On both Volvo and Pacifica, the ignition can be controled from any autonomous mode because you typically can't get into automous mode until after ignition is on. Obviously, though, the DBW module must be awoken by some wake input other than the vehicle ignition before it can accept a command to go from Ignition Off to any other ignition state.
 
 ROS Attribute: ignition_cmd
 ";
@@ -787,12 +803,12 @@ CM_ SG_ 2147495686 AKit_LowBeamReq "Currently supported by Prius & Volvo only. C
 CM_ BO_ 2147495683 "Must be sent continuously, even if you're not planning to enable this actuator.
 
 ROS Topic: /vehicle/steering_cmd";
-CM_ SG_ 2147495683 AKit_SteeringWhlAngleReq "counterclockwise = positive
+CM_ SG_ 2147495683 AKit_SteeringWhlAngleReq "counterclockwise = positive. Not all vehicles support the full range of travel. The Pacifica supports +/- 540deg, the Volvo VNR supports +/-750deg, Prius +/-500deg, and the Grand Cherokee +/-560 deg. See the signal DBW_SteeringWhlAngleDes to see if the DBW system is clipping an out-of-range request for your vehicle.
 
 
 ROS Attribute: angle_cmd
 ";
-CM_ SG_ 2147495683 AKit_SteeringWhlAngleVelocityLim "0 = infinite rate limit. Used only when SteeringWhlReqType = 1 or 2.
+CM_ SG_ 2147495683 AKit_SteeringWhlAngleVelocityLim "0 = infinite rate limit. Used only when SteeringWhlReqType = 1 or 2. For normal driving (non-emergency maneuvers), 250 deg/s is the suggested starting value.
 
 
 ROS Attribute: angle_velocity
@@ -866,15 +882,17 @@ CM_ SG_ 2147495684 AKit_BrakePcntTorqueReq "Used when AKit_BrakeCtrlReqType = 1.
 This value is in % of a fixed reference value. This reference value depends only on the type of vehicle. Contact New Eagle to determine the reference value for your vehicle make/model.
 
 100% reference values for each vehicle platform:
-Chrylser Pacifica: 100% = 9.8 m/s^2 deceleration on flat ground at curb weight.
-Volvo VNR:\t  100% = 9.8 m/s^2 deceleration on flat ground at curb weight.
-Toyota Prius:\t  100% = 6.0 m/s^2 deceleration on flat ground at curb weight.
+Chrylser Pacifica: \t100% = 9.8 m/s^2 deceleration on flat ground at curb weight.
+Volvo VNR:\t  \t100% = 9.8 m/s^2 deceleration on flat ground at curb weight.
+Toyota Prius:\t\t100% = 6.0 m/s^2 deceleration on flat ground at curb weight.
+Jeep Grand Cherokee:\t100% = 8.1 m/s^2 acceleration on flat ground at curb weight.
 
 ROS Attribute: torque_cmd
 ";
 CM_ SG_ 2147495684 AKit_SpeedModeDecelLim "0 = infinite (no limit). When AKit_AccelReqType = 2 (speed control), the DBW will limit decceleration to this value.
 If vehicle is in reverse, this signal will still limit the brake pedal value (not the accelerator).
 Overshoot & settling time requirements cannot be guaranteed with a limit above 7.5m/s^2. The no-limit value, or anything above 7.5m/s^2 should only be used for emergency braking.
+For normal driving (non-emergency maneuvers), 1 m/s^2  is the suggested starting value.
 
 
 ROS Attribute: decel_limit
@@ -883,9 +901,13 @@ CM_ SG_ 2147495684 AKit_BrakeChecksum "J1850 checksum (initial value 0xFF, polyn
 CM_ SG_ 2147495684 AKit_SpeedModeNegJerkLim "0 = infinite (no limit). When AKit_BrakeCtrlReqType = 2 (speed control), the DBW will limit negative jerk (rate-of-change of torque) to this value.
 If vehicle is in reverse, this signal will still limit the brake pedal value (not the accelerator).
 Overshoot & settling time requirements cannot be guaranteed with a limit below X.Xm/s^2.
+For normal driving (non-emergency maneuvers), 1 m/s^3  is the suggested starting value.
 
 
 ROS Attribute:";
+CM_ SG_ 2147495684 AKit_ParkingBrkReq "Currently support only as an add-on option to the Pacifica. Contact New Eagle if you are interested in adding this option to a different vehicle platform.
+
+On the Pacifica, the parking brake can be applied in any ignition state and any autonomous state. the parking brake can be released in any autonomous state, but can NOT be released if the vehicle ignition is Off or Accessory. it must be in Run to release the parking brake.";
 CM_ BO_ 2147495685 "Must be sent continuously, even if you're not planning to enable this actuator.
 
 ROS Topic: /vehicle/gear_cmd ";
@@ -968,6 +990,11 @@ ROS Attribute: turn_signal
 CM_ SG_ 2147491599 DBW_DrvInptWiper "
 ROS Attribute: wiper
 ";
+CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnA "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.";
+CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnB "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.";
+CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnC "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.";
+CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnD "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.";
+CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnE "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.";
 CM_ BO_ 2147491591 "ROS Topic: /vehicle/tire_pressure_report";
 CM_ SG_ 2147491591 DBW_TirePressRR "pacifica scaling goes from 0 to 126, 1 psi per bit. convert to kpa for standard units here.
 
@@ -991,7 +1018,7 @@ ROS Attribute: front_left
 ";
 CM_ BO_ 2147491592 "ROS Topic: /vehicle/vin";
 CM_ SG_ 2147491592 DBW_VinMultiplexor "message multiplexor";
-CM_ BO_ 2147491593 "Message ID reserved for future additon of a GPS sensor.
+CM_ BO_ 2147491593 "Message ID reserved for future additions
 
 ROS Topic:";
 CM_ BO_ 2147491594 "IMU = Intertial Measurement Unit
@@ -1154,14 +1181,40 @@ Volvo VNR:\t  100% = 40 Nm
 Toyota Prius:\t  100% = 20,000 (unitless)";
 CM_ SG_ 2147491603 DBW_PacificaSteerTrq "For development purposes only";
 CM_ BO_ 2147491604 "Status feedback for the various actuators commanded via AKit_OtherActuators. These will set if either the driver turns them on OR the autonomous system.";
+CM_ SG_ 2147491604 DBW_TurnSignalState "This is a constant value while the driver or AKit is sending a request. It does not oscillate as the bulbs actually flash on and off. To see the actual bulb on/off state, see DBW_TurnSignalSyncBit below";
 CM_ SG_ 2147491604 DBW_OtherActRollingCntr "Watchdog alive rolling counter";
+CM_ SG_ 2147491604 DBW_TurnSignalSyncBit "Used to tell the DBW HMI when to flash the indicators on & off. DBW_TurnSignalState is always a constant value and doesn't turn on/off as the bulbs blink.
+
+Note: many vehicles do not have feedback of whether the bulb is on or off. If so, DBW_TurnSignalState will still reflect the current left/right/hazard request, but this bit will be zero all the time";
+CM_ BO_ 2147491606 "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles. Low-res GPS reference point broadcasted slowly (doesnt change often). Higher res information will be sent in the DBW_GpsRemainder message in units of meters, relative to this reference
+
+The DBW module splits the GPS reading into a Reference and Remainder because most embedded modules only support single floating-point resolution, not double floating-point. With a single data type, the resolution near 180 degrees of longitude is +/- several meters per bit. The Reference/Remainder approach allows the single datatype (or uint32 in this case) to have a resolution of 0.001 m/bit at 180degrees longitude. Note that the actual resolution of the GPS sensor may be worse than 0.001 m/bit, depending on what GPS sensor is used in a given vehicle platform. However, this CAN message will be able to support all types of GPS sensors without changing the scaling of this message. ";
+CM_ SG_ 2147491606 DBW_GpsRefLat "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles. 
+
+Low-res GPS reference point TX'ed slowly. Higher res information will be sent in the DBW_GpsRemainder message in units of meters, relative to this reference
+
+0.005deg is about 555meters. ";
+CM_ SG_ 2147491606 DBW_GpsRefLong "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles.
+
+Low-res GPS reference point  TX'ed slowly. Higher res information will be sent in the DBW_GpsRemainder message in units of meters, relative to this reference.
+
+0.005deg is about 555meters. ";
+CM_ BO_ 2147491607 "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles. Position, in meters, relative to the GpsReference sent in the other message.
+
+The DBW module splits the GPS reading into a Reference and Remainder because most embedded modules only support single floating-point resolution, not double floating-point. With a single data type, the resolution near 180 degrees of longitude is +/- several meters per bit. The Reference/Remainder approach allows the single datatype (or uint32 in this case) to have a resolution of 0.001 m/bit at 180degrees longitude. Note that the actual resolution of the GPS sensor may be worse than 0.001 m/bit, depending on what GPS sensor is used in a given vehicle platform. However, this CAN message will be able to support all types of GPS sensors without changing the scaling of this message. ";
+CM_ SG_ 2147491607 DBW_GpsRemainderLat "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles.
+
+hi-res remainder from the reference signal, converted to meters. The meters conversion uses the basic Haversine formula, assuming 111,000m per deg latitude, and 111,321m per deg longitude at the equator";
+CM_ SG_ 2147491607 DBW_GpsRemainderLong "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles.
+
+hi-res remainder from the reference signal, converted to meters. The meters conversion uses the basic Haversine formula, assuming 111,000m per deg latitude, and 111,321m per deg longitude at the equator";
 VAL_ 2147491585 DBW_MiscByWireEnabled 0 "ManualMode" 1 "DriveByWireMode" ;
 VAL_ 2147491585 DBW_MiscByWireReady 0 "Not_Ready" 1 "Ready" ;
 VAL_ 2147491586 DBW_AccelCtrlType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Accelerator %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;
 VAL_ 2147491587 DBW_SteeringCtrlType 0 "Open Loop (Steering %-Torque)" 1 "Actuator-Level Closed Loop (Steering Wheel Angular Position)" 2 "Vehicle-Level Closed Loop (Vehicle Curvature)" ;
-VAL_ 2147491588 DBW_BrakeParkingBrkStatus 0 "Off" 1 "Transitioning" 2 "On" 3 "Fault" ;
+VAL_ 2147491588 DBW_BrakeParkingBrkStatus 0 "Reserved" 1 "Off" 2 "On" 3 "Fault" ;
 VAL_ 2147491588 DBW_BrakeCtrlType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Brake %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;
-VAL_ 2147491589 DBW_PrndStateActual 1 "Park" 2 "Reverse" 3 "Neutral" 4 "Drive" 5 "Low" 0 "No Request" ;
+VAL_ 2147491589 DBW_PrndStateActual 1 "Park" 2 "Reverse" 3 "Neutral" 4 "Drive" 5 "Low" 6 "Autostick_Hold" 7 "Autostick_Upshift" 8 "Autostick_Downshift" ;
 VAL_ 2147495682 AKit_AccelReqType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Accelerator %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;
 VAL_ 2147495681 AKit_EnblJoystickLimits 0 "Fully Autonomous Control" 1 "Joystick Control Mode" ;
 VAL_ 2147495686 AKit_TurnSignalReq 0 "Off" 1 "Left" 2 "Right" ;
@@ -1169,7 +1222,7 @@ VAL_ 2147495686 AKit_RightRearDoorReq 0 "NoRequest" 1 "Close Door" 2 "Open Door"
 VAL_ 2147495686 AKit_HighBeamReq 0 "No Request" 1 "High Beam If Lights Already On" 2 "Force High Beam On" 3 "Reserved (Force Off Not Supported)" ;
 VAL_ 2147495686 AKit_FrontWiperReq 0 "Off" 1 "Wiper_Intermittent1" 2 "Wiper_Intermittent2" 3 "Wiper_Intermittent3" 4 "Wiper_Intermittent4" 5 "Wiper_Intermittent5" 6 "Wiper_Intermittent6" 11 "Wiper_ConstantLowSpd" 12 "Wiper_ConstantHighSpd" 13 "Wiper_WashBrief" 14 "Wiper_WashContinuous" ;
 VAL_ 2147495686 AKit_RearWiperReq 0 "Off" 1 "Wiper_Intermittent1" 11 "Wiper_ConstantLowSpd" 12 "Wiper_ConstantHighSpd" 13 "Wiper_WashBrief" 14 "Wiper_WashContinuous" ;
-VAL_ 2147495686 AKit_IgnitionReq 0 "No Request (Use Key Position)" 1 "Reserved (Force Off Not Currently Supported)" 2 "Reserved (Accessory Command Not Currently Supported)" 3 "Run" 4 "Crank" ;
+VAL_ 2147495686 AKit_IgnitionReq 0 "No Request (Use Key Position)" 1 "Off (Supported on Pacifica but not Volvo)" 2 "Accessory (Supported on Pacifica but not Volvo)" 3 "Run" 4 "Crank" ;
 VAL_ 2147495686 AKit_LeftRearDoorReq 0 "No Request" 1 "Close Door" 2 "Open Door" 3 "Undefined" ;
 VAL_ 2147495686 AKit_LiftgateDoorReq 0 "No Request" 1 "Close Door" 2 "Open Door" 3 "Undefined" ;
 VAL_ 2147495686 AKit_BlockBasicCruiseCtrlBtns 0 "Pass Through" 1 "Block" ;
@@ -1177,8 +1230,10 @@ VAL_ 2147495686 AKit_BlockAdapCruiseCtrlBtns 0 "Pass Through" 1 "Block" ;
 VAL_ 2147495686 AKit_BlockTurnSigStalkInpts 0 "Pass Through" 1 "Block" ;
 VAL_ 2147495686 AKit_HornReq 0 "No Request" 1 "Horn On" ;
 VAL_ 2147495686 AKit_LowBeamReq 0 "No Request" 1 "Reserved (Auto mode not supported)" 2 "On" 3 "Reserved" ;
+VAL_ 2147495686 AKit_DoorLockReq 0 "DoorLock_NoRequest" 1 "Unlock_Doors" 2 "Lock_Doors" ;
 VAL_ 2147495683 AKit_SteeringReqType 0 "Open Loop (Steering %-Torque)" 1 "Actuator-Level Closed Loop (Steering Wheel Angular Position)" 2 "Vehicle-Level Closed Loop (Vehicle Curvature)" ;
 VAL_ 2147495684 AKit_BrakeCtrlReqType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Brake %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;
+VAL_ 2147495684 AKit_ParkingBrkReq 0 "No Request" 1 "Off" 2 "On" ;
 VAL_ 2147495685 AKit_PrndStateReq 1 "Park" 2 "Reverse" 3 "Neutral" 4 "Drive" 5 "Low" 0 "No Request" ;
 VAL_ 2147491599 DBW_DrvInptHiBeam 0 "Off" 1 "On" 2 "Flash" ;
 VAL_ 2147491599 DBW_DrvInptTurnSignal 0 "Off" 1 "Left" 2 "Right" ;
@@ -1200,4 +1255,5 @@ VAL_ 2147491604 DBW_LeftRearDoorState 0 "Undefined" 1 "Closed" 2 "Open" 3 "SNA (
 VAL_ 2147491604 DBW_LiftgateDoorState 0 "Undefined" 1 "Closed" 2 "Open" 3 "SNA (Faulted or Not Supported)" ;
 VAL_ 2147491604 DBW_HornState 0 "Off" 1 "On" 3 "SNA (Faulted or Not Supported)" ;
 VAL_ 2147491604 DBW_LowBeamState 0 "Undefined" 1 "On" 2 "Reserved" 3 "SNA (Faulted or Not Supported)" ;
+VAL_ 2147491604 DBW_TurnSignalSyncBit 0 "Bulb Off or State Unknown" 1 "Bulb On" ;
 

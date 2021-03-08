@@ -6,3 +6,4 @@ bool can_gateway_disabled
 bool inverter_contactor_disabled 
 bool prevent_enter_autonomous_mode 
 bool warn_driver_only 
+bool chime_fcw_beeps
