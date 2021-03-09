@@ -51,10 +51,13 @@
 #include <raptor_dbw_msgs/msg/gear_cmd.hpp>
 #include <raptor_dbw_msgs/msg/gear_report.hpp>
 #include <raptor_dbw_msgs/msg/global_enable_cmd.hpp>
+#include <raptor_dbw_msgs/msg/gps_reference_report.hpp>
+#include <raptor_dbw_msgs/msg/gps_remainder_report.hpp>
 #include <raptor_dbw_msgs/msg/hmi_global_enable_report.hpp>
 #include <raptor_dbw_msgs/msg/low_voltage_system_report.hpp>
 #include <raptor_dbw_msgs/msg/misc_cmd.hpp>
 #include <raptor_dbw_msgs/msg/misc_report.hpp>
+#include <raptor_dbw_msgs/msg/other_actuators_report.hpp>
 #include <raptor_dbw_msgs/msg/steering2_report.hpp>
 #include <raptor_dbw_msgs/msg/steering_cmd.hpp>
 #include <raptor_dbw_msgs/msg/steering_report.hpp>
@@ -221,6 +224,10 @@ private:
   rclcpp::Publisher<raptor_dbw_msgs::msg::FaultActionsReport>::SharedPtr pub_fault_actions_report_;
   rclcpp::Publisher<raptor_dbw_msgs::msg::HmiGlobalEnableReport>::SharedPtr
     pub_hmi_global_enable_report_;
+  rclcpp::Publisher<raptor_dbw_msgs::msg::OtherActuatorsReport>::SharedPtr
+    pub_other_actuators_report_;
+  rclcpp::Publisher<raptor_dbw_msgs::msg::GpsReferenceReport>::SharedPtr pub_gps_reference_report_;
+  rclcpp::Publisher<raptor_dbw_msgs::msg::GpsRemainderReport>::SharedPtr pub_gps_remainder_report_;
 
   NewEagle::Dbc dbwDbc_;
   std::string dbcFile_;

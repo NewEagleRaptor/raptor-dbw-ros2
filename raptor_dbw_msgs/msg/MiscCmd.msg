@@ -14,6 +14,7 @@ WiperRear rear_wiper_cmd
 Ignition ignition_cmd
 DoorRequest door_request_left_rear
 DoorRequest door_request_lift_gate
+DoorLock door_lock_cmd
 
 bool block_standard_cruise_buttons
 bool block_adaptive_cruise_buttons

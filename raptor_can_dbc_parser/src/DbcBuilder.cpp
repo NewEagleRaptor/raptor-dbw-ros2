@@ -60,6 +60,7 @@ NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
   if (!f.is_open()) {
     std::cout << "Unable to open " << dbcFile << std::endl;
     return dbc;
+    // TODO(NewEagle): This needs to halt execution!
   }
 
   uint32_t lineNumber = 0;
@@ -82,9 +83,9 @@ NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
         currentMessage = ReadMessage(parser);
         dbc.AddMessage(currentMessage);
       } catch (LineParserExceptionBase & exlp) {
-        // TODO(NewEagle): Add warning.
+        // TODO(NewEagle): This needs to halt execution!
       } catch (std::exception & ex) {
-        // TODO(NewEagle): Add warning.
+        // TODO(NewEagle): This needs to halt execution!
       }
     } else if (!SignalToken.compare(identifier)) {
       try {
@@ -93,9 +94,9 @@ NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
         NewEagle::DbcMessage * msg = dbc.GetMessage(currentMessage.GetName());
         msg->AddSignal(signal.GetName(), signal);
       } catch (LineParserExceptionBase & exlp) {
-        // TODO(NewEagle): Add warning.
+        // TODO(NewEagle): This needs to halt execution!
       } catch (std::exception & ex) {
-        // TODO(NewEagle): Add warning.
+        // TODO(NewEagle): This needs to halt execution!
       }
     } else if (!CommentToken.compare(identifier)) {
       try {

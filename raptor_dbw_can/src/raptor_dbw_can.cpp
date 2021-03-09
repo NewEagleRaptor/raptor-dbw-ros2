@@ -125,6 +125,12 @@ RaptorDbwCAN::RaptorDbwCAN(const rclcpp::NodeOptions & options)
   pub_hmi_global_enable_report_ =
     this->create_publisher<raptor_dbw_msgs::msg::HmiGlobalEnableReport>(
     "hmi_global_enable_report", 20);
+  pub_other_actuators_report_ = this->create_publisher<raptor_dbw_msgs::msg::OtherActuatorsReport>(
+    "other_actuators_report", 20);
+  pub_gps_reference_report_ = this->create_publisher<raptor_dbw_msgs::msg::GpsReferenceReport>(
+    "gps_reference_report", 20);
+  pub_gps_remainder_report_ = this->create_publisher<raptor_dbw_msgs::msg::GpsRemainderReport>(
+    "gps_remainder_report", 20);
 
   pub_imu_ = this->create_publisher<sensor_msgs::msg::Imu>("imu/data_raw", 10);
   pub_joint_states_ = this->create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);
@@ -206,13 +212,11 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
           if (msg->dlc >= message->GetDlc()) {
             message->SetFrame(msg);
 
-            bool faultCh1 = message->GetSignal("DBW_BrakeFault_Ch1")->GetResult() ? true : false;
-            bool faultCh2 = message->GetSignal("DBW_BrakeFault_Ch2")->GetResult() ? true : false;
             bool brakeSystemFault =
               message->GetSignal("DBW_BrakeFault")->GetResult() ? true : false;
             bool dbwSystemFault = brakeSystemFault;
 
-            faultBrakes(faultCh1 && faultCh2);
+            faultBrakes(brakeSystemFault);
             faultWatchdog(dbwSystemFault, brakeSystemFault);
 
             overrideBrake(message->GetSignal("DBW_BrakeDriverActivity")->GetResult());
@@ -227,8 +231,6 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
               message->GetSignal("DBW_BrakeDriverActivity")->GetResult() ? true : false;
 
             brakeReport.fault_brake_system = brakeSystemFault;
-
-            brakeReport.fault_ch2 = faultCh2;
 
             brakeReport.rolling_counter = message->GetSignal("DBW_BrakeRollingCntr")->GetResult();
 
@@ -246,8 +248,8 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
             brakeReport.control_type.value = message->GetSignal("DBW_BrakeCtrlType")->GetResult();
 
             pub_brake_->publish(brakeReport);
-            if (faultCh1 || faultCh2) {
-              // TODO(NewEagle): Add warning.
+            if (brakeSystemFault) {
+              // TODO(NewEagle): Print warning to terminal. Do not halt.
             }
           }
         }
@@ -298,7 +300,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
             pub_accel_pedal_->publish(accelPedalReprt);
 
             if (faultCh1 || faultCh2) {
-              // TODO(NewEagle): Add warning.
+              // TODO(NewEagle): Print warning to terminal. Do not halt.
             }
           }
         }
@@ -354,7 +356,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
             publishJointStates(msg->header.stamp, steeringReport);
 
             if (steeringSystemFault) {
-              // TODO(NewEagle): Add warning.
+              // TODO(NewEagle): Print warning to terminal. Do not halt.
             }
           }
         }
@@ -381,6 +383,10 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
               message->GetSignal("DBW_PrndFault")->GetResult() ? true : false;
 
             out.reject = message->GetSignal("DBW_PrndStateReject")->GetResult() ? true : false;
+
+            out.trans_curr_gear = message->GetSignal("DBW_TransCurGear")->GetResult();
+            out.gear_mismatch_flash =
+              message->GetSignal("DBW_PrndMismatchFlash")->GetResult() ? true : false;
 
             pub_gear_->publish(out);
           }
@@ -566,6 +572,17 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
             out.adaptive_cruise_decrease_distance_button = message->GetSignal(
               "DBW_DrvInptAccDecDistBtn")->GetResult() ? true : false;
 
+            out.steer_wheel_button_a =
+              message->GetSignal("DBW_DrvInputStrWhlBtnA")->GetResult() ? true : false;
+            out.steer_wheel_button_b =
+              message->GetSignal("DBW_DrvInputStrWhlBtnB")->GetResult() ? true : false;
+            out.steer_wheel_button_c =
+              message->GetSignal("DBW_DrvInputStrWhlBtnC")->GetResult() ? true : false;
+            out.steer_wheel_button_d =
+              message->GetSignal("DBW_DrvInputStrWhlBtnD")->GetResult() ? true : false;
+            out.steer_wheel_button_e =
+              message->GetSignal("DBW_DrvInputStrWhlBtnE")->GetResult() ? true : false;
+
             out.door_or_hood_ajar =
               message->GetSignal("DBW_OccupAnyDoorOrHoodAjar")->GetResult() ? true : false;
 
@@ -684,6 +701,9 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
             steering2Report.max_torque_motor =
               message->GetSignal("DBW_SteerTrq_Motor")->GetResult();
 
+            steering2Report.expect_torque_driver =
+              message->GetSignal("DBW_SteerTrq_DriverExpectedValue")->GetResult();
+
             pub_steering_2_report_->publish(steering2Report);
           }
         }
@@ -712,12 +732,95 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
               "DBW_FltAct_PreventEnterAutonMode")->GetResult();
             faultActionsReport.warn_driver_only =
               message->GetSignal("DBW_FltAct_WarnDriverOnly")->GetResult();
+            faultActionsReport.chime_fcw_beeps =
+              message->GetSignal("DBW_FltAct_Chime_FcwBeeps")->GetResult();
 
             pub_fault_actions_report_->publish(faultActionsReport);
           }
         }
         break;
+      case ID_OTHER_ACTUATORS_REPORT:
+        {
+          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_OTHER_ACTUATORS_REPORT);
 
+          if (msg->dlc >= message->GetDlc()) {
+            message->SetFrame(msg);
+
+            raptor_dbw_msgs::msg::OtherActuatorsReport out;
+            out.header.stamp = msg->header.stamp;
+
+            out.ignition_state.status = message->GetSignal(
+              "DBW_IgnitionState")->GetResult();
+            out.horn_state.status = message->GetSignal(
+              "DBW_HornState")->GetResult();
+
+            out.turn_signal_state.value = message->GetSignal(
+              "DBW_TurnSignalState")->GetResult();
+            out.turn_signal_sync = message->GetSignal(
+              "DBW_TurnSignalSyncBit")->GetResult() ? true : false;
+            out.high_beam_state.value = message->GetSignal(
+              "DBW_HighBeamState")->GetResult();
+            out.low_beam_state.status = message->GetSignal(
+              "DBW_LowBeamState")->GetResult();
+
+            out.front_wiper_state.status = message->GetSignal(
+              "DBW_FrontWiperState")->GetResult();
+            out.rear_wiper_state.status = message->GetSignal(
+              "DBW_RearWiperState")->GetResult();
+
+            out.right_rear_door_state.value = message->GetSignal(
+              "DBW_RightRearDoorState")->GetResult();
+            out.left_rear_door_state.value = message->GetSignal(
+              "DBW_LeftRearDoorState")->GetResult();
+            out.liftgate_door_state.value = message->GetSignal(
+              "DBW_LiftgateDoorState")->GetResult();
+            out.door_lock_state.value = message->GetSignal(
+              "DBW_DoorLockState")->GetResult();
+
+            pub_other_actuators_report_->publish(out);
+          }
+        }
+        break;
+      case ID_GPS_REFERENCE_REPORT:
+        {
+          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_GPS_REFERENCE_REPORT);
+
+          if (msg->dlc >= message->GetDlc()) {
+            message->SetFrame(msg);
+
+            raptor_dbw_msgs::msg::GpsReferenceReport out;
+            out.header.stamp = msg->header.stamp;
+
+            out.ref_latitude = message->GetSignal(
+              "DBW_GpsRefLat")->GetResult();
+
+            out.ref_longitude = message->GetSignal(
+              "DBW_GpsRefLong")->GetResult();
+
+            pub_gps_reference_report_->publish(out);
+          }
+        }
+        break;
+      case ID_GPS_REMAINDER_REPORT:
+        {
+          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_GPS_REMAINDER_REPORT);
+
+          if (msg->dlc >= message->GetDlc()) {
+            message->SetFrame(msg);
+
+            raptor_dbw_msgs::msg::GpsRemainderReport out;
+            out.header.stamp = msg->header.stamp;
+
+            out.rem_latitude = message->GetSignal(
+              "DBW_GpsRemainderLat")->GetResult();
+
+            out.rem_longitude = message->GetSignal(
+              "DBW_GpsRemainderLong")->GetResult();
+
+            pub_gps_remainder_report_->publish(out);
+          }
+        }
+        break;
       case ID_BRAKE_CMD:
         break;
       case ID_ACCELERATOR_PEDAL_CMD:
@@ -740,6 +843,7 @@ void RaptorDbwCAN::recvBrakeCmd(const raptor_dbw_msgs::msg::BrakeCmd::SharedPtr 
   message->GetSignal("AKit_BrakePcntTorqueReq")->SetResult(0);
   message->GetSignal("AKit_SpeedModeDecelLim")->SetResult(0);
   message->GetSignal("AKit_SpeedModeNegJerkLim")->SetResult(0);
+  message->GetSignal("AKit_ParkingBrkReq")->SetResult(0);
 
   if (enabled()) {
     if (msg->control_type.value == raptor_dbw_msgs::msg::ActuatorControlMode::OPEN_LOOP) {
@@ -762,6 +866,15 @@ void RaptorDbwCAN::recvBrakeCmd(const raptor_dbw_msgs::msg::BrakeCmd::SharedPtr 
 
     if (msg->enable) {
       message->GetSignal("AKit_BrakeCtrlEnblReq")->SetResult(1);
+    }
+
+    if ((msg->control_type.value == raptor_dbw_msgs::msg::ActuatorControlMode::OPEN_LOOP) ||
+      (msg->control_type.value ==  // NOLINT
+      raptor_dbw_msgs::msg::ActuatorControlMode::CLOSED_LOOP_ACTUATOR) ||
+      (msg->control_type.value ==  // NOLINT
+      raptor_dbw_msgs::msg::ActuatorControlMode::CLOSED_LOOP_VEHICLE))
+    {
+      message->GetSignal("AKit_ParkingBrkReq")->SetResult(msg->park_brake_cmd.status);
     }
   }
 
@@ -961,6 +1074,7 @@ void RaptorDbwCAN::recvMiscCmd(const raptor_dbw_msgs::msg::MiscCmd::SharedPtr ms
   message->GetSignal("AKit_OtherChecksum")->SetResult(0);
   message->GetSignal("AKit_HornReq")->SetResult(0);
   message->GetSignal("AKit_LowBeamReq")->SetResult(0);
+  message->GetSignal("AKit_DoorLockReq")->SetResult(0);
 
   if (enabled()) {
     message->GetSignal("AKit_TurnSignalReq")->SetResult(msg->cmd.value);
@@ -984,6 +1098,7 @@ void RaptorDbwCAN::recvMiscCmd(const raptor_dbw_msgs::msg::MiscCmd::SharedPtr ms
 
     message->GetSignal("AKit_HornReq")->SetResult(msg->horn_cmd);
     message->GetSignal("AKit_LowBeamReq")->SetResult(msg->low_beam_cmd.status);
+    message->GetSignal("AKit_DoorLockReq")->SetResult(msg->door_lock_cmd.value);
   }
 
   message->GetSignal("AKit_OtherRollingCntr")->SetResult(msg->rolling_counter);
@@ -1059,19 +1174,19 @@ void RaptorDbwCAN::enableSystem()
   if (!enable_) {
     if (fault()) {
       if (fault_steering_cal_) {
-        // TODO(NewEagle): Add warning.
+        // TODO(NewEagle): Print warning to terminal. Do not halt.
       }
       if (fault_brakes_) {
-        // TODO(NewEagle): Add warning.
+        // TODO(NewEagle): Print warning to terminal. Do not halt.
       }
       if (fault_accelerator_pedal_) {
-        // TODO(NewEagle): Add warning.
+        // TODO(NewEagle): Print warning to terminal. Do not halt.
       }
       if (fault_steering_) {
-        // TODO(NewEagle): Add warning.
+        // TODO(NewEagle): Print warning to terminal. Do not halt.
       }
       if (fault_watchdog_) {
-        // TODO(NewEagle): Add warning.
+        // TODO(NewEagle): Print warning to terminal. Do not halt.
       }
     } else {
       enable_ = true;
@@ -1104,6 +1219,7 @@ void RaptorDbwCAN::buttonCancel()
 
 void RaptorDbwCAN::overrideBrake(bool override)
 {
+  // TODO(NewEagle): If driver activity && system not enabled, nothing should happen??
   bool en = enabled();
   if (override && en) {
     enable_ = false;
@@ -1111,9 +1227,9 @@ void RaptorDbwCAN::overrideBrake(bool override)
   override_brake_ = override;
   if (publishDbwEnabled()) {
     if (en) {
-      // TODO(NewEagle): Add warning.
+      // TODO(NewEagle): Print warning to terminal. Do not halt.
     } else {
-      // TODO(NewEagle): Add info.
+      // TODO(NewEagle): Don't care. Do nothing.
     }
   }
 }
@@ -1127,9 +1243,9 @@ void RaptorDbwCAN::overrideAcceleratorPedal(bool override)
   override_accelerator_pedal_ = override;
   if (publishDbwEnabled()) {
     if (en) {
-      // TODO(NewEagle): Add warning.
+      // TODO(NewEagle): Print warning to terminal. Do not halt.
     } else {
-      // TODO(NewEagle): Add info.
+      // TODO(NewEagle): Don't care. Do nothing.
     }
   }
 }
@@ -1143,9 +1259,9 @@ void RaptorDbwCAN::overrideSteering(bool override)
   override_steering_ = override;
   if (publishDbwEnabled()) {
     if (en) {
-      // TODO(NewEagle): Add warning.
+      // TODO(NewEagle): Print warning to terminal. Do not halt.
     } else {
-      // TODO(NewEagle): Add info.
+      // TODO(NewEagle): Don't care. Do nothing.
     }
   }
 }
@@ -1159,9 +1275,9 @@ void RaptorDbwCAN::overrideGear(bool override)
   override_gear_ = override;
   if (publishDbwEnabled()) {
     if (en) {
-      // TODO(NewEagle): Add warning.
+      // TODO(NewEagle): Print warning to terminal. Do not halt.
     } else {
-      // TODO(NewEagle): Add info.
+      // TODO(NewEagle): Don't care. Do nothing.
     }
   }
 }
@@ -1169,7 +1285,7 @@ void RaptorDbwCAN::overrideGear(bool override)
 void RaptorDbwCAN::timeoutBrake(bool timeout, bool enabled)
 {
   if (!timeout_brakes_ && enabled_brakes_ && timeout && !enabled) {
-    // TODO(NewEagle): Add warning.
+    // TODO(NewEagle): Print warning to terminal. Do not halt.
   }
   timeout_brakes_ = timeout;
   enabled_brakes_ = enabled;
@@ -1178,7 +1294,7 @@ void RaptorDbwCAN::timeoutBrake(bool timeout, bool enabled)
 void RaptorDbwCAN::timeoutAcceleratorPedal(bool timeout, bool enabled)
 {
   if (!timeout_accelerator_pedal_ && enabled_accelerator_pedal_ && timeout && !enabled) {
-    // TODO(NewEagle): Add warning.
+    // TODO(NewEagle): Print warning to terminal. Do not halt.
   }
   timeout_accelerator_pedal_ = timeout;
   enabled_accelerator_pedal_ = enabled;
@@ -1187,7 +1303,7 @@ void RaptorDbwCAN::timeoutAcceleratorPedal(bool timeout, bool enabled)
 void RaptorDbwCAN::timeoutSteering(bool timeout, bool enabled)
 {
   if (!timeout_steering_ && enabled_steering_ && timeout && !enabled) {
-    // TODO(NewEagle): Add warning.
+    // TODO(NewEagle): Print warning to terminal. Do not halt.
   }
   timeout_steering_ = timeout;
   enabled_steering_ = enabled;
@@ -1272,19 +1388,19 @@ void RaptorDbwCAN::faultWatchdog(bool fault, uint8_t src, bool braking)
     }
   }
   if (braking && !fault_watchdog_using_brakes_) {
-    // TODO(NewEagle): Add warning.
+    // TODO(NewEagle): Print warning to terminal. Do not halt.
   } else if (!braking && fault_watchdog_using_brakes_) {
     // TODO(NewEagle): Add info.
   }
   if (fault && src && !fault_watchdog_warned_) {
-    // TODO(NewEagle): Add warning.
+    // TODO(NewEagle): Print warning to terminal. Do not halt.
     fault_watchdog_warned_ = true;
   } else if (!fault) {
     fault_watchdog_warned_ = false;
   }
   fault_watchdog_using_brakes_ = braking;
   if (fault && !fault_watchdog_using_brakes_ && fault_watchdog_warned_) {
-    // TODO(NewEagle): Add warning.
+    // TODO(NewEagle): Print warning to terminal. Do not halt.
   }
 }
 

@@ -6,3 +6,6 @@ uint8 REVERSE=2
 uint8 NEUTRAL=3
 uint8 DRIVE=4
 uint8 LOW=5
+uint8 AUTO_HOLD=6
+uint8 AUTO_SHIFT_UP=7
+uint8 AUTO_SHIFT_DOWN=8

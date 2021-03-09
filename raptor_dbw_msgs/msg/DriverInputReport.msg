@@ -18,6 +18,11 @@ bool cruise_on_off_button
 bool adaptive_cruise_on_off_button
 bool adaptive_cruise_increase_distance_button
 bool adaptive_cruise_decrease_distance_button
+bool steer_wheel_button_a
+bool steer_wheel_button_b
+bool steer_wheel_button_c
+bool steer_wheel_button_d
+bool steer_wheel_button_e
 
 # Door status
 bool driver_door_ajar
