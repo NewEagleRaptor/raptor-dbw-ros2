@@ -93,48 +93,48 @@ RaptorDbwCAN::RaptorDbwCAN(const rclcpp::NodeOptions & options)
 
   // Set up Publishers
   pub_can_ = this->create_publisher<can_msgs::msg::Frame>("can_tx", 20);
-  pub_brake_ = this->create_publisher<raptor_dbw_msgs::msg::BrakeReport>("brake_report", 20);
-  pub_accel_pedal_ = this->create_publisher<raptor_dbw_msgs::msg::AcceleratorPedalReport>(
+  pub_brake_ = this->create_publisher<BrakeReport>("brake_report", 20);
+  pub_accel_pedal_ = this->create_publisher<AcceleratorPedalReport>(
     "accelerator_pedal_report", 20);
   pub_steering_ =
-    this->create_publisher<raptor_dbw_msgs::msg::SteeringReport>("steering_report", 20);
-  pub_gear_ = this->create_publisher<raptor_dbw_msgs::msg::GearReport>("gear_report", 20);
-  pub_wheel_speeds_ = this->create_publisher<raptor_dbw_msgs::msg::WheelSpeedReport>(
+    this->create_publisher<SteeringReport>("steering_report", 20);
+  pub_gear_ = this->create_publisher<GearReport>("gear_report", 20);
+  pub_wheel_speeds_ = this->create_publisher<WheelSpeedReport>(
     "wheel_speed_report", 20);
-  pub_wheel_positions_ = this->create_publisher<raptor_dbw_msgs::msg::WheelPositionReport>(
+  pub_wheel_positions_ = this->create_publisher<WheelPositionReport>(
     "wheel_position_report", 20);
-  pub_tire_pressure_ = this->create_publisher<raptor_dbw_msgs::msg::TirePressureReport>(
+  pub_tire_pressure_ = this->create_publisher<TirePressureReport>(
     "tire_pressure_report", 20);
   pub_surround_ =
-    this->create_publisher<raptor_dbw_msgs::msg::SurroundReport>("surround_report", 20);
+    this->create_publisher<SurroundReport>("surround_report", 20);
 
-  pub_low_voltage_system_ = this->create_publisher<raptor_dbw_msgs::msg::LowVoltageSystemReport>(
+  pub_low_voltage_system_ = this->create_publisher<LowVoltageSystemReport>(
     "low_voltage_system_report", 2);
 
-  pub_brake_2_report_ = this->create_publisher<raptor_dbw_msgs::msg::Brake2Report>(
+  pub_brake_2_report_ = this->create_publisher<Brake2Report>(
     "brake_2_report",
     20);
-  pub_steering_2_report_ = this->create_publisher<raptor_dbw_msgs::msg::Steering2Report>(
+  pub_steering_2_report_ = this->create_publisher<Steering2Report>(
     "steering_2_report", 20);
-  pub_fault_actions_report_ = this->create_publisher<raptor_dbw_msgs::msg::FaultActionsReport>(
+  pub_fault_actions_report_ = this->create_publisher<FaultActionsReport>(
     "fault_actions_report", 20);
   pub_hmi_global_enable_report_ =
-    this->create_publisher<raptor_dbw_msgs::msg::HmiGlobalEnableReport>(
+    this->create_publisher<HmiGlobalEnableReport>(
     "hmi_global_enable_report", 20);
-  pub_other_actuators_report_ = this->create_publisher<raptor_dbw_msgs::msg::OtherActuatorsReport>(
+  pub_other_actuators_report_ = this->create_publisher<OtherActuatorsReport>(
     "other_actuators_report", 20);
-  pub_gps_reference_report_ = this->create_publisher<raptor_dbw_msgs::msg::GpsReferenceReport>(
+  pub_gps_reference_report_ = this->create_publisher<GpsReferenceReport>(
     "gps_reference_report", 20);
-  pub_gps_remainder_report_ = this->create_publisher<raptor_dbw_msgs::msg::GpsRemainderReport>(
+  pub_gps_remainder_report_ = this->create_publisher<GpsRemainderReport>(
     "gps_remainder_report", 20);
 
   pub_imu_ = this->create_publisher<sensor_msgs::msg::Imu>("imu/data_raw", 10);
   pub_joint_states_ = this->create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);
   pub_twist_ = this->create_publisher<geometry_msgs::msg::TwistStamped>("twist", 10);
   pub_vin_ = this->create_publisher<std_msgs::msg::String>("vin", 1);
-  pub_driver_input_ = this->create_publisher<raptor_dbw_msgs::msg::DriverInputReport>(
+  pub_driver_input_ = this->create_publisher<DriverInputReport>(
     "driver_input_report", 2);
-  pub_misc_ = this->create_publisher<raptor_dbw_msgs::msg::MiscReport>("misc_report", 2);
+  pub_misc_ = this->create_publisher<MiscReport>("misc_report", 2);
   pub_sys_enable_ = this->create_publisher<std_msgs::msg::Bool>("dbw_enabled", 1);
   publishDbwEnabled();
 
@@ -148,23 +148,23 @@ RaptorDbwCAN::RaptorDbwCAN(const rclcpp::NodeOptions & options)
   sub_can_ = this->create_subscription<can_msgs::msg::Frame>(
     "can_rx", 500, std::bind(&RaptorDbwCAN::recvCAN, this, std::placeholders::_1));
 
-  sub_brake_ = this->create_subscription<raptor_dbw_msgs::msg::BrakeCmd>(
+  sub_brake_ = this->create_subscription<BrakeCmd>(
     "brake_cmd", 1, std::bind(&RaptorDbwCAN::recvBrakeCmd, this, std::placeholders::_1));
 
-  sub_accelerator_pedal_ = this->create_subscription<raptor_dbw_msgs::msg::AcceleratorPedalCmd>(
+  sub_accelerator_pedal_ = this->create_subscription<AcceleratorPedalCmd>(
     "accelerator_pedal_cmd", 1,
     std::bind(&RaptorDbwCAN::recvAcceleratorPedalCmd, this, std::placeholders::_1));
 
-  sub_steering_ = this->create_subscription<raptor_dbw_msgs::msg::SteeringCmd>(
+  sub_steering_ = this->create_subscription<SteeringCmd>(
     "steering_cmd", 1, std::bind(&RaptorDbwCAN::recvSteeringCmd, this, std::placeholders::_1));
 
-  sub_gear_ = this->create_subscription<raptor_dbw_msgs::msg::GearCmd>(
+  sub_gear_ = this->create_subscription<GearCmd>(
     "gear_cmd", 1, std::bind(&RaptorDbwCAN::recvGearCmd, this, std::placeholders::_1));
 
-  sub_misc_ = this->create_subscription<raptor_dbw_msgs::msg::MiscCmd>(
+  sub_misc_ = this->create_subscription<MiscCmd>(
     "misc_cmd", 1, std::bind(&RaptorDbwCAN::recvMiscCmd, this, std::placeholders::_1));
 
-  sub_global_enable_ = this->create_subscription<raptor_dbw_msgs::msg::GlobalEnableCmd>(
+  sub_global_enable_ = this->create_subscription<GlobalEnableCmd>(
     "global_enable_cmd", 1,
     std::bind(&RaptorDbwCAN::recvGlobalEnableCmd, this, std::placeholders::_1));
 
@@ -217,7 +217,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
             faultWatchdog(dbwSystemFault, brakeSystemFault);
 
             overrideBrake(message->GetSignal("DBW_BrakeDriverActivity")->GetResult());
-            raptor_dbw_msgs::msg::BrakeReport brakeReport;
+            BrakeReport brakeReport;
             brakeReport.header.stamp = msg->header.stamp;
             brakeReport.pedal_position = message->GetSignal("DBW_BrakePdlDriverInput")->GetResult();
             brakeReport.pedal_output = message->GetSignal("DBW_BrakePdlPosnFdbck")->GetResult();
@@ -246,7 +246,9 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
 
             pub_brake_->publish(brakeReport);
             if (brakeSystemFault) {
-              // TODO(NewEagle): Print warning to terminal. Do not halt.
+              RCLCPP_WARN_THROTTLE(
+                this->get_logger(), m_clock, CLOCK_1_SEC,
+                "Brake report received a system fault.");
             }
           }
         }
@@ -269,7 +271,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
 
             overrideAcceleratorPedal(message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult());
 
-            raptor_dbw_msgs::msg::AcceleratorPedalReport accelPedalReprt;
+            AcceleratorPedalReport accelPedalReprt;
             accelPedalReprt.header.stamp = msg->header.stamp;
             accelPedalReprt.pedal_input =
               message->GetSignal("DBW_AccelPdlDriverInput")->GetResult();
@@ -297,7 +299,9 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
             pub_accel_pedal_->publish(accelPedalReprt);
 
             if (faultCh1 || faultCh2) {
-              // TODO(NewEagle): Print warning to terminal. Do not halt.
+              RCLCPP_WARN_THROTTLE(
+                this->get_logger(), m_clock, CLOCK_1_SEC,
+                "Acclerator pedal report received a system fault.");
             }
           }
         }
@@ -320,7 +324,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
               message->GetSignal(
                 "DBW_SteeringDriverActivity")->GetResult() ? true : false);
 
-            raptor_dbw_msgs::msg::SteeringReport steeringReport;
+            SteeringReport steeringReport;
             steeringReport.header.stamp = msg->header.stamp;
             steeringReport.steering_wheel_angle =
               message->GetSignal("DBW_SteeringWhlAngleAct")->GetResult() * (M_PI / 180);
@@ -353,7 +357,9 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
             publishJointStates(msg->header.stamp, steeringReport);
 
             if (steeringSystemFault) {
-              // TODO(NewEagle): Print warning to terminal. Do not halt.
+              RCLCPP_WARN_THROTTLE(
+                this->get_logger(), m_clock, CLOCK_1_SEC,
+                "Steering report received a system fault.");
             }
           }
         }
@@ -370,7 +376,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
               message->GetSignal("DBW_PrndDriverActivity")->GetResult() ? true : false;
 
             overrideGear(driverActivity);
-            raptor_dbw_msgs::msg::GearReport out;
+            GearReport out;
             out.header.stamp = msg->header.stamp;
 
             out.enabled = message->GetSignal("DBW_PrndCtrlEnabled")->GetResult() ? true : false;
@@ -385,6 +391,12 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
             out.gear_mismatch_flash =
               message->GetSignal("DBW_PrndMismatchFlash")->GetResult() ? true : false;
 
+            if (out.gear_mismatch_flash) {
+              RCLCPP_ERROR_THROTTLE(
+                this->get_logger(), m_clock, CLOCK_1_SEC,
+                "ERROR - shift lever is in Park, but transmission is in Drive. Please adjust the shift lever.");
+            }
+
             pub_gear_->publish(out);
           }
         }
@@ -397,7 +409,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
           if (msg->dlc >= message->GetDlc()) {
             message->SetFrame(msg);
 
-            raptor_dbw_msgs::msg::WheelSpeedReport out;
+            WheelSpeedReport out;
             out.header.stamp = msg->header.stamp;
 
             out.front_left = message->GetSignal("DBW_WhlSpd_FL")->GetResult();
@@ -417,7 +429,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
           if (msg->dlc >= message->GetDlc()) {
             message->SetFrame(msg);
 
-            raptor_dbw_msgs::msg::WheelPositionReport out;
+            WheelPositionReport out;
             out.header.stamp = msg->header.stamp;
             out.front_left = message->GetSignal("DBW_WhlPulseCnt_FL")->GetResult();
             out.front_right = message->GetSignal("DBW_WhlPulseCnt_FR")->GetResult();
@@ -437,7 +449,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
           if (msg->dlc >= message->GetDlc()) {
             message->SetFrame(msg);
 
-            raptor_dbw_msgs::msg::TirePressureReport out;
+            TirePressureReport out;
             out.header.stamp = msg->header.stamp;
             out.front_left = message->GetSignal("DBW_TirePressFL")->GetResult();
             out.front_right = message->GetSignal("DBW_TirePressFR")->GetResult();
@@ -455,7 +467,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
           if (msg->dlc >= message->GetDlc()) {
             message->SetFrame(msg);
 
-            raptor_dbw_msgs::msg::SurroundReport out;
+            SurroundReport out;
             out.header.stamp = msg->header.stamp;
 
             out.front_radar_object_distance = message->GetSignal("DBW_Reserved2")->GetResult();
@@ -544,7 +556,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
           if (msg->dlc >= message->GetDlc()) {
             message->SetFrame(msg);
 
-            raptor_dbw_msgs::msg::DriverInputReport out;
+            DriverInputReport out;
             out.header.stamp = msg->header.stamp;
 
             out.turn_signal.value = message->GetSignal("DBW_DrvInptTurnSignal")->GetResult();
@@ -600,7 +612,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
           if (msg->dlc >= message->GetDlc()) {
             message->SetFrame(msg);
 
-            raptor_dbw_msgs::msg::MiscReport out;
+            MiscReport out;
             out.header.stamp = msg->header.stamp;
 
             out.fuel_level =
@@ -634,7 +646,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
           if (msg->dlc >= message->GetDlc()) {
             message->SetFrame(msg);
 
-            raptor_dbw_msgs::msg::LowVoltageSystemReport lvSystemReport;
+            LowVoltageSystemReport lvSystemReport;
             lvSystemReport.header.stamp = msg->header.stamp;
 
             lvSystemReport.vehicle_battery_volts =
@@ -664,7 +676,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
           if (msg->dlc >= message->GetDlc()) {
             message->SetFrame(msg);
 
-            raptor_dbw_msgs::msg::Brake2Report brake2Report;
+            Brake2Report brake2Report;
             brake2Report.header.stamp = msg->header.stamp;
 
             brake2Report.brake_pressure = message->GetSignal("DBW_BrakePress_bar")->GetResult();
@@ -686,7 +698,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
           if (msg->dlc >= message->GetDlc()) {
             message->SetFrame(msg);
 
-            raptor_dbw_msgs::msg::Steering2Report steering2Report;
+            Steering2Report steering2Report;
             steering2Report.header.stamp = msg->header.stamp;
 
             steering2Report.vehicle_curvature_actual = message->GetSignal(
@@ -713,7 +725,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
           if (msg->dlc >= message->GetDlc()) {
             message->SetFrame(msg);
 
-            raptor_dbw_msgs::msg::FaultActionsReport faultActionsReport;
+            FaultActionsReport faultActionsReport;
             faultActionsReport.header.stamp = msg->header.stamp;
 
             faultActionsReport.autonomous_disabled_no_brakes = message->GetSignal(
@@ -743,7 +755,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
           if (msg->dlc >= message->GetDlc()) {
             message->SetFrame(msg);
 
-            raptor_dbw_msgs::msg::OtherActuatorsReport out;
+            OtherActuatorsReport out;
             out.header.stamp = msg->header.stamp;
 
             out.ignition_state.status = message->GetSignal(
@@ -785,7 +797,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
           if (msg->dlc >= message->GetDlc()) {
             message->SetFrame(msg);
 
-            raptor_dbw_msgs::msg::GpsReferenceReport out;
+            GpsReferenceReport out;
             out.header.stamp = msg->header.stamp;
 
             out.ref_latitude = message->GetSignal(
@@ -805,7 +817,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
           if (msg->dlc >= message->GetDlc()) {
             message->SetFrame(msg);
 
-            raptor_dbw_msgs::msg::GpsRemainderReport out;
+            GpsRemainderReport out;
             out.header.stamp = msg->header.stamp;
 
             out.rem_latitude = message->GetSignal(
@@ -830,7 +842,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvBrakeCmd(const raptor_dbw_msgs::msg::BrakeCmd::SharedPtr msg)
+void RaptorDbwCAN::recvBrakeCmd(const BrakeCmd::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_BrakeRequest");
 
@@ -843,17 +855,13 @@ void RaptorDbwCAN::recvBrakeCmd(const raptor_dbw_msgs::msg::BrakeCmd::SharedPtr 
   message->GetSignal("AKit_ParkingBrkReq")->SetResult(0);
 
   if (enabled()) {
-    if (msg->control_type.value == raptor_dbw_msgs::msg::ActuatorControlMode::OPEN_LOOP) {
+    if (msg->control_type.value == ActuatorControlMode::OPEN_LOOP) {
       message->GetSignal("AKit_BrakeCtrlReqType")->SetResult(0);
       message->GetSignal("AKit_BrakePedalReq")->SetResult(msg->pedal_cmd);
-    } else if (msg->control_type.value ==  // NOLINT
-      raptor_dbw_msgs::msg::ActuatorControlMode::CLOSED_LOOP_ACTUATOR)
-    {
+    } else if (msg->control_type.value == ActuatorControlMode::CLOSED_LOOP_ACTUATOR) {
       message->GetSignal("AKit_BrakeCtrlReqType")->SetResult(1);
       message->GetSignal("AKit_BrakePcntTorqueReq")->SetResult(msg->torque_cmd);
-    } else if (msg->control_type.value ==  // NOLINT
-      raptor_dbw_msgs::msg::ActuatorControlMode::CLOSED_LOOP_VEHICLE)
-    {
+    } else if (msg->control_type.value == ActuatorControlMode::CLOSED_LOOP_VEHICLE) {
       message->GetSignal("AKit_BrakeCtrlReqType")->SetResult(2);
       message->GetSignal("AKit_SpeedModeDecelLim")->SetResult(msg->decel_limit);
       message->GetSignal("AKit_SpeedModeNegJerkLim")->SetResult(msg->decel_negative_jerk_limit);
@@ -865,11 +873,9 @@ void RaptorDbwCAN::recvBrakeCmd(const raptor_dbw_msgs::msg::BrakeCmd::SharedPtr 
       message->GetSignal("AKit_BrakeCtrlEnblReq")->SetResult(1);
     }
 
-    if ((msg->control_type.value == raptor_dbw_msgs::msg::ActuatorControlMode::OPEN_LOOP) ||
-      (msg->control_type.value ==  // NOLINT
-      raptor_dbw_msgs::msg::ActuatorControlMode::CLOSED_LOOP_ACTUATOR) ||
-      (msg->control_type.value ==  // NOLINT
-      raptor_dbw_msgs::msg::ActuatorControlMode::CLOSED_LOOP_VEHICLE))
+    if ((msg->control_type.value == ActuatorControlMode::OPEN_LOOP) ||
+      (msg->control_type.value == ActuatorControlMode::CLOSED_LOOP_ACTUATOR) ||
+      (msg->control_type.value == ActuatorControlMode::CLOSED_LOOP_VEHICLE))
     {
       message->GetSignal("AKit_ParkingBrkReq")->SetResult(msg->park_brake_cmd.status);
     }
@@ -884,7 +890,7 @@ void RaptorDbwCAN::recvBrakeCmd(const raptor_dbw_msgs::msg::BrakeCmd::SharedPtr 
 }
 
 void RaptorDbwCAN::recvAcceleratorPedalCmd(
-  const raptor_dbw_msgs::msg::AcceleratorPedalCmd::SharedPtr msg)
+  const AcceleratorPedalCmd::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_AccelPdlRequest");
 
@@ -901,17 +907,13 @@ void RaptorDbwCAN::recvAcceleratorPedalCmd(
   message->GetSignal("AKit_SpeedModePosJerkLim")->SetResult(0);
 
   if (enabled()) {
-    if (msg->control_type.value == raptor_dbw_msgs::msg::ActuatorControlMode::OPEN_LOOP) {
+    if (msg->control_type.value == ActuatorControlMode::OPEN_LOOP) {
       message->GetSignal("AKit_AccelReqType")->SetResult(0);
       message->GetSignal("AKit_AccelPdlReq")->SetResult(msg->pedal_cmd);
-    } else if (msg->control_type.value ==  // NOLINT
-      raptor_dbw_msgs::msg::ActuatorControlMode::CLOSED_LOOP_ACTUATOR)
-    {
+    } else if (msg->control_type.value == ActuatorControlMode::CLOSED_LOOP_ACTUATOR) {
       message->GetSignal("AKit_AccelReqType")->SetResult(1);
       message->GetSignal("AKit_AccelPcntTorqueReq")->SetResult(msg->torque_cmd);
-    } else if (msg->control_type.value ==  // NOLINT
-      raptor_dbw_msgs::msg::ActuatorControlMode::CLOSED_LOOP_VEHICLE)
-    {
+    } else if (msg->control_type.value == ActuatorControlMode::CLOSED_LOOP_VEHICLE) {
       message->GetSignal("AKit_AccelReqType")->SetResult(2);
       message->GetSignal("AKit_SpeedReq")->SetResult(msg->speed_cmd);
       message->GetSignal("AKit_SpeedModeRoadSlope")->SetResult(msg->road_slope);
@@ -938,7 +940,7 @@ void RaptorDbwCAN::recvAcceleratorPedalCmd(
   pub_can_->publish(frame);
 }
 
-void RaptorDbwCAN::recvSteeringCmd(const raptor_dbw_msgs::msg::SteeringCmd::SharedPtr msg)
+void RaptorDbwCAN::recvSteeringCmd(const SteeringCmd::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_SteeringRequest");
 
@@ -952,12 +954,10 @@ void RaptorDbwCAN::recvSteeringCmd(const raptor_dbw_msgs::msg::SteeringCmd::Shar
   message->GetSignal("AKit_SteeringChecksum")->SetResult(0);
 
   if (enabled()) {
-    if (msg->control_type.value == raptor_dbw_msgs::msg::ActuatorControlMode::OPEN_LOOP) {
+    if (msg->control_type.value == ActuatorControlMode::OPEN_LOOP) {
       message->GetSignal("AKit_SteeringReqType")->SetResult(0);
       message->GetSignal("AKit_SteeringWhlPcntTrqReq")->SetResult(msg->torque_cmd);
-    } else if (msg->control_type.value ==  // NOLINT
-      raptor_dbw_msgs::msg::ActuatorControlMode::CLOSED_LOOP_ACTUATOR)
-    {
+    } else if (msg->control_type.value == ActuatorControlMode::CLOSED_LOOP_ACTUATOR) {
       message->GetSignal("AKit_SteeringReqType")->SetResult(1);
       double scmd =
         std::max(
@@ -966,9 +966,7 @@ void RaptorDbwCAN::recvSteeringCmd(const raptor_dbw_msgs::msg::SteeringCmd::Shar
           470.0F, static_cast<float>(
             msg->angle_cmd * (180.0F / M_PI * 1.0F))));
       message->GetSignal("AKit_SteeringWhlAngleReq")->SetResult(scmd);
-    } else if (msg->control_type.value ==  // NOLINT
-      raptor_dbw_msgs::msg::ActuatorControlMode::CLOSED_LOOP_VEHICLE)
-    {
+    } else if (msg->control_type.value == ActuatorControlMode::CLOSED_LOOP_VEHICLE) {
       message->GetSignal("AKit_SteeringReqType")->SetResult(2);
       message->GetSignal("AKit_SteeringVehCurvatureReq")->SetResult(msg->vehicle_curvature_cmd);
     } else {
@@ -1001,7 +999,7 @@ void RaptorDbwCAN::recvSteeringCmd(const raptor_dbw_msgs::msg::SteeringCmd::Shar
   pub_can_->publish(frame);
 }
 
-void RaptorDbwCAN::recvGearCmd(const raptor_dbw_msgs::msg::GearCmd::SharedPtr msg)
+void RaptorDbwCAN::recvGearCmd(const GearCmd::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_PrndRequest");
 
@@ -1024,7 +1022,7 @@ void RaptorDbwCAN::recvGearCmd(const raptor_dbw_msgs::msg::GearCmd::SharedPtr ms
   pub_can_->publish(frame);
 }
 
-void RaptorDbwCAN::recvGlobalEnableCmd(const raptor_dbw_msgs::msg::GlobalEnableCmd::SharedPtr msg)
+void RaptorDbwCAN::recvGlobalEnableCmd(const GlobalEnableCmd::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_GlobalEnbl");
 
@@ -1053,7 +1051,7 @@ void RaptorDbwCAN::recvGlobalEnableCmd(const raptor_dbw_msgs::msg::GlobalEnableC
   pub_can_->publish(frame);
 }
 
-void RaptorDbwCAN::recvMiscCmd(const raptor_dbw_msgs::msg::MiscCmd::SharedPtr msg)
+void RaptorDbwCAN::recvMiscCmd(const MiscCmd::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_OtherActuators");
 
@@ -1105,6 +1103,8 @@ void RaptorDbwCAN::recvMiscCmd(const raptor_dbw_msgs::msg::MiscCmd::SharedPtr ms
   pub_can_->publish(frame);
 }
 
+/// \brief DBW Enabled needs to publish when its state changes.
+/// \returns TRUE when DBW enable state changes, FALSE otherwise
 bool RaptorDbwCAN::publishDbwEnabled()
 {
   bool change = false;
@@ -1171,26 +1171,40 @@ void RaptorDbwCAN::enableSystem()
   if (!enable_) {
     if (fault()) {
       if (fault_steering_cal_) {
-        // TODO(NewEagle): Print warning to terminal. Do not halt.
+        RCLCPP_ERROR_THROTTLE(
+          this->get_logger(), m_clock, CLOCK_1_SEC,
+          "DBW system disabled. Steering calibration fault.");
       }
       if (fault_brakes_) {
-        // TODO(NewEagle): Print warning to terminal. Do not halt.
+        RCLCPP_ERROR_THROTTLE(
+          this->get_logger(), m_clock, CLOCK_1_SEC,
+          "DBW system disabled. Braking fault.");
       }
       if (fault_accelerator_pedal_) {
-        // TODO(NewEagle): Print warning to terminal. Do not halt.
+        RCLCPP_ERROR_THROTTLE(
+          this->get_logger(), m_clock, CLOCK_1_SEC,
+          "DBW system disabled. Accelerator Pedal fault.");
       }
       if (fault_steering_) {
-        // TODO(NewEagle): Print warning to terminal. Do not halt.
+        RCLCPP_ERROR_THROTTLE(
+          this->get_logger(), m_clock, CLOCK_1_SEC,
+          "DBW system disabled. Steering fault.");
       }
       if (fault_watchdog_) {
-        // TODO(NewEagle): Print warning to terminal. Do not halt.
+        RCLCPP_ERROR_THROTTLE(
+          this->get_logger(), m_clock, CLOCK_1_SEC,
+          "DBW system disabled. Watchdog fault.");
       }
     } else {
       enable_ = true;
       if (publishDbwEnabled()) {
-        // TODO(NewEagle): Add info.
+        RCLCPP_INFO_THROTTLE(
+          this->get_logger(), m_clock, CLOCK_1_SEC,
+          "DBW system enabled.");
       } else {
-        // TODO(NewEagle): Add info.
+        RCLCPP_WARN_THROTTLE(
+          this->get_logger(), m_clock, CLOCK_1_SEC,
+          "DBW system failed to enable. Check driver overrides.");
       }
     }
   }
@@ -1201,7 +1215,9 @@ void RaptorDbwCAN::disableSystem()
   if (enable_) {
     enable_ = false;
     publishDbwEnabled();
-    // TODO(NewEagle): Add info.
+    RCLCPP_INFO_THROTTLE(
+      this->get_logger(), m_clock, CLOCK_1_SEC,
+      "DBW system disabled - system disabled.");
   }
 }
 
@@ -1210,13 +1226,14 @@ void RaptorDbwCAN::buttonCancel()
   if (enable_) {
     enable_ = false;
     publishDbwEnabled();
-    // TODO(NewEagle): Add info.
+    RCLCPP_INFO_THROTTLE(
+      this->get_logger(), m_clock, CLOCK_1_SEC,
+      "DBW system disabled - button canceled.");
   }
 }
 
 void RaptorDbwCAN::overrideBrake(bool override)
 {
-  // TODO(NewEagle): If driver activity && system not enabled, nothing should happen??
   bool en = enabled();
   if (override && en) {
     enable_ = false;
@@ -1224,9 +1241,13 @@ void RaptorDbwCAN::overrideBrake(bool override)
   override_brake_ = override;
   if (publishDbwEnabled()) {
     if (en) {
-      // TODO(NewEagle): Print warning to terminal. Do not halt.
+      RCLCPP_WARN_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system disabled - brake override");
     } else {
-      // TODO(NewEagle): Don't care. Do nothing.
+      RCLCPP_INFO_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system enabled - no brake override");
     }
   }
 }
@@ -1240,9 +1261,13 @@ void RaptorDbwCAN::overrideAcceleratorPedal(bool override)
   override_accelerator_pedal_ = override;
   if (publishDbwEnabled()) {
     if (en) {
-      // TODO(NewEagle): Print warning to terminal. Do not halt.
+      RCLCPP_WARN_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system disabled - accelerator pedal override");
     } else {
-      // TODO(NewEagle): Don't care. Do nothing.
+      RCLCPP_INFO_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system enabled - no accelerator pedal override");
     }
   }
 }
@@ -1256,9 +1281,13 @@ void RaptorDbwCAN::overrideSteering(bool override)
   override_steering_ = override;
   if (publishDbwEnabled()) {
     if (en) {
-      // TODO(NewEagle): Print warning to terminal. Do not halt.
+      RCLCPP_WARN_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system disabled - steering override");
     } else {
-      // TODO(NewEagle): Don't care. Do nothing.
+      RCLCPP_INFO_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system enabled - no steering override");
     }
   }
 }
@@ -1272,9 +1301,13 @@ void RaptorDbwCAN::overrideGear(bool override)
   override_gear_ = override;
   if (publishDbwEnabled()) {
     if (en) {
-      // TODO(NewEagle): Print warning to terminal. Do not halt.
+      RCLCPP_WARN_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system disabled - PRND gear override");
     } else {
-      // TODO(NewEagle): Don't care. Do nothing.
+      RCLCPP_INFO_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system enabled - no PRND gear override");
     }
   }
 }
@@ -1282,7 +1315,9 @@ void RaptorDbwCAN::overrideGear(bool override)
 void RaptorDbwCAN::timeoutBrake(bool timeout, bool enabled)
 {
   if (!timeout_brakes_ && enabled_brakes_ && timeout && !enabled) {
-    // TODO(NewEagle): Print warning to terminal. Do not halt.
+    RCLCPP_WARN_THROTTLE(
+      this->get_logger(), m_clock, CLOCK_1_SEC,
+      "Brakes have timed out");
   }
   timeout_brakes_ = timeout;
   enabled_brakes_ = enabled;
@@ -1291,7 +1326,9 @@ void RaptorDbwCAN::timeoutBrake(bool timeout, bool enabled)
 void RaptorDbwCAN::timeoutAcceleratorPedal(bool timeout, bool enabled)
 {
   if (!timeout_accelerator_pedal_ && enabled_accelerator_pedal_ && timeout && !enabled) {
-    // TODO(NewEagle): Print warning to terminal. Do not halt.
+    RCLCPP_WARN_THROTTLE(
+      this->get_logger(), m_clock, CLOCK_1_SEC,
+      "Accelerator Pedal has timed out");
   }
   timeout_accelerator_pedal_ = timeout;
   enabled_accelerator_pedal_ = enabled;
@@ -1300,7 +1337,9 @@ void RaptorDbwCAN::timeoutAcceleratorPedal(bool timeout, bool enabled)
 void RaptorDbwCAN::timeoutSteering(bool timeout, bool enabled)
 {
   if (!timeout_steering_ && enabled_steering_ && timeout && !enabled) {
-    // TODO(NewEagle): Print warning to terminal. Do not halt.
+    RCLCPP_WARN_THROTTLE(
+      this->get_logger(), m_clock, CLOCK_1_SEC,
+      "Steering has timed out");
   }
   timeout_steering_ = timeout;
   enabled_steering_ = enabled;
@@ -1315,9 +1354,13 @@ void RaptorDbwCAN::faultBrakes(bool fault)
   fault_brakes_ = fault;
   if (publishDbwEnabled()) {
     if (en) {
-      RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Braking fault.");
+      RCLCPP_ERROR_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system disabled. Braking fault.");
     } else {
-      // TODO(NewEagle): Add info.
+      RCLCPP_INFO_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system enabled - no braking fault");
     }
   }
 }
@@ -1331,9 +1374,13 @@ void RaptorDbwCAN::faultAcceleratorPedal(bool fault)
   fault_accelerator_pedal_ = fault;
   if (publishDbwEnabled()) {
     if (en) {
-      RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Accelerator Pedal fault.");
+      RCLCPP_ERROR_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system disabled. Accelerator Pedal fault.");
     } else {
-      // TODO(NewEagle): Add info.
+      RCLCPP_INFO_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system enabled - no accelerator pedal fault");
     }
   }
 }
@@ -1347,9 +1394,13 @@ void RaptorDbwCAN::faultSteering(bool fault)
   fault_steering_ = fault;
   if (publishDbwEnabled()) {
     if (en) {
-      RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Steering fault.");
+      RCLCPP_ERROR_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system disabled. Steering fault.");
     } else {
-      // TODO(NewEagle): Add info.
+      RCLCPP_INFO_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system enabled - no steering fault");
     }
   }
 }
@@ -1363,9 +1414,13 @@ void RaptorDbwCAN::faultSteeringCal(bool fault)
   fault_steering_cal_ = fault;
   if (publishDbwEnabled()) {
     if (en) {
-      RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Steering calibration fault.");
+      RCLCPP_ERROR_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system disabled. Steering calibration fault.");
     } else {
-      // TODO(NewEagle): Add info.
+      RCLCPP_INFO_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system enabled - no steering calibration fault");
     }
   }
 }
@@ -1379,25 +1434,37 @@ void RaptorDbwCAN::faultWatchdog(bool fault, uint8_t src, bool braking)
   fault_watchdog_ = fault;
   if (publishDbwEnabled()) {
     if (en) {
-      RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Watchdog fault.");
+      RCLCPP_ERROR_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system disabled. Watchdog fault.");
     } else {
-      // TODO(NewEagle): Add info.
+      RCLCPP_INFO_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "DBW system enabled - no watchdog fault");
     }
   }
   if (braking && !fault_watchdog_using_brakes_) {
-    // TODO(NewEagle): Print warning to terminal. Do not halt.
+    RCLCPP_ERROR_THROTTLE(
+      this->get_logger(), m_clock, CLOCK_1_SEC,
+      "Watchdog - new braking fault.");
   } else if (!braking && fault_watchdog_using_brakes_) {
-    // TODO(NewEagle): Add info.
+    RCLCPP_INFO_THROTTLE(
+      this->get_logger(), m_clock, CLOCK_1_SEC,
+      "Watchdog - braking fault is cleared.");
   }
   if (fault && src && !fault_watchdog_warned_) {
-    // TODO(NewEagle): Print warning to terminal. Do not halt.
+    RCLCPP_WARN_THROTTLE(
+      this->get_logger(), m_clock, CLOCK_1_SEC,
+      "Watchdog - new fault warning.");
     fault_watchdog_warned_ = true;
   } else if (!fault) {
     fault_watchdog_warned_ = false;
   }
   fault_watchdog_using_brakes_ = braking;
   if (fault && !fault_watchdog_using_brakes_ && fault_watchdog_warned_) {
-    // TODO(NewEagle): Print warning to terminal. Do not halt.
+    RCLCPP_ERROR_THROTTLE(
+      this->get_logger(), m_clock, CLOCK_1_SEC,
+      "Watchdog - new non-braking fault.");
   }
 }
 
@@ -1408,7 +1475,7 @@ void RaptorDbwCAN::faultWatchdog(bool fault, uint8_t src)
 
 void RaptorDbwCAN::publishJointStates(
   const rclcpp::Time stamp,
-  const raptor_dbw_msgs::msg::WheelSpeedReport wheels)
+  const WheelSpeedReport wheels)
 {
   double dt = stamp.seconds() - joint_state_.header.stamp.sec;
   joint_state_.velocity[JOINT_FL] = wheels.front_left;
@@ -1429,7 +1496,7 @@ void RaptorDbwCAN::publishJointStates(
 
 void RaptorDbwCAN::publishJointStates(
   const rclcpp::Time stamp,
-  const raptor_dbw_msgs::msg::SteeringReport steering)
+  const SteeringReport steering)
 {
   double dt = stamp.seconds() - joint_state_.header.stamp.sec;
   const double L = acker_wheelbase_;

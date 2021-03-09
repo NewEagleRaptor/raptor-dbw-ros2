@@ -65,6 +65,9 @@ public:
   explicit RaptorDbwJoystick(const rclcpp::NodeOptions & options);
 
 private:
+  rclcpp::Clock m_clock;
+  static constexpr int64_t CLOCK_1_SEC = 1000;  // duration in milliseconds
+
   void recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg);
   void cmdCallback();
 

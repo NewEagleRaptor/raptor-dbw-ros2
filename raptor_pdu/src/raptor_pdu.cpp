@@ -67,7 +67,9 @@ void raptor_pdu::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
 {
   if (!msg->is_rtr && !msg->is_error && msg->is_extended) {
     if (msg->id == relayStatusAddr_) {
-      RCLCPP_INFO(this->get_logger(), "Relay Status");
+      RCLCPP_INFO_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "Relay Status");
 
       NewEagle::DbcMessage * message = pduDbc_.GetMessage("RelayStatus");
       message->SetFrame(msg);
@@ -85,7 +87,9 @@ void raptor_pdu::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
 
       relay_report_pub_->publish(out);
     } else if (msg->id == fuseStatusAddr_) {
-      RCLCPP_INFO(this->get_logger(), "Fuse Status");
+      RCLCPP_INFO_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "Fuse Status");
 
       NewEagle::DbcMessage * message = pduDbc_.GetMessage("FuseStatus");
       message->SetFrame(msg);
@@ -116,7 +120,9 @@ void raptor_pdu::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
 
 void raptor_pdu::recvRelayCmd(const raptor_pdu_msgs::msg::RelayCommand::SharedPtr msg)
 {
-  RCLCPP_INFO(this->get_logger(), "Relay Command");
+  RCLCPP_INFO_THROTTLE(
+    this->get_logger(), m_clock, CLOCK_1_SEC,
+    "Relay Command");
 
   NewEagle::DbcMessage * message = pduDbc_.GetMessage("RelayCommand");
 
