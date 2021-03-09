@@ -154,11 +154,9 @@ void RaptorDbwJoystick::recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg)
   // Check for expected sizes
   if (msg->axes.size() != (size_t)AXIS_COUNT) {
     RCLCPP_ERROR(this->get_logger(), "Axis count is wrong.");
-    return;
   }
   if (msg->buttons.size() != (size_t)BTN_COUNT) {
     RCLCPP_ERROR(this->get_logger(), "Button count is wrong");
-    return;
   }
 
   // Handle joystick startup

@@ -74,6 +74,9 @@ private:
 
   uint32_t count_;
 
+  rclcpp::Clock m_clock;
+  static constexpr int64_t CLOCK_1_SEC = 1000;  // duration in milliseconds
+
   NewEagle::Dbc pduDbc_;
   std::string pduFile_;
 
