@@ -72,6 +72,8 @@ private:
   std::string EnumValueToken;
   std::string AttributeToken;
   std::string SignalValueTypeToken;
+  std::string EndOfInitToken;
+  bool isInitPassed;
 };
 
 

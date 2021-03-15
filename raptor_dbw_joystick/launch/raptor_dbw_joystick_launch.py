@@ -71,28 +71,28 @@ def generate_launch_description():
         [
             Node(
                 package='raptor_dbw_can',
-                executable='raptor_dbw_can_node',
+                node_executable='raptor_dbw_can_node',
                 output='screen',
-                namespace='raptor_dbw_interface',
+                node_namespace='raptor_dbw_interface',
                 parameters=[
                     {'dbw_dbc_file': dbc_file_path}
                 ],
             ),
             Node(
                 package='kvaser_interface',
-                executable='kvaser_can_bridge',
+                node_executable='kvaser_can_bridge',
                 output='screen',
-                namespace='',
+                node_namespace='',
                 parameters=[params_file]),
             Node(
                 package='raptor_dbw_joystick',
-                executable='raptor_dbw_joystick_node',
+                node_executable='raptor_dbw_joystick_node',
                 output='screen',
                 parameters=[params_file]
                 ),
             Node(
                 package='joy',
-                executable='joy_node',
+                node_executable='joy_node',
                 output='screen',
                 parameters=[params_file]
             )
