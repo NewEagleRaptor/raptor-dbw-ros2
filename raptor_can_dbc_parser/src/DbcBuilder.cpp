@@ -45,6 +45,8 @@ DbcBuilder::DbcBuilder()
   EnumValueToken = std::string("VAL_");
   AttributeToken = std::string("BA_");
   SignalValueTypeToken = std::string("SIG_VALTYPE_");
+  EndOfInitToken = std::string("BS_:");
+  isInitPassed = false;
 }
 
 NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
@@ -65,7 +67,6 @@ NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
   while (std::getline(f, line, '\n')) {
     lineNumber++;
     NewEagle::LineParser parser(line);
-    std::string errItemName("");
 
     std::string identifier;
     try {
@@ -74,45 +75,51 @@ NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
       identifier = std::string();
     }
 
-    if (!MessageToken.compare(identifier)) {
+    if (!EndOfInitToken.compare(identifier)) {
+      // Skip past blank init list at beginning of DBC.
+      isInitPassed = true;
+    } else if (!MessageToken.compare(identifier)) {
       try {
         currentMessage = ReadMessage(parser);
         dbc.AddMessage(currentMessage);
-        errItemName = "message " + currentMessage.GetName();
       } catch (LineParserExceptionBase & exlp) {
-        std::string error_msg(
-          "Tried to add " + errItemName +
-          ". Got Line Parser Exception Base error.");
-        throw std::runtime_error(error_msg);
+        if (isInitPassed) {
+          std::string error_msg(
+            "Tried to add message " + identifier +
+            " on line " + std::to_string(lineNumber) +
+            ". Got Line Parser Exception Base error: " + exlp.what());
+          throw std::runtime_error(error_msg);
+        }
       } catch (std::exception & ex) {
         std::string error_msg(
-          "Tried to add " + errItemName +
-          ". Got Standard Exception error.");
+          "Tried to add message " + identifier +
+          " on line " + std::to_string(lineNumber) +
+          ". Got Standard Exception error: " + ex.what() );
         throw std::runtime_error(error_msg);
       }
     } else if (!SignalToken.compare(identifier)) {
       try {
         NewEagle::DbcSignal signal = ReadSignal(parser);
-        errItemName = "message " + currentMessage.GetName() +
-          ", signal " + signal.GetName();
-
         NewEagle::DbcMessage * msg = dbc.GetMessage(currentMessage.GetName());
         msg->AddSignal(signal.GetName(), signal);
       } catch (LineParserExceptionBase & exlp) {
-        std::string error_msg(
-          "Tried to add " + errItemName +
-          ". Got Line Parser Exception Base error.");
-        throw std::runtime_error(error_msg);
+        if (isInitPassed) {
+          std::string error_msg(
+            "Tried to add signal" + identifier +
+            " on line " + std::to_string(lineNumber) +
+            ". Got Line Parser Exception Base error: " + exlp.what());
+          throw std::runtime_error(error_msg);
+        }
       } catch (std::exception & ex) {
         std::string error_msg(
-          "Tried to add " + errItemName +
-          ". Got Standard Exception error.");
+          "Tried to add signal" + identifier +
+          " on line " + std::to_string(lineNumber) +
+          ". Got Standard Exception error: " + ex.what() );
         throw std::runtime_error(error_msg);
       }
     } else if (!CommentToken.compare(identifier)) {
       try {
         std::string token = parser.ReadCIdentifier();
-        errItemName = "CI Identifier " + token;
 
         if (!MessageToken.compare(token)) {
           NewEagle::DbcMessageComment dbcMessageComment = ReadMessageComment(parser);
@@ -146,20 +153,23 @@ NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
           }
         }
       } catch (LineParserExceptionBase & exlp) {
-        std::string error_msg(
-          "Tried to read " + errItemName +
-          ". Got Line Parser Exception Base error.");
-        throw std::runtime_error(error_msg);
+        if (isInitPassed) {
+          std::string error_msg(
+            "Tried to read comment " + identifier +
+            " on line " + std::to_string(lineNumber) +
+            ". Got Line Parser Exception Base error: " + exlp.what());
+          throw std::runtime_error(error_msg);
+        }
       } catch (std::exception & ex) {
         std::string error_msg(
-          "Tried to read " + errItemName +
-          ". Got Standard Exception error.");
+          "Tried to read comment " + identifier +
+          " on line " + std::to_string(lineNumber) +
+          ". Got Standard Exception error: " + ex.what() );
         throw std::runtime_error(error_msg);
       }
     } else if (!AttributeToken.compare(identifier)) {
       try {
         NewEagle::DbcAttribute dbcAttribute = ReadAttribute(parser);
-        errItemName = "DBC Attribute " + dbcAttribute.AttributeName;
 
         if (dbc.GetMessageCount() > 0) {
           std::map<std::string, NewEagle::DbcMessage>::iterator it;
@@ -189,14 +199,18 @@ NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
           }
         }
       } catch (LineParserExceptionBase & exlp) {
-        std::string error_msg(
-          "Tried to read " + errItemName +
-          ". Got Line Parser Exception Base error.");
-        throw std::runtime_error(error_msg);
+        if (isInitPassed) {
+          std::string error_msg(
+            "Tried to read attribute " + identifier +
+            " on line " + std::to_string(lineNumber) +
+            ". Got Line Parser Exception Base error: " + exlp.what());
+          throw std::runtime_error(error_msg);
+        }
       } catch (std::exception & ex) {
         std::string error_msg(
-          "Tried to read " + errItemName +
-          ". Got Standard Exception error.");
+          "Tried to read attribute " + identifier +
+          " on line " + std::to_string(lineNumber) +
+          ". Got Standard Exception error: " + ex.what() );
         throw std::runtime_error(error_msg);
       }
     } else if (!EnumValueToken.compare(identifier)) {
@@ -204,7 +218,6 @@ NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
     } else if (!SignalValueTypeToken.compare(identifier)) {
       try {
         NewEagle::DbcSignalValueType dbcSignalValueType = ReadSignalValueType(parser);
-        errItemName = "DBC Signal Value Type " + dbcSignalValueType.SignalName;
 
         if (dbc.GetMessageCount() > 0) {
           std::map<std::string, NewEagle::DbcMessage>::iterator it;
@@ -223,14 +236,18 @@ NewEagle::Dbc DbcBuilder::NewDbc(const std::string & dbcFile)
           }
         }
       } catch (LineParserExceptionBase & exlp) {
-        std::string error_msg(
-          "Tried to read " + errItemName +
-          ". Got Line Parser Exception Base error.");
-        throw std::runtime_error(error_msg);
+        if (isInitPassed) {
+          std::string error_msg(
+            "Tried to read signal value type " + identifier +
+            " on line " + std::to_string(lineNumber) +
+            ". Got Line Parser Exception Base error: " + exlp.what());
+          throw std::runtime_error(error_msg);
+        }
       } catch (std::exception & ex) {
         std::string error_msg(
-          "Tried to read " + errItemName +
-          ". Got Standard Exception error.");
+          "Tried to read signal value type " + identifier +
+          " on line " + std::to_string(lineNumber) +
+          ". Got Standard Exception error: " + ex.what() );
         throw std::runtime_error(error_msg);
       }
     }
