@@ -82,7 +82,7 @@ def generate_launch_description():
                 package='kvaser_interface',
                 node_executable='kvaser_can_bridge',
                 output='screen',
-                node_namespace='can_rx_tx',
+                node_namespace='raptor_dbw_interface',
                 parameters=[params_file],
             ),
         ]
