@@ -1,22 +1,23 @@
-kvaser_reader_node:
-  ros__parameters:
-    hardware_id: 11000
-    circuit_id: 0
-    bit_rate: 500000
-    enable_echo: false
-kvaser_writer_node:
-  ros__parameters:
-    hardware_id: 11000
-    circuit_id: 0
-    bit_rate: 500000
-    enable_echo: false
-raptor_dbw_joystick_node:
-  ros__parameters:
+raptor_dbw_interface:
+  kvaser_reader_node:
+    ros__parameters:
+      hardware_id: 22024
+      circuit_id: 0
+      bit_rate: 500000
+      enable_echo: false
+  kvaser_writer_node:
+    ros__parameters:
+      hardware_id: 22024
+      circuit_id: 0
+      bit_rate: 500000
+      enable_echo: false
+  raptor_dbw_joystick_node:
+    ros__parameters:
       ignore: false
       enable: true
       svel: 0.0
-joy_node:
-  ros__parameters:
+  joy_node:
+    ros__parameters:
       device_id: 0
       device_name: "/dev/input/js0"
       deadzone: 0.5

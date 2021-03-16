@@ -92,7 +92,7 @@ RaptorDbwCAN::RaptorDbwCAN(const rclcpp::NodeOptions & options)
   joint_state_.name[JOINT_SR] = "steer_fr";
 
   // Set up Publishers
-  pub_can_ = this->create_publisher<can_msgs::msg::Frame>("can_tx", 20);
+  pub_can_ = this->create_publisher<can_msgs::msg::Frame>("can_rx", 20);
   pub_brake_ = this->create_publisher<BrakeReport>("brake_report", 20);
   pub_accel_pedal_ = this->create_publisher<AcceleratorPedalReport>(
     "accelerator_pedal_report", 20);
@@ -146,7 +146,7 @@ RaptorDbwCAN::RaptorDbwCAN(const rclcpp::NodeOptions & options)
     "disable", 10, std::bind(&RaptorDbwCAN::recvDisable, this, std::placeholders::_1));
 
   sub_can_ = this->create_subscription<can_msgs::msg::Frame>(
-    "can_rx", 500, std::bind(&RaptorDbwCAN::recvCAN, this, std::placeholders::_1));
+    "can_tx", 500, std::bind(&RaptorDbwCAN::recvCAN, this, std::placeholders::_1));
 
   sub_brake_ = this->create_subscription<BrakeCmd>(
     "brake_cmd", 1, std::bind(&RaptorDbwCAN::recvBrakeCmd, this, std::placeholders::_1));

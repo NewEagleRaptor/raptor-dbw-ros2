@@ -77,18 +77,20 @@ def generate_launch_description():
                 package='kvaser_interface',
                 executable='kvaser_can_bridge',
                 output='screen',
-                namespace='',
+                namespace='raptor_dbw_interface',
                 parameters=[params_file]),
             Node(
                 package='raptor_dbw_joystick',
                 executable='raptor_dbw_joystick_node',
                 output='screen',
+                namespace='raptor_dbw_interface',
                 parameters=[params_file]
                 ),
             Node(
                 package='joy',
                 executable='joy_node',
                 output='screen',
+                namespace='raptor_dbw_interface',
                 parameters=[params_file]
             )
         ])

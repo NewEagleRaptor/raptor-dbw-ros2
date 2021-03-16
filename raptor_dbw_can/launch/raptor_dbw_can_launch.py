@@ -77,7 +77,7 @@ def generate_launch_description():
                 package='kvaser_interface',
                 executable='kvaser_can_bridge',
                 output='screen',
-                namespace='',
+                namespace='raptor_dbw_interface',
                 parameters=[params_file]),
         ])
 
