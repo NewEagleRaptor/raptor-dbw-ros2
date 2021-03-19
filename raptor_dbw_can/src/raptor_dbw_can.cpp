@@ -203,633 +203,81 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
   if (!msg->is_rtr && !msg->is_error) {
     switch (msg->id) {
       case ID_BRAKE_REPORT:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_BRAKE_REPORT);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            bool brakeSystemFault =
-              message->GetSignal("DBW_BrakeFault")->GetResult() ? true : false;
-            bool dbwSystemFault = brakeSystemFault;
-
-            faultBrakes(brakeSystemFault);
-            faultWatchdog(dbwSystemFault, brakeSystemFault);
-
-            overrideBrake(message->GetSignal("DBW_BrakeDriverActivity")->GetResult());
-            BrakeReport brakeReport;
-            brakeReport.header.stamp = msg->header.stamp;
-            brakeReport.pedal_position = message->GetSignal("DBW_BrakePdlDriverInput")->GetResult();
-            brakeReport.pedal_output = message->GetSignal("DBW_BrakePdlPosnFdbck")->GetResult();
-
-            brakeReport.enabled =
-              message->GetSignal("DBW_BrakeEnabled")->GetResult() ? true : false;
-            brakeReport.driver_activity =
-              message->GetSignal("DBW_BrakeDriverActivity")->GetResult() ? true : false;
-
-            brakeReport.fault_brake_system = brakeSystemFault;
-
-            brakeReport.rolling_counter = message->GetSignal("DBW_BrakeRollingCntr")->GetResult();
-
-            brakeReport.brake_torque_actual =
-              message->GetSignal("DBW_BrakePcntTorqueActual")->GetResult();
-
-            brakeReport.intervention_active =
-              message->GetSignal("DBW_BrakeInterventionActv")->GetResult() ? true : false;
-            brakeReport.intervention_ready =
-              message->GetSignal("DBW_BrakeInterventionReady")->GetResult() ? true : false;
-
-            brakeReport.parking_brake.status =
-              message->GetSignal("DBW_BrakeParkingBrkStatus")->GetResult();
-
-            brakeReport.control_type.value = message->GetSignal("DBW_BrakeCtrlType")->GetResult();
-
-            pub_brake_->publish(brakeReport);
-            if (brakeSystemFault) {
-              RCLCPP_WARN_THROTTLE(
-                this->get_logger(), m_clock, CLOCK_1_SEC,
-                "Brake report received a system fault.");
-            }
-          }
-        }
+        recvBrakeRpt(msg);
         break;
 
       case ID_ACCEL_PEDAL_REPORT:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_ACCEL_PEDAL_REPORT);
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            bool faultCh1 = message->GetSignal("DBW_AccelPdlFault_Ch1")->GetResult() ? true : false;
-            bool faultCh2 = message->GetSignal("DBW_AccelPdlFault_Ch2")->GetResult() ? true : false;
-            bool accelPdlSystemFault =
-              message->GetSignal("DBW_AccelPdlFault")->GetResult() ? true : false;
-            bool dbwSystemFault = accelPdlSystemFault;
-
-            faultAcceleratorPedal(faultCh1 && faultCh2);
-            faultWatchdog(dbwSystemFault, accelPdlSystemFault);
-
-            overrideAcceleratorPedal(message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult());
-
-            AcceleratorPedalReport accelPedalReprt;
-            accelPedalReprt.header.stamp = msg->header.stamp;
-            accelPedalReprt.pedal_input =
-              message->GetSignal("DBW_AccelPdlDriverInput")->GetResult();
-            accelPedalReprt.pedal_output = message->GetSignal("DBW_AccelPdlPosnFdbck")->GetResult();
-            accelPedalReprt.enabled =
-              message->GetSignal("DBW_AccelPdlEnabled")->GetResult() ? true : false;
-            accelPedalReprt.ignore_driver =
-              message->GetSignal("DBW_AccelPdlIgnoreDriver")->GetResult() ? true : false;
-            accelPedalReprt.driver_activity =
-              message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult() ? true : false;
-            accelPedalReprt.torque_actual =
-              message->GetSignal("DBW_AccelPcntTorqueActual")->GetResult();
-
-            accelPedalReprt.control_type.value =
-              message->GetSignal("DBW_AccelCtrlType")->GetResult();
-
-            accelPedalReprt.rolling_counter =
-              message->GetSignal("DBW_AccelPdlRollingCntr")->GetResult();
-
-            accelPedalReprt.fault_accel_pedal_system = accelPdlSystemFault;
-
-            accelPedalReprt.fault_ch1 = faultCh1;
-            accelPedalReprt.fault_ch2 = faultCh2;
-
-            pub_accel_pedal_->publish(accelPedalReprt);
-
-            if (faultCh1 || faultCh2) {
-              RCLCPP_WARN_THROTTLE(
-                this->get_logger(), m_clock, CLOCK_1_SEC,
-                "Acclerator pedal report received a system fault.");
-            }
-          }
-        }
+        recvAccelPedalRpt(msg);
         break;
 
       case ID_STEERING_REPORT:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_STEERING_REPORT);
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            bool steeringSystemFault =
-              message->GetSignal("DBW_SteeringFault")->GetResult() ? true : false;
-            bool dbwSystemFault = steeringSystemFault;
-
-            faultSteering(steeringSystemFault);
-
-            faultWatchdog(dbwSystemFault);
-            overrideSteering(
-              message->GetSignal(
-                "DBW_SteeringDriverActivity")->GetResult() ? true : false);
-
-            SteeringReport steeringReport;
-            steeringReport.header.stamp = msg->header.stamp;
-            steeringReport.steering_wheel_angle =
-              message->GetSignal("DBW_SteeringWhlAngleAct")->GetResult() * (M_PI / 180);
-            steeringReport.steering_wheel_angle_cmd =
-              message->GetSignal("DBW_SteeringWhlAngleDes")->GetResult() * (M_PI / 180);
-            steeringReport.steering_wheel_torque =
-              message->GetSignal("DBW_SteeringWhlPcntTrqCmd")->GetResult() * 0.0625;
-
-            steeringReport.enabled =
-              message->GetSignal("DBW_SteeringEnabled")->GetResult() ? true : false;
-            steeringReport.driver_activity =
-              message->GetSignal("DBW_SteeringDriverActivity")->GetResult() ? true : false;
-
-            steeringReport.rolling_counter =
-              message->GetSignal("DBW_SteeringRollingCntr")->GetResult();
-
-            steeringReport.control_type.value =
-              message->GetSignal("DBW_SteeringCtrlType")->GetResult();
-
-            steeringReport.overheat_prevention_mode =
-              message->GetSignal("DBW_OverheatPreventMode")->GetResult() ? true : false;
-
-            steeringReport.steering_overheat_warning = message->GetSignal(
-              "DBW_SteeringOverheatWarning")->GetResult() ? true : false;
-
-            steeringReport.fault_steering_system = steeringSystemFault;
-
-            pub_steering_->publish(steeringReport);
-
-            publishJointStates(msg->header.stamp, steeringReport);
-
-            if (steeringSystemFault) {
-              RCLCPP_WARN_THROTTLE(
-                this->get_logger(), m_clock, CLOCK_1_SEC,
-                "Steering report received a system fault.");
-            }
-          }
-        }
+        recvSteeringRpt(msg);
         break;
 
       case ID_GEAR_REPORT:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_GEAR_REPORT);
-
-          if (msg->dlc >= 1) {
-            message->SetFrame(msg);
-
-            bool driverActivity =
-              message->GetSignal("DBW_PrndDriverActivity")->GetResult() ? true : false;
-
-            overrideGear(driverActivity);
-            GearReport out;
-            out.header.stamp = msg->header.stamp;
-
-            out.enabled = message->GetSignal("DBW_PrndCtrlEnabled")->GetResult() ? true : false;
-            out.state.gear = message->GetSignal("DBW_PrndStateActual")->GetResult();
-            out.driver_activity = driverActivity;
-            out.gear_select_system_fault =
-              message->GetSignal("DBW_PrndFault")->GetResult() ? true : false;
-
-            out.reject = message->GetSignal("DBW_PrndStateReject")->GetResult() ? true : false;
-
-            out.trans_curr_gear = message->GetSignal("DBW_TransCurGear")->GetResult();
-            out.gear_mismatch_flash =
-              message->GetSignal("DBW_PrndMismatchFlash")->GetResult() ? true : false;
-
-            if (out.gear_mismatch_flash) {
-              RCLCPP_ERROR_THROTTLE(
-                this->get_logger(), m_clock, CLOCK_1_SEC,
-                "ERROR - shift lever is in Park, but transmission is in Drive. Please adjust the shift lever.");
-            }
-
-            pub_gear_->publish(out);
-          }
-        }
+        recvGearRpt(msg);
         break;
 
       case ID_REPORT_WHEEL_SPEED:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_WHEEL_SPEED);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            WheelSpeedReport out;
-            out.header.stamp = msg->header.stamp;
-
-            out.front_left = message->GetSignal("DBW_WhlSpd_FL")->GetResult();
-            out.front_right = message->GetSignal("DBW_WhlSpd_FR")->GetResult();
-            out.rear_left = message->GetSignal("DBW_WhlSpd_RL")->GetResult();
-            out.rear_right = message->GetSignal("DBW_WhlSpd_RR")->GetResult();
-
-            pub_wheel_speeds_->publish(out);
-            publishJointStates(msg->header.stamp, out);
-          }
-        }
+        recvCWheelSpeedRpt(msg);
         break;
 
       case ID_REPORT_WHEEL_POSITION:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_WHEEL_POSITION);
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            WheelPositionReport out;
-            out.header.stamp = msg->header.stamp;
-            out.front_left = message->GetSignal("DBW_WhlPulseCnt_FL")->GetResult();
-            out.front_right = message->GetSignal("DBW_WhlPulseCnt_FR")->GetResult();
-            out.rear_left = message->GetSignal("DBW_WhlPulseCnt_RL")->GetResult();
-            out.rear_right = message->GetSignal("DBW_WhlPulseCnt_RR")->GetResult();
-            out.wheel_pulses_per_rev = message->GetSignal("DBW_WhlPulsesPerRev")->GetResult();
-
-            pub_wheel_positions_->publish(out);
-          }
-        }
+        recvWheelPositionRpt(msg);
         break;
 
       case ID_REPORT_TIRE_PRESSURE:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_TIRE_PRESSURE);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            TirePressureReport out;
-            out.header.stamp = msg->header.stamp;
-            out.front_left = message->GetSignal("DBW_TirePressFL")->GetResult();
-            out.front_right = message->GetSignal("DBW_TirePressFR")->GetResult();
-            out.rear_left = message->GetSignal("DBW_TirePressRL")->GetResult();
-            out.rear_right = message->GetSignal("DBW_TirePressRR")->GetResult();
-            pub_tire_pressure_->publish(out);
-          }
-        }
+        recvTirePressureRpt(msg);
         break;
 
       case ID_REPORT_SURROUND:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_SURROUND);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            SurroundReport out;
-            out.header.stamp = msg->header.stamp;
-
-            out.front_radar_object_distance = message->GetSignal("DBW_Reserved2")->GetResult();
-            out.rear_radar_object_distance = message->GetSignal("DBW_SonarRearDist")->GetResult();
-
-            out.front_radar_distance_valid =
-              message->GetSignal("DBW_Reserved3")->GetResult() ? true : false;
-            out.parking_sonar_data_valid =
-              message->GetSignal("DBW_SonarVld")->GetResult() ? true : false;
-
-            out.rear_right.status = message->GetSignal("DBW_SonarArcNumRR")->GetResult();
-            out.rear_left.status = message->GetSignal("DBW_SonarArcNumRL")->GetResult();
-            out.rear_center.status = message->GetSignal("DBW_SonarArcNumRC")->GetResult();
-
-            out.front_right.status = message->GetSignal("DBW_SonarArcNumFR")->GetResult();
-            out.front_left.status = message->GetSignal("DBW_SonarArcNumFL")->GetResult();
-            out.front_center.status = message->GetSignal("DBW_SonarArcNumFC")->GetResult();
-
-            pub_surround_->publish(out);
-          }
-        }
+        recvSurroundRpt(msg);
         break;
 
       case ID_VIN:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_VIN);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            if (message->GetSignal("DBW_VinMultiplexor")->GetResult() == VIN_MUX_VIN0) {
-              vin_.push_back(message->GetSignal("DBW_VinDigit_01")->GetResult());
-              vin_.push_back(message->GetSignal("DBW_VinDigit_02")->GetResult());
-              vin_.push_back(message->GetSignal("DBW_VinDigit_03")->GetResult());
-              vin_.push_back(message->GetSignal("DBW_VinDigit_04")->GetResult());
-              vin_.push_back(message->GetSignal("DBW_VinDigit_05")->GetResult());
-              vin_.push_back(message->GetSignal("DBW_VinDigit_06")->GetResult());
-              vin_.push_back(message->GetSignal("DBW_VinDigit_07")->GetResult());
-            } else if (message->GetSignal("DBW_VinMultiplexor")->GetResult() == VIN_MUX_VIN1) {
-              vin_.push_back(message->GetSignal("DBW_VinDigit_08")->GetResult());
-              vin_.push_back(message->GetSignal("DBW_VinDigit_09")->GetResult());
-              vin_.push_back(message->GetSignal("DBW_VinDigit_10")->GetResult());
-              vin_.push_back(message->GetSignal("DBW_VinDigit_11")->GetResult());
-              vin_.push_back(message->GetSignal("DBW_VinDigit_12")->GetResult());
-              vin_.push_back(message->GetSignal("DBW_VinDigit_13")->GetResult());
-              vin_.push_back(message->GetSignal("DBW_VinDigit_14")->GetResult());
-            } else if (message->GetSignal("DBW_VinMultiplexor")->GetResult() == VIN_MUX_VIN2) {
-              vin_.push_back(message->GetSignal("DBW_VinDigit_15")->GetResult());
-              vin_.push_back(message->GetSignal("DBW_VinDigit_16")->GetResult());
-              vin_.push_back(message->GetSignal("DBW_VinDigit_17")->GetResult());
-              std_msgs::msg::String msg; msg.data = vin_;
-              pub_vin_->publish(msg);
-            }
-          }
-        }
+        recvVinRpt(msg);
         break;
 
       case ID_REPORT_IMU:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_IMU);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            sensor_msgs::msg::Imu out;
-            out.header.stamp = msg->header.stamp;
-            out.header.frame_id = frame_id_;
-
-            out.angular_velocity.z =
-              static_cast<double>(message->GetSignal("DBW_ImuYawRate")->GetResult()) *
-              (M_PI / 180.0F);
-            out.linear_acceleration.x =
-              static_cast<double>(message->GetSignal("DBW_ImuAccelX")->GetResult());
-            out.linear_acceleration.y =
-              static_cast<double>(message->GetSignal("DBW_ImuAccelY")->GetResult());
-
-            pub_imu_->publish(out);
-          }
-        }
+        recvImuRpt(msg);
         break;
 
       case ID_REPORT_DRIVER_INPUT:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_DRIVER_INPUT);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            DriverInputReport out;
-            out.header.stamp = msg->header.stamp;
-
-            out.turn_signal.value = message->GetSignal("DBW_DrvInptTurnSignal")->GetResult();
-            out.high_beam_headlights.status = message->GetSignal("DBW_DrvInptHiBeam")->GetResult();
-            out.wiper.status = message->GetSignal("DBW_DrvInptWiper")->GetResult();
-
-            out.cruise_resume_button =
-              message->GetSignal("DBW_DrvInptCruiseResumeBtn")->GetResult() ? true : false;
-            out.cruise_cancel_button =
-              message->GetSignal("DBW_DrvInptCruiseCancelBtn")->GetResult() ? true : false;
-            out.cruise_accel_button =
-              message->GetSignal("DBW_DrvInptCruiseAccelBtn")->GetResult() ? true : false;
-            out.cruise_decel_button =
-              message->GetSignal("DBW_DrvInptCruiseDecelBtn")->GetResult() ? true : false;
-            out.cruise_on_off_button =
-              message->GetSignal("DBW_DrvInptCruiseOnOffBtn")->GetResult() ? true : false;
-
-            out.adaptive_cruise_on_off_button =
-              message->GetSignal("DBW_DrvInptAccOnOffBtn")->GetResult() ? true : false;
-            out.adaptive_cruise_increase_distance_button = message->GetSignal(
-              "DBW_DrvInptAccIncDistBtn")->GetResult() ? true : false;
-            out.adaptive_cruise_decrease_distance_button = message->GetSignal(
-              "DBW_DrvInptAccDecDistBtn")->GetResult() ? true : false;
-
-            out.steer_wheel_button_a =
-              message->GetSignal("DBW_DrvInputStrWhlBtnA")->GetResult() ? true : false;
-            out.steer_wheel_button_b =
-              message->GetSignal("DBW_DrvInputStrWhlBtnB")->GetResult() ? true : false;
-            out.steer_wheel_button_c =
-              message->GetSignal("DBW_DrvInputStrWhlBtnC")->GetResult() ? true : false;
-            out.steer_wheel_button_d =
-              message->GetSignal("DBW_DrvInputStrWhlBtnD")->GetResult() ? true : false;
-            out.steer_wheel_button_e =
-              message->GetSignal("DBW_DrvInputStrWhlBtnE")->GetResult() ? true : false;
-
-            out.door_or_hood_ajar =
-              message->GetSignal("DBW_OccupAnyDoorOrHoodAjar")->GetResult() ? true : false;
-
-            out.airbag_deployed =
-              message->GetSignal("DBW_OccupAnyAirbagDeployed")->GetResult() ? true : false;
-            out.any_seatbelt_unbuckled =
-              message->GetSignal("DBW_OccupAnySeatbeltUnbuckled")->GetResult() ? true : false;
-
-            pub_driver_input_->publish(out);
-          }
-        }
+        recvDriverInputRpt(msg);
         break;
 
       case ID_MISC_REPORT:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_MISC_REPORT);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            MiscReport out;
-            out.header.stamp = msg->header.stamp;
-
-            out.fuel_level =
-              static_cast<double>(message->GetSignal("DBW_MiscFuelLvl")->GetResult());
-            out.drive_by_wire_enabled =
-              static_cast<bool>(message->GetSignal("DBW_MiscByWireEnabled")->GetResult());
-            out.vehicle_speed =
-              static_cast<double>(message->GetSignal("DBW_MiscVehicleSpeed")->GetResult());
-            out.software_build_number =
-              message->GetSignal("DBW_SoftwareBuildNumber")->GetResult();
-            out.general_actuator_fault =
-              message->GetSignal("DBW_MiscFault")->GetResult() ? true : false;
-            out.by_wire_ready =
-              message->GetSignal("DBW_MiscByWireReady")->GetResult() ? true : false;
-            out.general_driver_activity =
-              message->GetSignal("DBW_MiscDriverActivity")->GetResult() ? true : false;
-            out.comms_fault =
-              message->GetSignal("DBW_MiscAKitCommFault")->GetResult() ? true : false;
-            out.ambient_temp =
-              static_cast<double>(message->GetSignal("DBW_AmbientTemp")->GetResult());
-
-            pub_misc_->publish(out);
-          }
-        }
+        recvMiscRpt(msg);
         break;
 
       case ID_LOW_VOLTAGE_SYSTEM_REPORT:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_LOW_VOLTAGE_SYSTEM_REPORT);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            LowVoltageSystemReport lvSystemReport;
-            lvSystemReport.header.stamp = msg->header.stamp;
-
-            lvSystemReport.vehicle_battery_volts =
-              static_cast<double>(message->GetSignal("DBW_LvVehBattVlt")->GetResult());
-            lvSystemReport.vehicle_battery_current =
-              static_cast<double>(message->GetSignal("DBW_LvBattCurr")->GetResult());
-            lvSystemReport.vehicle_alternator_current =
-              static_cast<double>(message->GetSignal("DBW_LvAlternatorCurr")->GetResult());
-
-            lvSystemReport.dbw_battery_volts =
-              static_cast<double>(message->GetSignal("DBW_LvDbwBattVlt")->GetResult());
-            lvSystemReport.dcdc_current =
-              static_cast<double>(message->GetSignal("DBW_LvDcdcCurr")->GetResult());
-
-            lvSystemReport.aux_inverter_contactor =
-              message->GetSignal("DBW_LvInvtrContactorCmd")->GetResult() ? true : false;
-
-            pub_low_voltage_system_->publish(lvSystemReport);
-          }
-        }
+        recvLowVoltageSystemRpt(msg);
         break;
 
       case ID_BRAKE_2_REPORT:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_BRAKE_2_REPORT);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            Brake2Report brake2Report;
-            brake2Report.header.stamp = msg->header.stamp;
-
-            brake2Report.brake_pressure = message->GetSignal("DBW_BrakePress_bar")->GetResult();
-
-            brake2Report.estimated_road_slope =
-              message->GetSignal("DBW_RoadSlopeEstimate")->GetResult();
-
-            brake2Report.speed_set_point = message->GetSignal("DBW_SpeedSetpt")->GetResult();
-
-            pub_brake_2_report_->publish(brake2Report);
-          }
-        }
+        recvBrake2Rpt(msg);
         break;
 
       case ID_STEERING_2_REPORT:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_STEERING_2_REPORT);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            Steering2Report steering2Report;
-            steering2Report.header.stamp = msg->header.stamp;
-
-            steering2Report.vehicle_curvature_actual = message->GetSignal(
-              "DBW_SteeringVehCurvatureAct")->GetResult();
-
-            steering2Report.max_torque_driver =
-              message->GetSignal("DBW_SteerTrq_Driver")->GetResult();
-
-            steering2Report.max_torque_motor =
-              message->GetSignal("DBW_SteerTrq_Motor")->GetResult();
-
-            steering2Report.expect_torque_driver =
-              message->GetSignal("DBW_SteerTrq_DriverExpectedValue")->GetResult();
-
-            pub_steering_2_report_->publish(steering2Report);
-          }
-        }
+        recvSteering2Rpt(msg);
         break;
 
       case ID_FAULT_ACTION_REPORT:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_FAULT_ACTION_REPORT);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            FaultActionsReport faultActionsReport;
-            faultActionsReport.header.stamp = msg->header.stamp;
-
-            faultActionsReport.autonomous_disabled_no_brakes = message->GetSignal(
-              "DBW_FltAct_AutonDsblNoBrakes")->GetResult();
-
-            faultActionsReport.autonomous_disabled_apply_brakes = message->GetSignal(
-              "DBW_FltAct_AutonDsblApplyBrakes")->GetResult();
-            faultActionsReport.can_gateway_disabled =
-              message->GetSignal("DBW_FltAct_CANGatewayDsbl")->GetResult();
-            faultActionsReport.inverter_contactor_disabled = message->GetSignal(
-              "DBW_FltAct_InvtrCntctrDsbl")->GetResult();
-            faultActionsReport.prevent_enter_autonomous_mode = message->GetSignal(
-              "DBW_FltAct_PreventEnterAutonMode")->GetResult();
-            faultActionsReport.warn_driver_only =
-              message->GetSignal("DBW_FltAct_WarnDriverOnly")->GetResult();
-            faultActionsReport.chime_fcw_beeps =
-              message->GetSignal("DBW_FltAct_Chime_FcwBeeps")->GetResult();
-
-            pub_fault_actions_report_->publish(faultActionsReport);
-          }
-        }
+        recvFaultActionRpt(msg);
         break;
+
       case ID_OTHER_ACTUATORS_REPORT:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_OTHER_ACTUATORS_REPORT);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            OtherActuatorsReport out;
-            out.header.stamp = msg->header.stamp;
-
-            out.ignition_state.status = message->GetSignal(
-              "DBW_IgnitionState")->GetResult();
-            out.horn_state.status = message->GetSignal(
-              "DBW_HornState")->GetResult();
-
-            out.turn_signal_state.value = message->GetSignal(
-              "DBW_TurnSignalState")->GetResult();
-            out.turn_signal_sync = message->GetSignal(
-              "DBW_TurnSignalSyncBit")->GetResult() ? true : false;
-            out.high_beam_state.value = message->GetSignal(
-              "DBW_HighBeamState")->GetResult();
-            out.low_beam_state.status = message->GetSignal(
-              "DBW_LowBeamState")->GetResult();
-
-            out.front_wiper_state.status = message->GetSignal(
-              "DBW_FrontWiperState")->GetResult();
-            out.rear_wiper_state.status = message->GetSignal(
-              "DBW_RearWiperState")->GetResult();
-
-            out.right_rear_door_state.value = message->GetSignal(
-              "DBW_RightRearDoorState")->GetResult();
-            out.left_rear_door_state.value = message->GetSignal(
-              "DBW_LeftRearDoorState")->GetResult();
-            out.liftgate_door_state.value = message->GetSignal(
-              "DBW_LiftgateDoorState")->GetResult();
-            out.door_lock_state.value = message->GetSignal(
-              "DBW_DoorLockState")->GetResult();
-
-            pub_other_actuators_report_->publish(out);
-          }
-        }
+        recvOtherActuatorsRpt(msg);
         break;
+
       case ID_GPS_REFERENCE_REPORT:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_GPS_REFERENCE_REPORT);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            GpsReferenceReport out;
-            out.header.stamp = msg->header.stamp;
-
-            out.ref_latitude = message->GetSignal(
-              "DBW_GpsRefLat")->GetResult();
-
-            out.ref_longitude = message->GetSignal(
-              "DBW_GpsRefLong")->GetResult();
-
-            pub_gps_reference_report_->publish(out);
-          }
-        }
+        recvGpsReferenceRpt(msg);
         break;
+
       case ID_GPS_REMAINDER_REPORT:
-        {
-          NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_GPS_REMAINDER_REPORT);
-
-          if (msg->dlc >= message->GetDlc()) {
-            message->SetFrame(msg);
-
-            GpsRemainderReport out;
-            out.header.stamp = msg->header.stamp;
-
-            out.rem_latitude = message->GetSignal(
-              "DBW_GpsRemainderLat")->GetResult();
-
-            out.rem_longitude = message->GetSignal(
-              "DBW_GpsRemainderLong")->GetResult();
-
-            pub_gps_remainder_report_->publish(out);
-          }
-        }
+        recvGpsRemainderRpt(msg);
         break;
+
       case ID_BRAKE_CMD:
         break;
       case ID_ACCELERATOR_PEDAL_CMD:
@@ -838,7 +286,624 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
         break;
       case ID_GEAR_CMD:
         break;
+      default:
+        break;
     }
+  }
+}
+
+void RaptorDbwCAN::recvBrakeRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_BRAKE_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    bool brakeSystemFault =
+      message->GetSignal("DBW_BrakeFault")->GetResult() ? true : false;
+    bool dbwSystemFault = brakeSystemFault;
+
+    faultBrakes(brakeSystemFault);
+    faultWatchdog(dbwSystemFault, brakeSystemFault);
+
+    overrideBrake(message->GetSignal("DBW_BrakeDriverActivity")->GetResult());
+    BrakeReport brakeReport;
+    brakeReport.header.stamp = msg->header.stamp;
+    brakeReport.pedal_position = message->GetSignal("DBW_BrakePdlDriverInput")->GetResult();
+    brakeReport.pedal_output = message->GetSignal("DBW_BrakePdlPosnFdbck")->GetResult();
+
+    brakeReport.enabled =
+      message->GetSignal("DBW_BrakeEnabled")->GetResult() ? true : false;
+    brakeReport.driver_activity =
+      message->GetSignal("DBW_BrakeDriverActivity")->GetResult() ? true : false;
+
+    brakeReport.fault_brake_system = brakeSystemFault;
+
+    brakeReport.rolling_counter = message->GetSignal("DBW_BrakeRollingCntr")->GetResult();
+
+    brakeReport.brake_torque_actual =
+      message->GetSignal("DBW_BrakePcntTorqueActual")->GetResult();
+
+    brakeReport.intervention_active =
+      message->GetSignal("DBW_BrakeInterventionActv")->GetResult() ? true : false;
+    brakeReport.intervention_ready =
+      message->GetSignal("DBW_BrakeInterventionReady")->GetResult() ? true : false;
+
+    brakeReport.parking_brake.status =
+      message->GetSignal("DBW_BrakeParkingBrkStatus")->GetResult();
+
+    brakeReport.control_type.value = message->GetSignal("DBW_BrakeCtrlType")->GetResult();
+
+    pub_brake_->publish(brakeReport);
+    if (brakeSystemFault) {
+      RCLCPP_WARN_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "Brake report received a system fault.");
+    }
+  }
+}
+
+void RaptorDbwCAN::recvAccelPedalRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_ACCEL_PEDAL_REPORT);
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    bool faultCh1 = message->GetSignal("DBW_AccelPdlFault_Ch1")->GetResult() ? true : false;
+    bool faultCh2 = message->GetSignal("DBW_AccelPdlFault_Ch2")->GetResult() ? true : false;
+    bool accelPdlSystemFault =
+      message->GetSignal("DBW_AccelPdlFault")->GetResult() ? true : false;
+    bool dbwSystemFault = accelPdlSystemFault;
+
+    faultAcceleratorPedal(faultCh1 && faultCh2);
+    faultWatchdog(dbwSystemFault, accelPdlSystemFault);
+
+    overrideAcceleratorPedal(message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult());
+
+    AcceleratorPedalReport accelPedalReprt;
+    accelPedalReprt.header.stamp = msg->header.stamp;
+    accelPedalReprt.pedal_input =
+      message->GetSignal("DBW_AccelPdlDriverInput")->GetResult();
+    accelPedalReprt.pedal_output = message->GetSignal("DBW_AccelPdlPosnFdbck")->GetResult();
+    accelPedalReprt.enabled =
+      message->GetSignal("DBW_AccelPdlEnabled")->GetResult() ? true : false;
+    accelPedalReprt.ignore_driver =
+      message->GetSignal("DBW_AccelPdlIgnoreDriver")->GetResult() ? true : false;
+    accelPedalReprt.driver_activity =
+      message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult() ? true : false;
+    accelPedalReprt.torque_actual =
+      message->GetSignal("DBW_AccelPcntTorqueActual")->GetResult();
+
+    accelPedalReprt.control_type.value =
+      message->GetSignal("DBW_AccelCtrlType")->GetResult();
+
+    accelPedalReprt.rolling_counter =
+      message->GetSignal("DBW_AccelPdlRollingCntr")->GetResult();
+
+    accelPedalReprt.fault_accel_pedal_system = accelPdlSystemFault;
+
+    accelPedalReprt.fault_ch1 = faultCh1;
+    accelPedalReprt.fault_ch2 = faultCh2;
+
+    pub_accel_pedal_->publish(accelPedalReprt);
+
+    if (faultCh1 || faultCh2) {
+      RCLCPP_WARN_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "Acclerator pedal report received a system fault.");
+    }
+  }
+}
+
+void RaptorDbwCAN::recvSteeringRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_STEERING_REPORT);
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    bool steeringSystemFault =
+      message->GetSignal("DBW_SteeringFault")->GetResult() ? true : false;
+    bool dbwSystemFault = steeringSystemFault;
+
+    faultSteering(steeringSystemFault);
+
+    faultWatchdog(dbwSystemFault);
+    overrideSteering(
+      message->GetSignal(
+        "DBW_SteeringDriverActivity")->GetResult() ? true : false);
+
+    SteeringReport steeringReport;
+    steeringReport.header.stamp = msg->header.stamp;
+    steeringReport.steering_wheel_angle =
+      message->GetSignal("DBW_SteeringWhlAngleAct")->GetResult() * (M_PI / 180);
+    steeringReport.steering_wheel_angle_cmd =
+      message->GetSignal("DBW_SteeringWhlAngleDes")->GetResult() * (M_PI / 180);
+    steeringReport.steering_wheel_torque =
+      message->GetSignal("DBW_SteeringWhlPcntTrqCmd")->GetResult() * 0.0625;
+
+    steeringReport.enabled =
+      message->GetSignal("DBW_SteeringEnabled")->GetResult() ? true : false;
+    steeringReport.driver_activity =
+      message->GetSignal("DBW_SteeringDriverActivity")->GetResult() ? true : false;
+
+    steeringReport.rolling_counter =
+      message->GetSignal("DBW_SteeringRollingCntr")->GetResult();
+
+    steeringReport.control_type.value =
+      message->GetSignal("DBW_SteeringCtrlType")->GetResult();
+
+    steeringReport.overheat_prevention_mode =
+      message->GetSignal("DBW_OverheatPreventMode")->GetResult() ? true : false;
+
+    steeringReport.steering_overheat_warning = message->GetSignal(
+      "DBW_SteeringOverheatWarning")->GetResult() ? true : false;
+
+    steeringReport.fault_steering_system = steeringSystemFault;
+
+    pub_steering_->publish(steeringReport);
+
+    publishJointStates(msg->header.stamp, steeringReport);
+
+    if (steeringSystemFault) {
+      RCLCPP_WARN_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC,
+        "Steering report received a system fault.");
+    }
+  }
+}
+
+void RaptorDbwCAN::recvGearRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_GEAR_REPORT);
+
+  if (msg->dlc >= 1) {
+    message->SetFrame(msg);
+
+    bool driverActivity =
+      message->GetSignal("DBW_PrndDriverActivity")->GetResult() ? true : false;
+
+    overrideGear(driverActivity);
+    GearReport out;
+    out.header.stamp = msg->header.stamp;
+
+    out.enabled = message->GetSignal("DBW_PrndCtrlEnabled")->GetResult() ? true : false;
+    out.state.gear = message->GetSignal("DBW_PrndStateActual")->GetResult();
+    out.driver_activity = driverActivity;
+    out.gear_select_system_fault =
+      message->GetSignal("DBW_PrndFault")->GetResult() ? true : false;
+
+    out.reject = message->GetSignal("DBW_PrndStateReject")->GetResult() ? true : false;
+
+    out.trans_curr_gear = message->GetSignal("DBW_TransCurGear")->GetResult();
+    out.gear_mismatch_flash =
+      message->GetSignal("DBW_PrndMismatchFlash")->GetResult() ? true : false;
+
+    if (out.gear_mismatch_flash) {
+      std::string err_msg(
+        "ERROR - shift lever is in Park, but transmission is in Drive.");
+      err_msg = err_msg + " Please adjust the shift lever.";
+      RCLCPP_ERROR_THROTTLE(
+        this->get_logger(), m_clock, CLOCK_1_SEC, err_msg);
+    }
+
+    pub_gear_->publish(out);
+  }
+}
+
+void RaptorDbwCAN::recvCWheelSpeedRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_WHEEL_SPEED);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    WheelSpeedReport out;
+    out.header.stamp = msg->header.stamp;
+
+    out.front_left = message->GetSignal("DBW_WhlSpd_FL")->GetResult();
+    out.front_right = message->GetSignal("DBW_WhlSpd_FR")->GetResult();
+    out.rear_left = message->GetSignal("DBW_WhlSpd_RL")->GetResult();
+    out.rear_right = message->GetSignal("DBW_WhlSpd_RR")->GetResult();
+
+    pub_wheel_speeds_->publish(out);
+    publishJointStates(msg->header.stamp, out);
+  }
+}
+
+void RaptorDbwCAN::recvWheelPositionRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_WHEEL_POSITION);
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    WheelPositionReport out;
+    out.header.stamp = msg->header.stamp;
+    out.front_left = message->GetSignal("DBW_WhlPulseCnt_FL")->GetResult();
+    out.front_right = message->GetSignal("DBW_WhlPulseCnt_FR")->GetResult();
+    out.rear_left = message->GetSignal("DBW_WhlPulseCnt_RL")->GetResult();
+    out.rear_right = message->GetSignal("DBW_WhlPulseCnt_RR")->GetResult();
+    out.wheel_pulses_per_rev = message->GetSignal("DBW_WhlPulsesPerRev")->GetResult();
+
+    pub_wheel_positions_->publish(out);
+  }
+}
+
+void RaptorDbwCAN::recvTirePressureRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_TIRE_PRESSURE);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    TirePressureReport out;
+    out.header.stamp = msg->header.stamp;
+    out.front_left = message->GetSignal("DBW_TirePressFL")->GetResult();
+    out.front_right = message->GetSignal("DBW_TirePressFR")->GetResult();
+    out.rear_left = message->GetSignal("DBW_TirePressRL")->GetResult();
+    out.rear_right = message->GetSignal("DBW_TirePressRR")->GetResult();
+    pub_tire_pressure_->publish(out);
+  }
+}
+
+void RaptorDbwCAN::recvSurroundRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_SURROUND);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    SurroundReport out;
+    out.header.stamp = msg->header.stamp;
+
+    out.front_radar_object_distance = message->GetSignal("DBW_Reserved2")->GetResult();
+    out.rear_radar_object_distance = message->GetSignal("DBW_SonarRearDist")->GetResult();
+
+    out.front_radar_distance_valid =
+      message->GetSignal("DBW_Reserved3")->GetResult() ? true : false;
+    out.parking_sonar_data_valid =
+      message->GetSignal("DBW_SonarVld")->GetResult() ? true : false;
+
+    out.rear_right.status = message->GetSignal("DBW_SonarArcNumRR")->GetResult();
+    out.rear_left.status = message->GetSignal("DBW_SonarArcNumRL")->GetResult();
+    out.rear_center.status = message->GetSignal("DBW_SonarArcNumRC")->GetResult();
+
+    out.front_right.status = message->GetSignal("DBW_SonarArcNumFR")->GetResult();
+    out.front_left.status = message->GetSignal("DBW_SonarArcNumFL")->GetResult();
+    out.front_center.status = message->GetSignal("DBW_SonarArcNumFC")->GetResult();
+
+    pub_surround_->publish(out);
+  }
+}
+
+void RaptorDbwCAN::recvVinRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_VIN);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    if (message->GetSignal("DBW_VinMultiplexor")->GetResult() == VIN_MUX_VIN0) {
+      vin_.push_back(message->GetSignal("DBW_VinDigit_01")->GetResult());
+      vin_.push_back(message->GetSignal("DBW_VinDigit_02")->GetResult());
+      vin_.push_back(message->GetSignal("DBW_VinDigit_03")->GetResult());
+      vin_.push_back(message->GetSignal("DBW_VinDigit_04")->GetResult());
+      vin_.push_back(message->GetSignal("DBW_VinDigit_05")->GetResult());
+      vin_.push_back(message->GetSignal("DBW_VinDigit_06")->GetResult());
+      vin_.push_back(message->GetSignal("DBW_VinDigit_07")->GetResult());
+    } else if (message->GetSignal("DBW_VinMultiplexor")->GetResult() == VIN_MUX_VIN1) {
+      vin_.push_back(message->GetSignal("DBW_VinDigit_08")->GetResult());
+      vin_.push_back(message->GetSignal("DBW_VinDigit_09")->GetResult());
+      vin_.push_back(message->GetSignal("DBW_VinDigit_10")->GetResult());
+      vin_.push_back(message->GetSignal("DBW_VinDigit_11")->GetResult());
+      vin_.push_back(message->GetSignal("DBW_VinDigit_12")->GetResult());
+      vin_.push_back(message->GetSignal("DBW_VinDigit_13")->GetResult());
+      vin_.push_back(message->GetSignal("DBW_VinDigit_14")->GetResult());
+    } else if (message->GetSignal("DBW_VinMultiplexor")->GetResult() == VIN_MUX_VIN2) {
+      vin_.push_back(message->GetSignal("DBW_VinDigit_15")->GetResult());
+      vin_.push_back(message->GetSignal("DBW_VinDigit_16")->GetResult());
+      vin_.push_back(message->GetSignal("DBW_VinDigit_17")->GetResult());
+      std_msgs::msg::String msg; msg.data = vin_;
+      pub_vin_->publish(msg);
+    }
+  }
+}
+
+void RaptorDbwCAN::recvImuRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_IMU);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    sensor_msgs::msg::Imu out;
+    out.header.stamp = msg->header.stamp;
+    out.header.frame_id = frame_id_;
+
+    out.angular_velocity.z =
+      static_cast<double>(message->GetSignal("DBW_ImuYawRate")->GetResult()) *
+      (M_PI / 180.0F);
+    out.linear_acceleration.x =
+      static_cast<double>(message->GetSignal("DBW_ImuAccelX")->GetResult());
+    out.linear_acceleration.y =
+      static_cast<double>(message->GetSignal("DBW_ImuAccelY")->GetResult());
+
+    pub_imu_->publish(out);
+  }
+}
+
+void RaptorDbwCAN::recvDriverInputRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_DRIVER_INPUT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    DriverInputReport out;
+    out.header.stamp = msg->header.stamp;
+
+    out.turn_signal.value = message->GetSignal("DBW_DrvInptTurnSignal")->GetResult();
+    out.high_beam_headlights.status = message->GetSignal("DBW_DrvInptHiBeam")->GetResult();
+    out.wiper.status = message->GetSignal("DBW_DrvInptWiper")->GetResult();
+
+    out.cruise_resume_button =
+      message->GetSignal("DBW_DrvInptCruiseResumeBtn")->GetResult() ? true : false;
+    out.cruise_cancel_button =
+      message->GetSignal("DBW_DrvInptCruiseCancelBtn")->GetResult() ? true : false;
+    out.cruise_accel_button =
+      message->GetSignal("DBW_DrvInptCruiseAccelBtn")->GetResult() ? true : false;
+    out.cruise_decel_button =
+      message->GetSignal("DBW_DrvInptCruiseDecelBtn")->GetResult() ? true : false;
+    out.cruise_on_off_button =
+      message->GetSignal("DBW_DrvInptCruiseOnOffBtn")->GetResult() ? true : false;
+
+    out.adaptive_cruise_on_off_button =
+      message->GetSignal("DBW_DrvInptAccOnOffBtn")->GetResult() ? true : false;
+    out.adaptive_cruise_increase_distance_button = message->GetSignal(
+      "DBW_DrvInptAccIncDistBtn")->GetResult() ? true : false;
+    out.adaptive_cruise_decrease_distance_button = message->GetSignal(
+      "DBW_DrvInptAccDecDistBtn")->GetResult() ? true : false;
+
+    out.steer_wheel_button_a =
+      message->GetSignal("DBW_DrvInputStrWhlBtnA")->GetResult() ? true : false;
+    out.steer_wheel_button_b =
+      message->GetSignal("DBW_DrvInputStrWhlBtnB")->GetResult() ? true : false;
+    out.steer_wheel_button_c =
+      message->GetSignal("DBW_DrvInputStrWhlBtnC")->GetResult() ? true : false;
+    out.steer_wheel_button_d =
+      message->GetSignal("DBW_DrvInputStrWhlBtnD")->GetResult() ? true : false;
+    out.steer_wheel_button_e =
+      message->GetSignal("DBW_DrvInputStrWhlBtnE")->GetResult() ? true : false;
+
+    out.door_or_hood_ajar =
+      message->GetSignal("DBW_OccupAnyDoorOrHoodAjar")->GetResult() ? true : false;
+
+    out.airbag_deployed =
+      message->GetSignal("DBW_OccupAnyAirbagDeployed")->GetResult() ? true : false;
+    out.any_seatbelt_unbuckled =
+      message->GetSignal("DBW_OccupAnySeatbeltUnbuckled")->GetResult() ? true : false;
+
+    pub_driver_input_->publish(out);
+  }
+}
+
+void RaptorDbwCAN::recvMiscRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_MISC_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    MiscReport out;
+    out.header.stamp = msg->header.stamp;
+
+    out.fuel_level =
+      static_cast<double>(message->GetSignal("DBW_MiscFuelLvl")->GetResult());
+    out.drive_by_wire_enabled =
+      static_cast<bool>(message->GetSignal("DBW_MiscByWireEnabled")->GetResult());
+    out.vehicle_speed =
+      static_cast<double>(message->GetSignal("DBW_MiscVehicleSpeed")->GetResult());
+    out.software_build_number =
+      message->GetSignal("DBW_SoftwareBuildNumber")->GetResult();
+    out.general_actuator_fault =
+      message->GetSignal("DBW_MiscFault")->GetResult() ? true : false;
+    out.by_wire_ready =
+      message->GetSignal("DBW_MiscByWireReady")->GetResult() ? true : false;
+    out.general_driver_activity =
+      message->GetSignal("DBW_MiscDriverActivity")->GetResult() ? true : false;
+    out.comms_fault =
+      message->GetSignal("DBW_MiscAKitCommFault")->GetResult() ? true : false;
+    out.ambient_temp =
+      static_cast<double>(message->GetSignal("DBW_AmbientTemp")->GetResult());
+
+    pub_misc_->publish(out);
+  }
+}
+
+void RaptorDbwCAN::recvLowVoltageSystemRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_LOW_VOLTAGE_SYSTEM_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    LowVoltageSystemReport lvSystemReport;
+    lvSystemReport.header.stamp = msg->header.stamp;
+
+    lvSystemReport.vehicle_battery_volts =
+      static_cast<double>(message->GetSignal("DBW_LvVehBattVlt")->GetResult());
+    lvSystemReport.vehicle_battery_current =
+      static_cast<double>(message->GetSignal("DBW_LvBattCurr")->GetResult());
+    lvSystemReport.vehicle_alternator_current =
+      static_cast<double>(message->GetSignal("DBW_LvAlternatorCurr")->GetResult());
+
+    lvSystemReport.dbw_battery_volts =
+      static_cast<double>(message->GetSignal("DBW_LvDbwBattVlt")->GetResult());
+    lvSystemReport.dcdc_current =
+      static_cast<double>(message->GetSignal("DBW_LvDcdcCurr")->GetResult());
+
+    lvSystemReport.aux_inverter_contactor =
+      message->GetSignal("DBW_LvInvtrContactorCmd")->GetResult() ? true : false;
+
+    pub_low_voltage_system_->publish(lvSystemReport);
+  }
+}
+
+void RaptorDbwCAN::recvBrake2Rpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_BRAKE_2_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    Brake2Report brake2Report;
+    brake2Report.header.stamp = msg->header.stamp;
+
+    brake2Report.brake_pressure = message->GetSignal("DBW_BrakePress_bar")->GetResult();
+
+    brake2Report.estimated_road_slope =
+      message->GetSignal("DBW_RoadSlopeEstimate")->GetResult();
+
+    brake2Report.speed_set_point = message->GetSignal("DBW_SpeedSetpt")->GetResult();
+
+    pub_brake_2_report_->publish(brake2Report);
+  }
+}
+
+void RaptorDbwCAN::recvSteering2Rpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_STEERING_2_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    Steering2Report steering2Report;
+    steering2Report.header.stamp = msg->header.stamp;
+
+    steering2Report.vehicle_curvature_actual = message->GetSignal(
+      "DBW_SteeringVehCurvatureAct")->GetResult();
+
+    steering2Report.max_torque_driver =
+      message->GetSignal("DBW_SteerTrq_Driver")->GetResult();
+
+    steering2Report.max_torque_motor =
+      message->GetSignal("DBW_SteerTrq_Motor")->GetResult();
+
+    steering2Report.expect_torque_driver =
+      message->GetSignal("DBW_SteerTrq_DriverExpectedValue")->GetResult();
+
+    pub_steering_2_report_->publish(steering2Report);
+  }
+}
+
+void RaptorDbwCAN::recvFaultActionRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_FAULT_ACTION_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    FaultActionsReport faultActionsReport;
+    faultActionsReport.header.stamp = msg->header.stamp;
+
+    faultActionsReport.autonomous_disabled_no_brakes = message->GetSignal(
+      "DBW_FltAct_AutonDsblNoBrakes")->GetResult();
+
+    faultActionsReport.autonomous_disabled_apply_brakes = message->GetSignal(
+      "DBW_FltAct_AutonDsblApplyBrakes")->GetResult();
+    faultActionsReport.can_gateway_disabled =
+      message->GetSignal("DBW_FltAct_CANGatewayDsbl")->GetResult();
+    faultActionsReport.inverter_contactor_disabled = message->GetSignal(
+      "DBW_FltAct_InvtrCntctrDsbl")->GetResult();
+    faultActionsReport.prevent_enter_autonomous_mode = message->GetSignal(
+      "DBW_FltAct_PreventEnterAutonMode")->GetResult();
+    faultActionsReport.warn_driver_only =
+      message->GetSignal("DBW_FltAct_WarnDriverOnly")->GetResult();
+    faultActionsReport.chime_fcw_beeps =
+      message->GetSignal("DBW_FltAct_Chime_FcwBeeps")->GetResult();
+
+    pub_fault_actions_report_->publish(faultActionsReport);
+  }
+}
+
+void RaptorDbwCAN::recvOtherActuatorsRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_OTHER_ACTUATORS_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    OtherActuatorsReport out;
+    out.header.stamp = msg->header.stamp;
+
+    out.ignition_state.status = message->GetSignal(
+      "DBW_IgnitionState")->GetResult();
+    out.horn_state.status = message->GetSignal(
+      "DBW_HornState")->GetResult();
+
+    out.turn_signal_state.value = message->GetSignal(
+      "DBW_TurnSignalState")->GetResult();
+    out.turn_signal_sync = message->GetSignal(
+      "DBW_TurnSignalSyncBit")->GetResult() ? true : false;
+    out.high_beam_state.value = message->GetSignal(
+      "DBW_HighBeamState")->GetResult();
+    out.low_beam_state.status = message->GetSignal(
+      "DBW_LowBeamState")->GetResult();
+
+    out.front_wiper_state.status = message->GetSignal(
+      "DBW_FrontWiperState")->GetResult();
+    out.rear_wiper_state.status = message->GetSignal(
+      "DBW_RearWiperState")->GetResult();
+
+    out.right_rear_door_state.value = message->GetSignal(
+      "DBW_RightRearDoorState")->GetResult();
+    out.left_rear_door_state.value = message->GetSignal(
+      "DBW_LeftRearDoorState")->GetResult();
+    out.liftgate_door_state.value = message->GetSignal(
+      "DBW_LiftgateDoorState")->GetResult();
+    out.door_lock_state.value = message->GetSignal(
+      "DBW_DoorLockState")->GetResult();
+
+    pub_other_actuators_report_->publish(out);
+  }
+}
+
+void RaptorDbwCAN::recvGpsReferenceRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_GPS_REFERENCE_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    GpsReferenceReport out;
+    out.header.stamp = msg->header.stamp;
+
+    out.ref_latitude = message->GetSignal(
+      "DBW_GpsRefLat")->GetResult();
+
+    out.ref_longitude = message->GetSignal(
+      "DBW_GpsRefLong")->GetResult();
+
+    pub_gps_reference_report_->publish(out);
+  }
+}
+
+void RaptorDbwCAN::recvGpsRemainderRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_GPS_REMAINDER_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    GpsRemainderReport out;
+    out.header.stamp = msg->header.stamp;
+
+    out.rem_latitude = message->GetSignal(
+      "DBW_GpsRemainderLat")->GetResult();
+
+    out.rem_longitude = message->GetSignal(
+      "DBW_GpsRemainderLong")->GetResult();
+
+    pub_gps_remainder_report_->publish(out);
   }
 }
 
