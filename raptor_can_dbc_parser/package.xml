@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>raptor_can_dbc_parser</name>
-  <version>0.0.0</version>
+  <version>1.0.0</version>
   <description>
     DBC file interface.  Read a DBC file, unpack CAN messages and convert to engineering units, pack values into CAN messages for publishing.
   </description>

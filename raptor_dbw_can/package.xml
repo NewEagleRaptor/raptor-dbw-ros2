@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>raptor_dbw_can</name>
-  <version>0.0.0</version>
+  <version>1.0.0</version>
   <description>
     Drive-by-wire interface to the New Eagle Raptor DBW kit
   </description>
