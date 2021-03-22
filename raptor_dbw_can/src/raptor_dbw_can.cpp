@@ -479,7 +479,7 @@ void RaptorDbwCAN::recvGearRpt(const can_msgs::msg::Frame::SharedPtr msg)
       std::string err_msg(
         "ERROR - shift lever is in Park, but transmission is in Drive.");
       err_msg = err_msg + "Please adjust the shift lever.";
-      RCLCPP_ERROR(this->get_logger(), err_msg);
+      RCLCPP_ERROR(this->get_logger(), err_msg.c_str());
     }
 
     pub_gear_->publish(out);
