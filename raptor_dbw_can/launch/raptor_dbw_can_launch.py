@@ -75,7 +75,8 @@ def generate_launch_description():
                 output='screen',
                 node_namespace='raptor_dbw_interface',
                 parameters=[
-                    {'dbw_dbc_file': dbc_file_path}
+                    {'dbw_dbc_file': dbc_file_path},
+                    {'max_steer_angle': 470.0}
                 ],
             ),
             Node(

@@ -43,6 +43,7 @@ RaptorDbwCAN::RaptorDbwCAN(const rclcpp::NodeOptions & options)
 : Node("raptor_dbw_can_node", options)
 {
   dbcFile_ = this->declare_parameter("dbw_dbc_file", "");
+  max_steer_angle_ = this->declare_parameter("max_steer_angle", 470.0);
 
   // Initialize enable state machine
   prev_enable_ = true;
@@ -414,9 +415,9 @@ void RaptorDbwCAN::recvSteeringRpt(const can_msgs::msg::Frame::SharedPtr msg)
     SteeringReport steeringReport;
     steeringReport.header.stamp = msg->header.stamp;
     steeringReport.steering_wheel_angle =
-      message->GetSignal("DBW_SteeringWhlAngleAct")->GetResult() * (M_PI / 180);
+      message->GetSignal("DBW_SteeringWhlAngleAct")->GetResult();
     steeringReport.steering_wheel_angle_cmd =
-      message->GetSignal("DBW_SteeringWhlAngleDes")->GetResult() * (M_PI / 180);
+      message->GetSignal("DBW_SteeringWhlAngleDes")->GetResult();
     steeringReport.steering_wheel_torque =
       message->GetSignal("DBW_SteeringWhlPcntTrqCmd")->GetResult() * 0.0625;
 
@@ -1022,10 +1023,10 @@ void RaptorDbwCAN::recvSteeringCmd(const SteeringCmd::SharedPtr msg)
       message->GetSignal("AKit_SteeringReqType")->SetResult(1);
       double scmd =
         std::max(
-        -470.0F,
+        -1.0F * max_steer_angle_,
         std::min(
-          470.0F, static_cast<float>(
-            msg->angle_cmd * (180.0F / M_PI * 1.0F))));
+          max_steer_angle_ * 1.0F, static_cast<float>(
+            msg->angle_cmd * 1.0F)));
       message->GetSignal("AKit_SteeringWhlAngleReq")->SetResult(scmd);
     } else if (msg->control_type.value == ActuatorControlMode::CLOSED_LOOP_VEHICLE) {
       message->GetSignal("AKit_SteeringReqType")->SetResult(2);
@@ -1040,7 +1041,7 @@ void RaptorDbwCAN::recvSteeringCmd(const SteeringCmd::SharedPtr msg)
         1.0F,
         std::min(
           254.0F, static_cast<float>(
-            std::roundf(std::fabs(msg->angle_velocity) * 180.0F / M_PI / 2.0F))));
+            std::roundf(std::fabs(msg->angle_velocity) / 2.0F))));
 
       message->GetSignal("AKit_SteeringWhlAngleVelocityLim")->SetResult(vcmd);
     }

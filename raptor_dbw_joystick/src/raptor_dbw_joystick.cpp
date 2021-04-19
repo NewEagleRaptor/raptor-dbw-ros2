@@ -43,9 +43,11 @@ RaptorDbwJoystick::RaptorDbwJoystick(const rclcpp::NodeOptions & options)
   ignore_ = false;
   enable_ = true;
   svel_ = 0.0;
+  max_steer_angle_ = 470.0;
   this->declare_parameter("ignore", ignore_);
   this->declare_parameter("enable", enable_);
   this->declare_parameter("svel", svel_);
+  this->declare_parameter("max_steer_angle", max_steer_angle_);
 
   data_.brake_joy = 0.0;
   data_.gear_cmd = raptor_dbw_msgs::msg::Gear::NONE;
@@ -191,7 +193,7 @@ void RaptorDbwJoystick::recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg)
   }
 
   // Steering
-  data_.steering_joy = 470.0 * M_PI / 180.0 *
+  data_.steering_joy = max_steer_angle_ *
     ((fabs(msg->axes[AXIS_STEER_1]) >
     fabs(msg->axes[AXIS_STEER_2])) ? msg->axes[AXIS_STEER_1] : msg->axes[AXIS_STEER_2]);
   data_.steering_mult = msg->buttons[BTN_STEER_MULT_1] || msg->buttons[BTN_STEER_MULT_2];
