@@ -167,6 +167,8 @@ private:
   rclcpp::Clock m_clock;
   static constexpr int64_t CLOCK_1_SEC = 1000;  // duration in milliseconds
 
+  float max_steer_angle_;
+
   bool prev_enable_;
   bool enable_;
   bool override_brake_;

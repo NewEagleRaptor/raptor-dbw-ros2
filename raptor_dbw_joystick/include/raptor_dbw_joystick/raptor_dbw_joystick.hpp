@@ -87,6 +87,7 @@ private:
   bool ignore_;     // Ignore driver overrides
   bool enable_;     // Use enable and disable buttons
   double svel_;     // Steering command speed
+  float max_steer_angle_; // Maximum steering angle allowed
 
   // Variables
   rclcpp::TimerBase::SharedPtr timer_;

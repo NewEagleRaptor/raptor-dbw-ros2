@@ -16,6 +16,7 @@ raptor_dbw_interface:
       ignore: false
       enable: true
       svel: 0.0
+      max_steer_angle: 470.0
   joy_node:
     ros__parameters:
       device_id: 0
