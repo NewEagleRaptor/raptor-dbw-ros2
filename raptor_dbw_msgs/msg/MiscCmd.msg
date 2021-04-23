@@ -23,3 +23,5 @@ bool block_turn_signal_stalk
 bool horn_cmd
 
 LowBeam low_beam_cmd
+
+# TODO(NERaptor): add checksum support

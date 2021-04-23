@@ -21,3 +21,5 @@ ActuatorControlMode control_type
 float32 accel_limit # m/s^2
 
 float32 accel_positive_jerk_limit # m/s^3
+
+# TODO(NERaptor): add checksum support
