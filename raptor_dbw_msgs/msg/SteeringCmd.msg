@@ -16,3 +16,5 @@ float32 torque_cmd # %-torque
 float32 vehicle_curvature_cmd # 1/m
 
 ActuatorControlMode control_type
+
+# TODO(NERaptor): add checksum support

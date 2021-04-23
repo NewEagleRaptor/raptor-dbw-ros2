@@ -910,6 +910,7 @@ void RaptorDbwCAN::recvGpsRemainderRpt(const can_msgs::msg::Frame::SharedPtr msg
 
 void RaptorDbwCAN::recvBrakeCmd(const BrakeCmd::SharedPtr msg)
 {
+  // TODO(NERaptor): add checksum support
   NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_BrakeRequest");
 
   message->GetSignal("AKit_BrakePedalReq")->SetResult(0);
@@ -958,6 +959,7 @@ void RaptorDbwCAN::recvBrakeCmd(const BrakeCmd::SharedPtr msg)
 void RaptorDbwCAN::recvAcceleratorPedalCmd(
   const AcceleratorPedalCmd::SharedPtr msg)
 {
+  // TODO(NERaptor): add checksum support
   NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_AccelPdlRequest");
 
   message->GetSignal("AKit_AccelPdlReq")->SetResult(0);
@@ -1008,6 +1010,7 @@ void RaptorDbwCAN::recvAcceleratorPedalCmd(
 
 void RaptorDbwCAN::recvSteeringCmd(const SteeringCmd::SharedPtr msg)
 {
+  // TODO(NERaptor): add checksum support
   NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_SteeringRequest");
 
   message->GetSignal("AKit_SteeringWhlAngleReq")->SetResult(0);
@@ -1067,6 +1070,7 @@ void RaptorDbwCAN::recvSteeringCmd(const SteeringCmd::SharedPtr msg)
 
 void RaptorDbwCAN::recvGearCmd(const GearCmd::SharedPtr msg)
 {
+  // TODO(NERaptor): add checksum support
   NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_PrndRequest");
 
   message->GetSignal("AKit_PrndCtrlEnblReq")->SetResult(0);
@@ -1090,6 +1094,7 @@ void RaptorDbwCAN::recvGearCmd(const GearCmd::SharedPtr msg)
 
 void RaptorDbwCAN::recvGlobalEnableCmd(const GlobalEnableCmd::SharedPtr msg)
 {
+  // TODO(NERaptor): add checksum support
   NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_GlobalEnbl");
 
   message->GetSignal("AKit_GlobalEnblRollingCntr")->SetResult(0);
@@ -1119,6 +1124,7 @@ void RaptorDbwCAN::recvGlobalEnableCmd(const GlobalEnableCmd::SharedPtr msg)
 
 void RaptorDbwCAN::recvMiscCmd(const MiscCmd::SharedPtr msg)
 {
+  // TODO(NERaptor): add checksum support
   NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_OtherActuators");
 
   message->GetSignal("AKit_TurnSignalReq")->SetResult(0);

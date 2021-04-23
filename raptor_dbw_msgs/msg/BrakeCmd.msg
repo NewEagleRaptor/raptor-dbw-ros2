@@ -15,3 +15,5 @@ ActuatorControlMode control_type
 float32 decel_negative_jerk_limit # m/s^3
 
 ParkingBrake park_brake_cmd
+
+# TODO(NERaptor): add checksum support
