@@ -66,6 +66,15 @@
 #include <raptor_dbw_msgs/msg/tire_pressure_report.hpp>
 #include <raptor_dbw_msgs/msg/wheel_position_report.hpp>
 #include <raptor_dbw_msgs/msg/wheel_speed_report.hpp>
+#include <raptor_dbw_msgs/msg/ArticulationCmd.msg>
+#include <raptor_dbw_msgs/msg/ArticulationControlMode.msg>
+#include <raptor_dbw_msgs/msg/DumpBedCmd.msg>
+#include <raptor_dbw_msgs/msg/DumpBedControlMode.msg>
+#include <raptor_dbw_msgs/msg/DumpBedModeRequest.msg>
+#include <raptor_dbw_msgs/msg/EngineCmd.msg>
+#include <raptor_dbw_msgs/msg/EngineModeRequest.msg>
+#include <raptor_dbw_msgs/msg/EngineRequestType.msg>
+#include <raptor_dbw_msgs/msg/RunningLights.msg>
 #include <sensor_msgs/msg/imu.hpp>
 #include <sensor_msgs/msg/joint_state.hpp>
 #include <std_msgs/msg/bool.hpp>
@@ -136,6 +145,15 @@ using raptor_dbw_msgs::msg::WheelPositionReport;
 using raptor_dbw_msgs::msg::WheelSpeedReport;
 using raptor_dbw_msgs::msg::WiperFront;
 using raptor_dbw_msgs::msg::WiperRear;
+using raptor_dbw_msgs::msg::ArticulationCmd;
+using raptor_dbw_msgs::msg::ArticulationControlMode;
+using raptor_dbw_msgs::msg::DumpBedCmd;
+using raptor_dbw_msgs::msg::DumpBedControlMode;
+using raptor_dbw_msgs::msg::DumpBedModeRequest;
+using raptor_dbw_msgs::msg::EngineCmd;
+using raptor_dbw_msgs::msg::EngineModeRequest;
+using raptor_dbw_msgs::msg::EngineRequestType;
+using raptor_dbw_msgs::msg::RunningLights;
 
 namespace raptor_dbw_can
 {
@@ -151,7 +169,8 @@ public:
   explicit RaptorDbwCAN(
     const rclcpp::NodeOptions & options,
     std::string dbw_dbc_file,
-    float max_steer_angle);
+    float max_steer_angle,
+    float max_articulation_angle);
   ~RaptorDbwCAN();
 
 private:
@@ -308,6 +327,7 @@ private:
   // Parameters from launch
   std::string dbw_dbc_file_;
   float max_steer_angle_;
+  float max_articulation_angle_;
 
   // Other useful variables
 

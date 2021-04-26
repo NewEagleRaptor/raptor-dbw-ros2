@@ -38,10 +38,12 @@ namespace raptor_dbw_can
 RaptorDbwCAN::RaptorDbwCAN(
   const rclcpp::NodeOptions & options,
   std::string dbw_dbc_file,
-  float max_steer_angle)
+  float max_steer_angle,
+  float max_articulation_angle)
 : Node("raptor_dbw_can_node", options),
   dbw_dbc_file_{dbw_dbc_file},
-  max_steer_angle_{max_steer_angle}
+  max_steer_angle_{max_steer_angle},
+  max_articulation_angle_{max_articulation_angle}
 {
   // Initialize enable state machine
   int i{0};

@@ -92,7 +92,8 @@ public:
     bool ignore,
     bool enable,
     double svel,
-    float max_steer_angle);
+    float max_steer_angle,
+    float max_articulation_angle);
 
 private:
   rclcpp::Clock m_clock;
@@ -125,6 +126,7 @@ private:
   bool enable_;     // Use enable and disable buttons
   double svel_;     // Steering command speed
   float max_steer_angle_;  // Maximum steering angle allowed
+  float max_articulation_angle_;  // Maximum articulation angle allowed
 
   // Variables
   rclcpp::TimerBase::SharedPtr timer_;

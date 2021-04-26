@@ -65,6 +65,15 @@ set(msg_files
   "msg/WheelSpeedType.msg"
   "msg/WiperFront.msg"  
   "msg/WiperRear.msg"
+  "msg/ArticulationCmd.msg"
+  "msg/ArticulationControlMode.msg"
+  "msg/DumpBedCmd.msg"
+  "msg/DumpBedControlMode.msg"
+  "msg/DumpBedModeRequest.msg"
+  "msg/EngineCmd.msg"
+  "msg/EngineModeRequest.msg"
+  "msg/EngineRequestType.msg"
+  "msg/RunningLights.msg"
 )
 
 rosidl_generate_interfaces(${PROJECT_NAME}
