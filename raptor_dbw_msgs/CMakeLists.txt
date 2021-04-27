@@ -71,8 +71,8 @@ set(msg_files
   "msg/DumpBedControlMode.msg"
   "msg/DumpBedModeRequest.msg"
   "msg/EngineCmd.msg"
+  "msg/EngineControlMode.msg"
   "msg/EngineModeRequest.msg"
-  "msg/EngineRequestType.msg"
   "msg/RunningLights.msg"
 )
 

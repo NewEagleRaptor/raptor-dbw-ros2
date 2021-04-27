@@ -776,9 +776,6 @@ void RaptorDbwCAN::recvSteering2Rpt(const Frame::SharedPtr msg)
     steering2Report.max_torque_motor =
       message->GetSignal("DBW_SteerTrq_Motor")->GetResult();
 
-    steering2Report.expect_torque_driver =
-      message->GetSignal("DBW_SteerTrq_DriverExpectedValue")->GetResult();
-
     pub_steering_2_report_->publish(steering2Report);
   }
 }
@@ -830,8 +827,6 @@ void RaptorDbwCAN::recvOtherActuatorsRpt(const Frame::SharedPtr msg)
 
     out.turn_signal_state.value = message->GetSignal(
       "DBW_TurnSignalState")->GetResult();
-    out.turn_signal_sync = message->GetSignal(
-      "DBW_TurnSignalSyncBit")->GetResult() ? true : false;
     out.high_beam_state.value = message->GetSignal(
       "DBW_HighBeamState")->GetResult();
     out.low_beam_state.status = message->GetSignal(

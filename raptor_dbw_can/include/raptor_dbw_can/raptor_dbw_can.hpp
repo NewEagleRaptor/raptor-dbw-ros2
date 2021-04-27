@@ -66,15 +66,15 @@
 #include <raptor_dbw_msgs/msg/tire_pressure_report.hpp>
 #include <raptor_dbw_msgs/msg/wheel_position_report.hpp>
 #include <raptor_dbw_msgs/msg/wheel_speed_report.hpp>
-#include <raptor_dbw_msgs/msg/ArticulationCmd.msg>
-#include <raptor_dbw_msgs/msg/ArticulationControlMode.msg>
-#include <raptor_dbw_msgs/msg/DumpBedCmd.msg>
-#include <raptor_dbw_msgs/msg/DumpBedControlMode.msg>
-#include <raptor_dbw_msgs/msg/DumpBedModeRequest.msg>
-#include <raptor_dbw_msgs/msg/EngineCmd.msg>
-#include <raptor_dbw_msgs/msg/EngineModeRequest.msg>
-#include <raptor_dbw_msgs/msg/EngineRequestType.msg>
-#include <raptor_dbw_msgs/msg/RunningLights.msg>
+#include <raptor_dbw_msgs/msg/articulation_cmd.hpp>
+#include <raptor_dbw_msgs/msg/articulation_control_mode.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed_cmd.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed_control_mode.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed_mode_request.hpp>
+#include <raptor_dbw_msgs/msg/engine_cmd.hpp>
+#include <raptor_dbw_msgs/msg/engine_control_mode.hpp>
+#include <raptor_dbw_msgs/msg/engine_mode_request.hpp>
+#include <raptor_dbw_msgs/msg/running_lights.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <sensor_msgs/msg/joint_state.hpp>
 #include <std_msgs/msg/bool.hpp>
@@ -151,8 +151,8 @@ using raptor_dbw_msgs::msg::DumpBedCmd;
 using raptor_dbw_msgs::msg::DumpBedControlMode;
 using raptor_dbw_msgs::msg::DumpBedModeRequest;
 using raptor_dbw_msgs::msg::EngineCmd;
+using raptor_dbw_msgs::msg::EngineControlMode;
 using raptor_dbw_msgs::msg::EngineModeRequest;
-using raptor_dbw_msgs::msg::EngineRequestType;
 using raptor_dbw_msgs::msg::RunningLights;
 
 namespace raptor_dbw_can
