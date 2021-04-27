@@ -33,18 +33,18 @@
 namespace raptor_dbw_joystick
 {
 
-RaptorDbwJoystick::RaptorDbwJoystick(const rclcpp::NodeOptions & options)
-: Node("raptor_dbw_joystick_node", options)
+RaptorDbwJoystick::RaptorDbwJoystick(
+  const rclcpp::NodeOptions & options,
+  bool ignore,
+  bool enable,
+  double svel,
+  float max_steer_angle)
+: Node("raptor_dbw_joystick_node", options),
+  ignore_{ignore},
+  enable_{enable},
+  svel_{svel},
+  max_steer_angle_{max_steer_angle}
 {
-  ignore_ = false;
-  enable_ = true;
-  svel_ = 0.0;
-  max_steer_angle_ = 470.0;
-  this->declare_parameter("ignore", ignore_);
-  this->declare_parameter("enable", enable_);
-  this->declare_parameter("svel", svel_);
-  this->declare_parameter("max_steer_angle", max_steer_angle_);
-
   data_.brake_joy = 0.0;
   data_.gear_cmd = raptor_dbw_msgs::msg::Gear::NONE;
   data_.steering_joy = 0.0;

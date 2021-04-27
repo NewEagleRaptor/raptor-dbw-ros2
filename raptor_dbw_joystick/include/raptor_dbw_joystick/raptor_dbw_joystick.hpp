@@ -62,7 +62,12 @@ typedef struct
 class RaptorDbwJoystick : public rclcpp::Node
 {
 public:
-  explicit RaptorDbwJoystick(const rclcpp::NodeOptions & options);
+  explicit RaptorDbwJoystick(
+    const rclcpp::NodeOptions & options,
+    bool ignore,
+    bool enable,
+    double svel,
+    float max_steer_angle);
 
 private:
   rclcpp::Clock m_clock;

@@ -35,12 +35,14 @@
 namespace raptor_dbw_can
 {
 
-RaptorDbwCAN::RaptorDbwCAN(const rclcpp::NodeOptions & options)
-: Node("raptor_dbw_can_node", options)
+RaptorDbwCAN::RaptorDbwCAN(
+  const rclcpp::NodeOptions & options,
+  std::string dbw_dbc_file,
+  float max_steer_angle)
+: Node("raptor_dbw_can_node", options),
+  dbw_dbc_file_{dbw_dbc_file},
+  max_steer_angle_{max_steer_angle}
 {
-  dbcFile_ = this->declare_parameter("dbw_dbc_file", "");
-  max_steer_angle_ = this->declare_parameter("max_steer_angle", 470.0);
-
   // Initialize enable state machine
   prev_enable_ = true;
   enable_ = false;
@@ -174,7 +176,7 @@ RaptorDbwCAN::RaptorDbwCAN(const rclcpp::NodeOptions & options)
     1000);
   count_ = 0;
 
-  dbwDbc_ = NewEagle::DbcBuilder().NewDbc(dbcFile_);
+  dbwDbc_ = NewEagle::DbcBuilder().NewDbc(dbw_dbc_file_);
 
   // Set up Timer
   timer_ = this->create_wall_timer(

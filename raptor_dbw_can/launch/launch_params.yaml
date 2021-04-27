@@ -11,3 +11,6 @@ raptor_dbw_interface:
       circuit_id: 0
       bit_rate: 500000
       enable_echo: false
+  raptor_dbw_can_node:
+    ros__parameters:
+      max_steer_angle: 470.0
