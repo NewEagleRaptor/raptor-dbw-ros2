@@ -2,6 +2,7 @@ std_msgs/Header header
 
 # Current gear enumeration
 Gear state
+Gear state_des
 
 # Gear reject flag
 bool reject
@@ -14,3 +15,6 @@ uint8 trans_curr_gear
 # Faults
 bool gear_select_system_fault
 bool gear_mismatch_flash
+
+# Watchdog counter
+uint8 rolling_counter

@@ -39,10 +39,12 @@ RaptorDbwCAN::RaptorDbwCAN(
   const rclcpp::NodeOptions & options,
   std::string dbw_dbc_file,
   float max_steer_angle,
+  float max_dump_angle,
   float max_articulation_angle)
 : Node("raptor_dbw_can_node", options),
   dbw_dbc_file_{dbw_dbc_file},
   max_steer_angle_{max_steer_angle},
+  max_dump_angle_{max_dump_angle},
   max_articulation_angle_{max_articulation_angle}
 {
   // Initialize enable state machine
@@ -119,6 +121,14 @@ RaptorDbwCAN::RaptorDbwCAN(
     "gps_reference_report", 20);
   pub_gps_remainder_report_ = this->create_publisher<GpsRemainderReport>(
     "gps_remainder_report", 20);
+  pub_action_report_ = this->create_publisher<ActionReport>(
+    "action_report", 20);
+  pub_articulation_report_ = this->create_publisher<ArticulationReport>(
+    "articulation_report", 20);
+  pub_dump_bed_report_ = this->create_publisher<DumpBedReport>(
+    "dump_bed_report", 20);
+  pub_engine_report_ = this->create_publisher<EngineReport>(
+    "engine_report", 20);
 
   pub_imu_ = this->create_publisher<Imu>("imu/data_raw", 10);
   pub_joint_states_ = this->create_publisher<JointState>("joint_states", 10);
@@ -158,6 +168,22 @@ RaptorDbwCAN::RaptorDbwCAN(
   sub_global_enable_ = this->create_subscription<GlobalEnableCmd>(
     "global_enable_cmd", 1,
     std::bind(&RaptorDbwCAN::recvGlobalEnableCmd, this, std::placeholders::_1));
+
+  sub_action_ = this->create_subscription<ActionCmd>(
+    "action_cmd", 1,
+    std::bind(&RaptorDbwCAN::recvActionCmd, this, std::placeholders::_1));
+
+  sub_articulation_ = this->create_subscription<ArticulationCmd>(
+    "articulation_cmd", 1,
+    std::bind(&RaptorDbwCAN::recvArticulationCmd, this, std::placeholders::_1));
+
+  sub_dump_bed_ = this->create_subscription<DumpBedCmd>(
+    "dump_bed_cmd", 1,
+    std::bind(&RaptorDbwCAN::recvDumpBedCmd, this, std::placeholders::_1));
+
+  sub_engine_ = this->create_subscription<EngineCmd>(
+    "engine_cmd", 1,
+    std::bind(&RaptorDbwCAN::recvEngineCmd, this, std::placeholders::_1));
 
   pdu1_relay_pub_ = this->create_publisher<RelayCommand>(
     "/pduB/relay_cmd", 1000);
@@ -268,6 +294,22 @@ void RaptorDbwCAN::recvCAN(const Frame::SharedPtr msg)
         recvGpsRemainderRpt(msg);
         break;
 
+      case ID_ENGINE_REPORT:
+        recvEngineRpt(msg);
+        break;
+
+      case ID_ARTICULATION_REPORT:
+        recvArticulationRpt(msg);
+        break;
+
+      case ID_DUMP_BED_REPORT:
+        recvDumpBedRpt(msg);
+        break;
+
+      case ID_ACTION_REPORT:
+        recvActionRpt(msg);
+        break;
+
       case ID_BRAKE_CMD:
         break;
       case ID_ACCELERATOR_PEDAL_CMD:
@@ -275,6 +317,14 @@ void RaptorDbwCAN::recvCAN(const Frame::SharedPtr msg)
       case ID_STEERING_CMD:
         break;
       case ID_GEAR_CMD:
+        break;
+      case ID_DUMP_BED_CMD:
+        break;
+      case ID_ENGINE_CMD:
+        break;
+      case ID_ARTICULATION_CMD:
+        break;
+      case ID_ACTION_CMD:
         break;
       default:
         break;
@@ -287,18 +337,21 @@ void RaptorDbwCAN::recvBrakeRpt(const Frame::SharedPtr msg)
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_BRAKE_REPORT);
 
   if (msg->dlc >= message->GetDlc()) {
+    BrakeReport brakeReport{};
+    bool brakeSystemFault{false}, dbwSystemFault{false}, driverActivity{false};
     message->SetFrame(msg);
 
-    bool brakeSystemFault =
+    brakeReport.fault_brake_system =
       message->GetSignal("DBW_BrakeFault")->GetResult() ? true : false;
-    bool dbwSystemFault = brakeSystemFault;
-    bool driverActivity = message->GetSignal("DBW_BrakeDriverActivity")->GetResult() ? true : false;
+
+    brakeSystemFault = brakeReport.fault_brake_system;
+    dbwSystemFault = brakeSystemFault;
+    driverActivity = message->GetSignal("DBW_BrakeDriverActivity")->GetResult() ? true : false;
 
     setFault(FAULT_BRAKE, brakeSystemFault);
     faultWatchdog(dbwSystemFault, brakeSystemFault);
     setOverride(OVR_BRAKE, driverActivity);
 
-    BrakeReport brakeReport;
     brakeReport.header.stamp = msg->header.stamp;
     brakeReport.pedal_position = message->GetSignal("DBW_BrakePdlDriverInput")->GetResult();
     brakeReport.pedal_output = message->GetSignal("DBW_BrakePdlPosnFdbck")->GetResult();
@@ -306,8 +359,6 @@ void RaptorDbwCAN::recvBrakeRpt(const Frame::SharedPtr msg)
     brakeReport.enabled =
       message->GetSignal("DBW_BrakeEnabled")->GetResult() ? true : false;
     brakeReport.driver_activity = driverActivity;
-
-    brakeReport.fault_brake_system = brakeSystemFault;
 
     brakeReport.rolling_counter = message->GetSignal("DBW_BrakeRollingCntr")->GetResult();
 
@@ -456,6 +507,7 @@ void RaptorDbwCAN::recvGearRpt(const Frame::SharedPtr msg)
 
     out.enabled = message->GetSignal("DBW_PrndCtrlEnabled")->GetResult() ? true : false;
     out.state.gear = message->GetSignal("DBW_PrndStateActual")->GetResult();
+    out.state_des.gear = message->GetSignal("DBW_PrndStateDes")->GetResult();
     out.driver_activity = driverActivity;
     out.gear_select_system_fault =
       message->GetSignal("DBW_PrndFault")->GetResult() ? true : false;
@@ -465,6 +517,8 @@ void RaptorDbwCAN::recvGearRpt(const Frame::SharedPtr msg)
     out.trans_curr_gear = message->GetSignal("DBW_TransCurGear")->GetResult();
     out.gear_mismatch_flash =
       message->GetSignal("DBW_PrndMismatchFlash")->GetResult() ? true : false;
+
+    out.rolling_counter = message->GetSignal("DBW_PrndRollingCntr")->GetResult();
 
     if (out.gear_mismatch_flash) {
       std::string err_msg(
@@ -831,6 +885,16 @@ void RaptorDbwCAN::recvOtherActuatorsRpt(const Frame::SharedPtr msg)
       "DBW_HighBeamState")->GetResult();
     out.low_beam_state.status = message->GetSignal(
       "DBW_LowBeamState")->GetResult();
+    out.running_lights_state.status = message->GetSignal(
+      "DBW_RunningLightsState")->GetResult();
+    out.mode_light_red = message->GetSignal(
+      "DBW_ModeLightState_Red")->GetResult() ? true : false;
+    out.mode_light_yellow = message->GetSignal(
+      "DBW_ModeLightState_Yellow")->GetResult() ? true : false;
+    out.mode_light_green = message->GetSignal(
+      "DBW_ModeLightState_Green")->GetResult() ? true : false;
+    out.mode_light_blue = message->GetSignal(
+      "DBW_ModeLightState_Blue")->GetResult() ? true : false;
 
     out.front_wiper_state.status = message->GetSignal(
       "DBW_FrontWiperState")->GetResult();
@@ -890,6 +954,142 @@ void RaptorDbwCAN::recvGpsRemainderRpt(const Frame::SharedPtr msg)
   }
 }
 
+void RaptorDbwCAN::recvActionRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_ACTION_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    ActionReport out{};
+    out.header.stamp = msg->header.stamp;
+
+    // Control mode status
+    out.enabled = message->GetSignal(
+      "DBW_ActionEnabled")->GetResult() ? true : false;
+    out.vehicle_stop_status.value = message->GetSignal(
+      "DBW_ActionVehStop")->GetResult();
+    out.emergency_brake_status.value = message->GetSignal(
+      "DBW_ActionEmergencyBrk")->GetResult();
+
+    // Fault handling
+    out.fault.status = message->GetSignal(
+      "DBW_ActionFault")->GetResult();
+    out.rolling_counter = message->GetSignal(
+      "DBW_ActionRollingCntr")->GetResult();
+
+    pub_action_report_->publish(out);
+  }
+}
+
+void RaptorDbwCAN::recvArticulationRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_ARTICULATION_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    ArticulationReport out{};
+    out.header.stamp = msg->header.stamp;
+
+    // Control status
+    out.enabled = message->GetSignal(
+      "DBW_ArticulationEnabled")->GetResult() ? true : false;
+    out.control_type.value = message->GetSignal(
+      "DBW_ArticulationCtrlType")->GetResult();
+    out.angle_actual = message->GetSignal(
+      "DBW_ArticulationAngleAct")->GetResult();
+    out.angle_desired = message->GetSignal(
+      "DBW_ArticulationAngleDes")->GetResult();
+    out.angle_steer = message->GetSignal(
+      "DBW_ArticulationSteerWheelAng")->GetResult();
+
+    // Fault handling
+    out.fault.status = message->GetSignal(
+      "DBW_ArticulationFault")->GetResult();
+    out.driver_activity = message->GetSignal(
+      "DBW_ArticulationDriverActivity")->GetResult() ? true : false;
+    out.rolling_counter = message->GetSignal(
+      "DBW_ArticulationRollingCntr")->GetResult();
+
+    pub_articulation_report_->publish(out);
+  }
+}
+
+void RaptorDbwCAN::recvDumpBedRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_DUMP_BED_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    DumpBedReport out{};
+    out.header.stamp = msg->header.stamp;
+
+    // Control status
+    out.enabled = message->GetSignal(
+      "DBW_DumpBedEnabled")->GetResult() ? true : false;
+    out.control_type.value = message->GetSignal(
+      "DBW_DumpBedCtrlType")->GetResult();
+    out.mode_actual.value = message->GetSignal(
+      "DBW_DumpBedModeAct")->GetResult();
+    out.mode_desired.value = message->GetSignal(
+      "DBW_DumpBedModeDes")->GetResult();
+    out.angle_actual = message->GetSignal(
+      "DBW_DumpBedAngleAct")->GetResult();
+    out.angle_desired = message->GetSignal(
+      "DBW_DumpBedAngleDes")->GetResult();
+    out.lever_pct_actual = message->GetSignal(
+      "DBW_DumpBedLeverPercentReqAct")->GetResult();
+    out.lever_pct_desired = message->GetSignal(
+      "DBW_DumpBedLeverPercentReqDes")->GetResult();
+
+    // Fault handling
+    out.fault.status = message->GetSignal(
+      "DBW_DumpBedFault")->GetResult();
+    out.driver_activity = message->GetSignal(
+      "DBW_DumpBedDriverActivity")->GetResult() ? true : false;
+    out.rolling_counter = message->GetSignal(
+      "DBW_DumpBedRollingCntr")->GetResult();
+
+    pub_dump_bed_report_->publish(out);
+  }
+}
+
+void RaptorDbwCAN::recvEngineRpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_ENGINE_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    EngineReport out{};
+    out.header.stamp = msg->header.stamp;
+
+    // Control mode status
+    out.enabled = message->GetSignal(
+      "DBW_EngineEnabled")->GetResult() ? true : false;
+    out.control_type.value = message->GetSignal(
+      "DBW_EngineCtrlType")->GetResult();
+    out.mode_actual.value = message->GetSignal(
+      "DBW_EngineModeAct")->GetResult();
+    out.mode_actual.value = message->GetSignal(
+      "DBW_EngineModeDes")->GetResult();
+
+    // Fault handling
+    out.eng_key_mismatch.status = message->GetSignal(
+      "DBW_EngineKeyStateMismatch")->GetResult();
+    out.fault.status = message->GetSignal(
+      "DBW_EngineFault")->GetResult();
+    out.driver_activity = message->GetSignal(
+      "DBW_EngineDriverActivity")->GetResult() ? true : false;
+    out.rolling_counter = message->GetSignal(
+      "DBW_EngineRollingCntr")->GetResult();
+
+    pub_engine_report_->publish(out);
+  }
+}
+
 void RaptorDbwCAN::recvBrakeCmd(const BrakeCmd::SharedPtr msg)
 {
   // TODO(NERaptor): add checksum support
@@ -946,7 +1146,7 @@ void RaptorDbwCAN::recvAcceleratorPedalCmd(
 
   message->GetSignal("AKit_AccelPdlReq")->SetResult(0);
   message->GetSignal("AKit_AccelPdlEnblReq")->SetResult(0);
-  message->GetSignal("Akit_AccelPdlIgnoreDriverOvrd")->SetResult(0);
+  message->GetSignal("AKit_AccelPdlIgnoreDriverOvrd")->SetResult(0);
   message->GetSignal("AKit_AccelPdlRollingCntr")->SetResult(0);
   message->GetSignal("AKit_AccelReqType")->SetResult(0);
   message->GetSignal("AKit_AccelPcntTorqueReq")->SetResult(0);
@@ -982,7 +1182,7 @@ void RaptorDbwCAN::recvAcceleratorPedalCmd(
   cnt->SetResult(msg->rolling_counter);
 
   if (msg->ignore) {
-    message->GetSignal("Akit_AccelPdlIgnoreDriverOvrd")->SetResult(1);
+    message->GetSignal("AKit_AccelPdlIgnoreDriverOvrd")->SetResult(1);
   }
 
   Frame frame = message->GetFrame();
@@ -1083,7 +1283,7 @@ void RaptorDbwCAN::recvGlobalEnableCmd(const GlobalEnableCmd::SharedPtr msg)
   message->GetSignal("AKit_GlobalByWireEnblReq")->SetResult(0);
   message->GetSignal("AKit_EnblJoystickLimits")->SetResult(0);
   message->GetSignal("AKit_SoftwareBuildNumber")->SetResult(0);
-  message->GetSignal("Akit_GlobalEnblChecksum")->SetResult(0);
+  message->GetSignal("AKit_GlobalEnblChecksum")->SetResult(0);
 
   if (enabled()) {
     if (msg->global_enable) {
@@ -1124,36 +1324,180 @@ void RaptorDbwCAN::recvMiscCmd(const MiscCmd::SharedPtr msg)
   message->GetSignal("AKit_HornReq")->SetResult(0);
   message->GetSignal("AKit_LowBeamReq")->SetResult(0);
   message->GetSignal("AKit_DoorLockReq")->SetResult(0);
+  message->GetSignal("AKit_RunningLightsReq")->SetResult(0);
+  message->GetSignal("AKit_ModeLight_Red")->SetResult(0);
+  message->GetSignal("AKit_ModeLight_Yellow")->SetResult(0);
+  message->GetSignal("AKit_ModeLight_Green")->SetResult(0);
+  message->GetSignal("AKit_ModeLight_Blue")->SetResult(0);
+  message->GetSignal("AKit_DiffLock")->SetResult(0);
 
   if (enabled()) {
+    message->GetSignal("AKit_IgnitionReq")->SetResult(msg->ignition_cmd.status);
+    message->GetSignal("AKit_HornReq")->SetResult(msg->horn_cmd);
+    message->GetSignal("AKit_DiffLock")->SetResult(msg->diff_lock);
+
+    // Lights
     message->GetSignal("AKit_TurnSignalReq")->SetResult(msg->cmd.value);
-
-    message->GetSignal("AKit_RightRearDoorReq")->SetResult(msg->door_request_right_rear.value);
     message->GetSignal("AKit_HighBeamReq")->SetResult(msg->high_beam_cmd.status);
+    message->GetSignal("AKit_LowBeamReq")->SetResult(msg->low_beam_cmd.status);
+    message->GetSignal("AKit_RunningLightsReq")->SetResult(msg->running_lights.status);
+    message->GetSignal("AKit_ModeLight_Red")->SetResult(msg->mode_light_red);
+    message->GetSignal("AKit_ModeLight_Yellow")->SetResult(msg->mode_light_yellow);
+    message->GetSignal("AKit_ModeLight_Green")->SetResult(msg->mode_light_green);
+    message->GetSignal("AKit_ModeLight_Blue")->SetResult(msg->mode_light_blue);
 
+    // Wipers
     message->GetSignal("AKit_FrontWiperReq")->SetResult(msg->front_wiper_cmd.status);
     message->GetSignal("AKit_RearWiperReq")->SetResult(msg->rear_wiper_cmd.status);
 
-    message->GetSignal("AKit_IgnitionReq")->SetResult(msg->ignition_cmd.status);
-
+    // Doors
+    message->GetSignal("AKit_RightRearDoorReq")->SetResult(msg->door_request_right_rear.value);
     message->GetSignal("AKit_LeftRearDoorReq")->SetResult(msg->door_request_left_rear.value);
     message->GetSignal("AKit_LiftgateDoorReq")->SetResult(msg->door_request_lift_gate.value);
+    message->GetSignal("AKit_DoorLockReq")->SetResult(msg->door_lock_cmd.value);
 
+    // Block driver input
     message->GetSignal("AKit_BlockBasicCruiseCtrlBtns")->SetResult(
       msg->block_standard_cruise_buttons);
     message->GetSignal("AKit_BlockAdapCruiseCtrlBtns")->SetResult(
       msg->block_adaptive_cruise_buttons);
     message->GetSignal("AKit_BlockTurnSigStalkInpts")->SetResult(msg->block_turn_signal_stalk);
-
-    message->GetSignal("AKit_HornReq")->SetResult(msg->horn_cmd);
-    message->GetSignal("AKit_LowBeamReq")->SetResult(msg->low_beam_cmd.status);
-    message->GetSignal("AKit_DoorLockReq")->SetResult(msg->door_lock_cmd.value);
   }
 
   message->GetSignal("AKit_OtherRollingCntr")->SetResult(msg->rolling_counter);
 
   Frame frame = message->GetFrame();
 
+  pub_can_->publish(frame);
+}
+
+void RaptorDbwCAN::recvActionCmd(const ActionCmd::SharedPtr msg)
+{
+  // TODO(NERaptor): add checksum support
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_ActionRequest");
+
+  // Init all signal values to 0
+  message->GetSignal("AKit_ActionChecksum")->SetResult(0);
+  message->GetSignal("AKit_ActionCtrlEnblReq")->SetResult(0);
+  message->GetSignal("AKit_ActionVehStopReq")->SetResult(0);
+  message->GetSignal("AKit_ActionEmergencyBrkReq")->SetResult(0);
+
+  // TODO(NERaptor): Add enable checks
+  if (enabled()) {
+    message->GetSignal("AKit_ActionCtrlEnblReq")->SetResult(msg->enable);
+    message->GetSignal("AKit_ActionVehStopReq")->SetResult(msg->vehicle_stop.value);
+    message->GetSignal("AKit_ActionEmergencyBrkReq")->SetResult(msg->emergency_brake.value);
+  }
+
+  // Set rolling counter
+  message->GetSignal("AKit_ActionRollingCntr")->SetResult(msg->rolling_counter);
+
+  // Publish message to CAN
+  can_msgs::msg::Frame frame = message->GetFrame();
+  pub_can_->publish(frame);
+}
+
+void RaptorDbwCAN::recvArticulationCmd(const ArticulationCmd::SharedPtr msg)
+{
+  // TODO(NERaptor): add checksum support
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_ArticulationRequest");
+
+  // Init all signal values to 0
+  message->GetSignal("AKit_ArticulationChecksum")->SetResult(0);
+  message->GetSignal("AKit_ArticulationCtrlEnblReq")->SetResult(0);
+  message->GetSignal("AKit_ArticulationReqType")->SetResult(0);
+  message->GetSignal("AKit_ArticulationAngleReq")->SetResult(0);
+  message->GetSignal("AKit_ArticulationIgnoreDrvrOvrd")->SetResult(0);
+  message->GetSignal("AKit_ArticulationVelocityLimit")->SetResult(0);
+
+  // TODO(NERaptor): Add enable checks
+  if (enabled()) {
+    // TODO(NERaptor): add Control Mode logic
+    // TODO(NERaptor): add angle limit check
+    // Control signals
+    message->GetSignal("AKit_ArticulationReqType")->SetResult(msg->control_type.value);
+    message->GetSignal("AKit_ArticulationAngleReq")->SetResult(msg->angle);
+
+    // Enables & limits
+    message->GetSignal("AKit_ArticulationCtrlEnblReq")->SetResult(msg->enable);
+    message->GetSignal("AKit_ArticulationIgnoreDrvrOvrd")->SetResult(msg->ignore_driver);
+    message->GetSignal("AKit_ArticulationVelocityLimit")->SetResult(msg->velocity_limit);
+  }
+
+  // Set rolling counter
+  message->GetSignal("AKit_ArticulationRollingCntr")->SetResult(msg->rolling_counter);
+
+  // Publish message to CAN
+  can_msgs::msg::Frame frame = message->GetFrame();
+  pub_can_->publish(frame);
+}
+
+void RaptorDbwCAN::recvDumpBedCmd(const DumpBedCmd::SharedPtr msg)
+{
+  // TODO(NERaptor): add checksum support
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_DumpBedRequest");
+
+  // Init all signal values to 0
+  message->GetSignal("AKit_DumpBedChecksum")->SetResult(0);
+  message->GetSignal("AKit_DumpBedCtrlEnblReq")->SetResult(0);
+  message->GetSignal("AKit_DumpBedReqType")->SetResult(0);
+  message->GetSignal("AKit_DumpBedModeReq")->SetResult(0);
+  message->GetSignal("AKit_DumpBedLeverPercentReq")->SetResult(0);
+  message->GetSignal("AKit_DumpBedAnglReq")->SetResult(0);
+  message->GetSignal("AKit_DumpBedIgnoreDriverOrvd")->SetResult(0);
+  message->GetSignal("AKit_DumpBedVelocityLimit")->SetResult(0);
+
+  // TODO(NERaptor): Add enable checks
+  if (enabled()) {
+    // TODO(NERaptor): add Control Mode logic
+    // TODO(NERaptor): add angle limit check
+    // Control signals
+    message->GetSignal("AKit_DumpBedReqType")->SetResult(msg->control_type.value);
+    message->GetSignal("AKit_DumpBedModeReq")->SetResult(msg->mode_type.value);
+    message->GetSignal("AKit_DumpBedLeverPercentReq")->SetResult(msg->lever_pct);
+    message->GetSignal("AKit_DumpBedAnglReq")->SetResult(msg->angle);
+
+    // Enables & limits
+    message->GetSignal("AKit_DumpBedCtrlEnblReq")->SetResult(msg->enable);
+    message->GetSignal("AKit_DumpBedIgnoreDriverOrvd")->SetResult(msg->ignore_driver);
+    message->GetSignal("AKit_DumpBedVelocityLimit")->SetResult(msg->velocity_limit);
+  }
+
+  // Set rolling counter
+  message->GetSignal("AKit_DumpBedRollingCntr")->SetResult(msg->rolling_counter);
+
+  // Publish message to CAN
+  can_msgs::msg::Frame frame = message->GetFrame();
+  pub_can_->publish(frame);
+}
+
+void RaptorDbwCAN::recvEngineCmd(const EngineCmd::SharedPtr msg)
+{
+  // TODO(NERaptor): add checksum support
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_EngineRequest");
+
+  // Init all signal values to 0
+  message->GetSignal("AKit_EngineChecksum")->SetResult(0);
+  message->GetSignal("AKit_EngineCtrlEnblReq")->SetResult(0);
+  message->GetSignal("AKit_EngineModeReq")->SetResult(0);
+  message->GetSignal("AKit_EngineReqType")->SetResult(0);
+
+  // TODO(NERaptor): Add enable checks
+  if (enabled()) {
+    // TODO(NERaptor): add Control Mode logic
+    // Control signals
+    message->GetSignal("AKit_EngineModeReq")->SetResult(msg->mode_type.value);
+    message->GetSignal("AKit_EngineReqType")->SetResult(msg->control_type.value);
+
+    // Enables
+    message->GetSignal("AKit_EngineCtrlEnblReq")->SetResult(msg->enable);
+  }
+
+  // Set rolling counter
+  message->GetSignal("AKit_EngineRollingCntr")->SetResult(msg->rolling_counter);
+
+  // Publish message to CAN
+  can_msgs::msg::Frame frame = message->GetFrame();
   pub_can_->publish(frame);
 }
 
@@ -1193,7 +1537,7 @@ void RaptorDbwCAN::timerCallback()
       NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_AccelPdlRequest");
       message->GetSignal("AKit_AccelPdlReq")->SetResult(0);
       message->GetSignal("AKit_AccelPdlEnblReq")->SetResult(0);
-      message->GetSignal("Akit_AccelPdlIgnoreDriverOvrd")->SetResult(0);
+      message->GetSignal("AKit_AccelPdlIgnoreDriverOvrd")->SetResult(0);
       // message->GetSignal("AKit_AccelPdlCtrlMode")->SetResult(0);
       pub_can_->publish(message->GetFrame());
     }

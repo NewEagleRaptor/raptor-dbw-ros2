@@ -93,6 +93,7 @@ public:
     bool enable,
     double svel,
     float max_steer_angle,
+    float max_dump_angle,
     float max_articulation_angle);
 
 private:
@@ -125,7 +126,8 @@ private:
   bool ignore_;     // Ignore driver overrides
   bool enable_;     // Use enable and disable buttons
   double svel_;     // Steering command speed
-  float max_steer_angle_;  // Maximum steering angle allowed
+  float max_steer_angle_;   // Maximum steering angle allowed
+  float max_dump_angle_;    // Maximum angle of the dump truck bucket
   float max_articulation_angle_;  // Maximum articulation angle allowed
 
   // Variables

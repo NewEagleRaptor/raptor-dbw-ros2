@@ -1,9 +1,7 @@
 # Control signals
-EngineControlMode control_type
-EngineModeRequest mode_type
-
-# Enables
 bool enable
+VehicleStop vehicle_stop
+EmergencyBrake emergency_brake
 
 # Watchdog counter
 uint8 rolling_counter

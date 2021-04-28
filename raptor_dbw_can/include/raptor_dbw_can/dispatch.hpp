@@ -77,6 +77,14 @@ enum ListMessageIDs
   ID_FAULT_ACTION_REPORT        = 0x1F15,   /**< Fault action report ID */
   ID_GPS_REFERENCE_REPORT       = 0x1F16,   /**< GPS reference report ID */
   ID_GPS_REMAINDER_REPORT       = 0x1F17,   /**< GPS remainder report ID */
+  ID_ENGINE_REPORT              = 0x1F20,   /**< Engine report ID */
+  ID_ARTICULATION_REPORT        = 0x1F21,   /**< Articulation report ID */
+  ID_DUMP_BED_REPORT            = 0x1F22,   /**< Dump bed report ID */
+  ID_ACTION_REPORT              = 0x1F23,   /**< Action report ID */
+  ID_DUMP_BED_CMD               = 0x2F07,   /**< Dump bed command ID */
+  ID_ENGINE_CMD                 = 0x2F08,   /**< Engine command ID */
+  ID_ARTICULATION_CMD           = 0x2F09,   /**< Articulation command ID */
+  ID_ACTION_CMD                 = 0x2F0A,   /**< Action command ID */
   ID_HMI_GLOBAL_ENABLE_REPORT   = 0x3f01,   /**< HMI global enable report ID */
 };
 

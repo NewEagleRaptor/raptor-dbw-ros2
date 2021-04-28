@@ -1,6 +1,6 @@
 # Control signals
-ArticulationControlMode cmd
-float32 angle             # deg
+ArticulationControlMode control_type
+float32 angle             # deg - counterclockwise is positive
 
 # Enables & limits
 bool enable

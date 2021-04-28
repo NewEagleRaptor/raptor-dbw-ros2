@@ -39,12 +39,14 @@ RaptorDbwJoystick::RaptorDbwJoystick(
   bool enable,
   double svel,
   float max_steer_angle,
+  float max_dump_angle,
   float max_articulation_angle)
 : Node("raptor_dbw_joystick_node", options),
   ignore_{ignore},
   enable_{enable},
   svel_{svel},
   max_steer_angle_{max_steer_angle},
+  max_dump_angle_{max_dump_angle},
   max_articulation_angle_{max_articulation_angle}
 {
   data_.brake_joy = 0.0;

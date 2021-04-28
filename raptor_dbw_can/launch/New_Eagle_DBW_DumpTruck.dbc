@@ -148,6 +148,7 @@ BO_ 2147495686 AKit_OtherActuators: 8 AKit
  SG_ AKit_ModeLight_Yellow : 41|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ AKit_ModeLight_Green : 42|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ AKit_ModeLight_Blue : 43|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ AKit_DiffLock : 44|1@1+ (1,0) [0|1] "Bool" Vector__XXX
 
 BO_ 2147495683 AKit_SteeringRequest: 8 AKit
  SG_ AKit_SteeringWhlAngleReq m1 : 0|14@1- (0.1,0) [-819.2|819.1] "deg" Vector__XXX
@@ -161,7 +162,7 @@ BO_ 2147495683 AKit_SteeringRequest: 8 AKit
  SG_ AKit_SteeringChecksum : 56|8@1+ (1,0) [0|255] "" Vector__XXX
 
 BO_ 2147495684 AKit_BrakeRequest: 8 AKit
- SG_ AKit_BrakePedalReq m0 : 0|14@1+ (0.1,0) [0|150] "%-pedal" Vector__XXX
+ SG_ AKit_BrakePedalReq m0 : 0|14@1+ (0.1,0) [0|100] "%-pedal" Vector__XXX
  SG_ AKit_BrakeRollingCntr : 48|4@1+ (1,0) [0|15] "" Vector__XXX
  SG_ AKit_BrakeCtrlEnblReq : 52|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ AKit_BrakeCtrlReqType M : 40|3@0+ (1,0) [0|7] "Enum" Vector__XXX
@@ -327,23 +328,24 @@ BO_ 2147491603 DBW_SteeringReport2: 8 DBW
  SG_ DBW_PacificaSteerTrq : 16|11@1+ (0.0078125,-8) [-8|7.99219] "Nm" Vector__XXX
 
 BO_ 2147491604 DBW_OtherActuatorsReport: 8 DBW
- SG_ DBW_TurnSignalState : 4|3@1+ (1,0) [0|0] "Enum" Vector__XXX
- SG_ DBW_RightRearDoorState : 8|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_HighBeamState : 28|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_FrontWiperState : 16|4@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_RearWiperState : 20|4@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_IgnitionState : 24|3@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_LeftRearDoorState : 10|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_LiftgateDoorState : 32|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_HornState : 12|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_LowBeamState : 30|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_OtherActRollingCntr : 56|4@1+ (1,0) [0|0] "" Vector__XXX
- SG_ DBW_DoorLockState : 0|8@1+ (1,0) [0|0] "Enum" Vector__XXX
- SG_ DBW_RunningLightsState : 34|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ DBW_TurnSignalState : 4|3@1+ (1,0) [0|7] "Enum" Vector__XXX
+ SG_ DBW_RightRearDoorState : 8|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ DBW_HighBeamState : 28|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ DBW_FrontWiperState : 16|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ DBW_RearWiperState : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ DBW_IgnitionState : 24|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ DBW_LeftRearDoorState : 10|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ DBW_LiftgateDoorState : 32|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ DBW_HornState : 12|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ DBW_LowBeamState : 30|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ DBW_OtherActRollingCntr : 56|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ DBW_DoorLockState : 0|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ DBW_RunningLightsState : 34|2@1+ (1,0) [0|3] "" Vector__XXX
  SG_ DBW_ModeLightState_Red : 40|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_ModeLightState_Yellow : 41|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_ModeLightState_Green : 42|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_ModeLightState_Blue : 43|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ DBW_DiffLockState : 44|2@1+ (1,0) [0|3] "Enum" Vector__XXX
 
 BO_ 2147491605 DBW_FaultActionsReport: 8 DBW
  SG_ DBW_FltAct_AutonDsblNoBrakes : 0|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -889,7 +891,8 @@ CM_ SG_ 2147495686 AKit_HornReq "Currently supported by Prius & Volvo only. Cont
 CM_ SG_ 2147495686 AKit_LowBeamReq "Currently supported by Prius & Volvo only. Contact New Eagle if you are interested in adding support for Low Beam control on a Pacifica (in addition to the automatic-low-beam feature on the OEM vehicle).
 
 Auto low beam is supported by CAT. They will turn on if the running lights are requested to be on.";
-CM_ SG_ 2147495686 AKit_RunningLightsReq "Currently supported by CAT";
+CM_ SG_ 2147495686 AKit_RunningLightsReq "";
+CM_ SG_ 2147495686 AKit_DiffLock "Engage differential axle lock.";
 CM_ BO_ 2147495683 "Must be sent continuously, even if you're not planning to enable this actuator.
 
 ROS Topic:";
@@ -1346,6 +1349,7 @@ VAL_ 2147495686 AKit_ModeLight_Red 1 "On" 0 "Off" ;
 VAL_ 2147495686 AKit_ModeLight_Yellow 1 "On" 0 "Off" ;
 VAL_ 2147495686 AKit_ModeLight_Green 1 "On" 0 "Off" ;
 VAL_ 2147495686 AKit_ModeLight_Blue 1 "On" 0 "Off" ;
+VAL_ 2147495686 AKit_DiffLock 1 "On" 0 "Off" ;
 VAL_ 2147495683 AKit_SteeringReqType 0 "Open Loop (Steering %-Torque)" 1 "Actuator-Level Closed Loop (Steering Wheel Angular Position)" 2 "Vehicle-Level Closed Loop (Vehicle Curvature)" ;
 VAL_ 2147495684 AKit_BrakeCtrlReqType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Brake %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;
 VAL_ 2147495684 AKit_ParkingBrkReq 0 "No Request" 1 "Off" 2 "On" ;
@@ -1371,6 +1375,7 @@ VAL_ 2147491604 DBW_LiftgateDoorState 0 "Undefined" 1 "Closed" 2 "Open" 3 "SNA (
 VAL_ 2147491604 DBW_HornState 0 "Off" 1 "On" 3 "SNA (Faulted or Not Supported)" ;
 VAL_ 2147491604 DBW_LowBeamState 0 "Undefined/Off" 2 "On" 1 "Auto" 3 "SNA (Faulted or Not Supported)" ;
 VAL_ 2147491604 DBW_RunningLightsState 0 "Undefined/Off" 2 "On" 1 "Auto" 3 "SNA (Faulted or Not Supported)" ;
+VAL_ 2147491604 DBW_DiffLockState 1 "On" 0 "Off" 3 "SNA" ;
 VAL_ 2147495687 AKit_DumpBedReqType 0 "Mode" 1 "Angle" ;
 VAL_ 2147495687 AKit_DumpBedModeReq 0 "Hold" 1 "Float" 2 "Lower" 3 "Raise" 4 "Auto Lower" 5 "Auto Raise" ;
 VAL_ 2147495689 AKit_ArticulationReqType 1 "Angle" 0 "Flowrate" ;

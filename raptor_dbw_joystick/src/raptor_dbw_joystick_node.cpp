@@ -43,12 +43,14 @@ int main(int argc, char ** argv)
   temp->declare_parameter("enable");
   temp->declare_parameter("svel");
   temp->declare_parameter("max_steer_angle");
+  temp->declare_parameter("max_dump_angle");
   temp->declare_parameter("max_articulation_angle");
 
   bool n_ignore = temp->get_parameter("ignore").as_bool();
   bool n_enable = temp->get_parameter("enable").as_bool();
   double n_svel = temp->get_parameter("svel").as_double();
   float n_max_steer_angle = temp->get_parameter("max_steer_angle").as_double();
+  float n_max_dump_angle = temp->get_parameter("max_dump_angle").as_double();
   float n_max_articulation_angle = temp->get_parameter("max_articulation_angle").as_double();
 
   // Create RaptorDbwJoystick class
@@ -58,6 +60,7 @@ int main(int argc, char ** argv)
     n_enable,
     n_svel,
     n_max_steer_angle,
+    n_max_dump_angle,
     n_max_articulation_angle
   );
 

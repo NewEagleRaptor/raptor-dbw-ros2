@@ -1,6 +1,6 @@
 # Control signals
-DumpBedControlMode cmd
-DumpBedModeRequest mode
+DumpBedControlMode control_type
+DumpBedModeRequest mode_type
 float32 lever_pct         # 0-100%
 float32 angle             # deg
 
