@@ -27,6 +27,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 #include <memory>
+#include <string>
 
 #include "raptor_dbw_can/raptor_dbw_can.hpp"
 
