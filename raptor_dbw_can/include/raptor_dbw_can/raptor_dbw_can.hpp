@@ -131,7 +131,10 @@ namespace raptor_dbw_can
 class RaptorDbwCAN : public rclcpp::Node
 {
 public:
-  explicit RaptorDbwCAN(const rclcpp::NodeOptions & options);
+  explicit RaptorDbwCAN(
+    const rclcpp::NodeOptions & options,
+    std::string dbw_dbc_file,
+    float max_steer_angle);
   ~RaptorDbwCAN();
 
 private:
@@ -171,8 +174,11 @@ private:
   rclcpp::Clock m_clock;
   static constexpr int64_t CLOCK_1_SEC = 1000;  // duration in milliseconds
 
+  // Parameters from launch
+  std::string dbw_dbc_file_;
   float max_steer_angle_;
 
+  // Other useful variables
   bool prev_enable_;
   bool enable_;
   bool override_brake_;
@@ -296,7 +302,6 @@ private:
   rclcpp::Publisher<GpsRemainderReport>::SharedPtr pub_gps_remainder_report_;
 
   NewEagle::Dbc dbwDbc_;
-  std::string dbcFile_;
 
   // Test stuff
   rclcpp::Publisher<raptor_pdu_msgs::msg::RelayCommand>::SharedPtr pdu1_relay_pub_;

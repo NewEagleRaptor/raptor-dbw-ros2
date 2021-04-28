@@ -33,15 +33,35 @@
 #include "raptor_dbw_joystick/raptor_dbw_joystick.hpp"
 
 #include <memory>
+#include <string>
 
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
-  rclcpp::NodeOptions options;
-  rclcpp::executors::SingleThreadedExecutor exec;
+  rclcpp::NodeOptions options{};
+  rclcpp::executors::SingleThreadedExecutor exec{};
+
+  // Get parameter values
+  auto temp = std::make_shared<rclcpp::Node>("raptor_dbw_joystick_node", options);
+  temp->declare_parameter("ignore");
+  temp->declare_parameter("enable");
+  temp->declare_parameter("svel");
+  temp->declare_parameter("max_steer_angle");
+
+  bool n_ignore = temp->get_parameter("ignore").as_bool();
+  bool n_enable = temp->get_parameter("enable").as_bool();
+  double n_svel = temp->get_parameter("svel").as_double();
+  float n_max_steer_angle = temp->get_parameter("max_steer_angle").as_double();
 
   // Create RaptorDbwJoystick class
-  auto node = std::make_shared<raptor_dbw_joystick::RaptorDbwJoystick>(options);
+  auto node = std::make_shared<raptor_dbw_joystick::RaptorDbwJoystick>(
+    options,
+    n_ignore,
+    n_enable,
+    n_svel,
+    n_max_steer_angle
+  );
+
   exec.add_node(node->get_node_base_interface());
   exec.spin();
 

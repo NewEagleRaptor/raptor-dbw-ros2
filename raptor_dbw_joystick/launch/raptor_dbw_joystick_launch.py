@@ -76,7 +76,7 @@ def generate_launch_description():
                 node_namespace='raptor_dbw_interface',
                 parameters=[
                     {'dbw_dbc_file': dbc_file_path},
-                    {'max_steer_angle': 470.0}
+                    params_file
                 ],
             ),
             Node(
