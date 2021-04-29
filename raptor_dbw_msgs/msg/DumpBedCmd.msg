@@ -2,7 +2,7 @@
 DumpBedControlMode control_type
 DumpBedModeRequest mode_type
 float32 lever_pct         # 0-100%
-float32 angle             # deg
+float32 angle_cmd         # deg
 
 # Enables & limits
 bool enable

@@ -1418,11 +1418,18 @@ void RaptorDbwCAN::recvArticulationCmd(const ArticulationCmd::SharedPtr msg)
 
   // Only send values if DBW && Articulation Command are both enabled.
   if (enabled() && msg->enable) {
-    // TODO(NERaptor): add angle limit check
     // Control signals
     if (msg->control_type.value == ArticulationControlMode::ANGLE) {
       message->GetSignal("AKit_ArticulationReqType")->SetResult(msg->control_type.value);
-      message->GetSignal("AKit_ArticulationAngleReq")->SetResult(msg->angle);
+
+      // Restrict articulation angle to specified range (-max angle -> max angle)
+      double angle_checked =
+        std::max(
+        -1.0F * max_articulation_angle_,
+        std::min(
+          max_articulation_angle_ * 1.0F, static_cast<float>(
+            msg->angle_cmd * 1.0F)));
+      message->GetSignal("AKit_ArticulationAngleReq")->SetResult(angle_checked);
     } else {
       // If mode is invalid, send mode == NONE
       message->GetSignal("AKit_ArticulationReqType")->SetResult(ArticulationControlMode::NONE);
@@ -1459,15 +1466,30 @@ void RaptorDbwCAN::recvDumpBedCmd(const DumpBedCmd::SharedPtr msg)
 
   // Only send values if DBW && Dump Bed Command are both enabled.
   if (enabled() && msg->enable) {
-    // TODO(NERaptor): add angle limit check
     // Control signals
     if (msg->control_type.value == DumpBedControlMode::MODE) {
       message->GetSignal("AKit_DumpBedReqType")->SetResult(msg->control_type.value);
       message->GetSignal("AKit_DumpBedModeReq")->SetResult(msg->mode_type.value);
-      message->GetSignal("AKit_DumpBedLeverPercentReq")->SetResult(msg->lever_pct);
+
+      // Only apply the Lever % command if the Mode says to use it
+      if ( (msg->mode_type.value == DumpBedModeRequest::LOWER) ||
+        (msg->mode_type.value == DumpBedModeRequest::RAISE) ||
+        (msg->mode_type.value == DumpBedModeRequest::AUTO_LOWER) ||
+        (msg->mode_type.value == DumpBedModeRequest::AUTO_RAISE))
+      {
+        message->GetSignal("AKit_DumpBedLeverPercentReq")->SetResult(msg->lever_pct);
+      }
     } else if (msg->control_type.value == DumpBedControlMode::ANGLE) {
       message->GetSignal("AKit_DumpBedReqType")->SetResult(msg->control_type.value);
-      message->GetSignal("AKit_DumpBedAnglReq")->SetResult(msg->angle);
+
+      // Restrict dump angle to specified range (0 -> max angle)
+      double angle_checked =
+        std::max(
+        0.0F,
+        std::min(
+          max_dump_angle_ * 1.0F, static_cast<float>(
+            msg->angle_cmd * 1.0F)));
+      message->GetSignal("AKit_DumpBedAnglReq")->SetResult(angle_checked);
     } else {
       // If mode is invalid, send mode == NONE
       message->GetSignal("AKit_DumpBedReqType")->SetResult(DumpBedControlMode::NONE);
