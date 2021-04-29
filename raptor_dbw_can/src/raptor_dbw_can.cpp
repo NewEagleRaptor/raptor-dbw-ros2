@@ -1609,16 +1609,24 @@ void RaptorDbwCAN::timerCallback()
     }
 
     if (overrides_[OVR_DUMP_BED]) {
-      NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_GearRequest");
-      message->GetSignal("AKit_PrndStateCmd")->SetResult(0);
-      message->GetSignal("AKit_PrndChecksum")->SetResult(0);
+      NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_DumpBedRequest");
+      message->GetSignal("AKit_DumpBedChecksum")->SetResult(0);
+      message->GetSignal("AKit_DumpBedCtrlEnblReq")->SetResult(0);
+      message->GetSignal("AKit_DumpBedReqType")->SetResult(0);
+      message->GetSignal("AKit_DumpBedModeReq")->SetResult(0);
+      message->GetSignal("AKit_DumpBedLeverPercentReq")->SetResult(0);
+      message->GetSignal("AKit_DumpBedAnglReq")->SetResult(0);
+      message->GetSignal("AKit_DumpBedIgnoreDriverOrvd")->SetResult(0);
+      message->GetSignal("AKit_DumpBedVelocityLimit")->SetResult(0);
       pub_can_->publish(message->GetFrame());
     }
 
     if (overrides_[OVR_ENGINE]) {
-      NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_GearRequest");
-      message->GetSignal("AKit_PrndStateCmd")->SetResult(0);
-      message->GetSignal("AKit_PrndChecksum")->SetResult(0);
+      NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_EngineRequest");
+      message->GetSignal("AKit_EngineChecksum")->SetResult(0);
+      message->GetSignal("AKit_EngineCtrlEnblReq")->SetResult(0);
+      message->GetSignal("AKit_EngineModeReq")->SetResult(0);
+      message->GetSignal("AKit_EngineReqType")->SetResult(0);
       pub_can_->publish(message->GetFrame());
     }
   }
