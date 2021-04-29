@@ -1473,9 +1473,7 @@ void RaptorDbwCAN::recvDumpBedCmd(const DumpBedCmd::SharedPtr msg)
 
       // Only apply the Lever % command if the Mode says to use it
       if ( (msg->mode_type.value == DumpBedModeRequest::LOWER) ||
-        (msg->mode_type.value == DumpBedModeRequest::RAISE) ||
-        (msg->mode_type.value == DumpBedModeRequest::AUTO_LOWER) ||
-        (msg->mode_type.value == DumpBedModeRequest::AUTO_RAISE))
+        (msg->mode_type.value == DumpBedModeRequest::RAISE))
       {
         message->GetSignal("AKit_DumpBedLeverPercentReq")->SetResult(msg->lever_pct);
       }
