@@ -56,7 +56,7 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
-            Node( # PDU node - 12V (ID 0xB0)
+            Node(  # PDU node - 12V (ID 0xB0)
                 package='raptor_pdu',
                 executable='pdu_node',
                 output='screen',
@@ -66,7 +66,7 @@ def generate_launch_description():
                     {"id": 0xB0}
                 ],
             ),
-            Node( # PDU node - 24V (ID 0xB1)
+            Node(  # PDU node - 24V (ID 0xB1)
                 package='raptor_pdu',
                 executable='pdu_node',
                 output='screen',

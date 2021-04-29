@@ -983,6 +983,7 @@ void RaptorDbwCAN::recvActionRpt(const can_msgs::msg::Frame::SharedPtr msg)
       "DBW_ActionFault")->GetResult();
     out.rolling_counter = message->GetSignal(
       "DBW_ActionRollingCntr")->GetResult();
+    setFault(FAULT_ACTION, (out.fault.status > 0) ? true : false);
 
     pub_action_report_->publish(out);
   }
@@ -1017,6 +1018,7 @@ void RaptorDbwCAN::recvArticulationRpt(const can_msgs::msg::Frame::SharedPtr msg
       "DBW_ArticulationDriverActivity")->GetResult() ? true : false;
     out.rolling_counter = message->GetSignal(
       "DBW_ArticulationRollingCntr")->GetResult();
+    setFault(FAULT_ARTIC, (out.fault.status > 0) ? true : false);
 
     pub_articulation_report_->publish(out);
   }
@@ -1057,6 +1059,8 @@ void RaptorDbwCAN::recvDumpBedRpt(const can_msgs::msg::Frame::SharedPtr msg)
       "DBW_DumpBedDriverActivity")->GetResult() ? true : false;
     out.rolling_counter = message->GetSignal(
       "DBW_DumpBedRollingCntr")->GetResult();
+    setFault(FAULT_DUMP_BED, (out.fault.status > 0) ? true : false);
+    setOverride(OVR_DUMP_BED, out.driver_activity);
 
     pub_dump_bed_report_->publish(out);
   }
@@ -1091,6 +1095,8 @@ void RaptorDbwCAN::recvEngineRpt(const can_msgs::msg::Frame::SharedPtr msg)
       "DBW_EngineDriverActivity")->GetResult() ? true : false;
     out.rolling_counter = message->GetSignal(
       "DBW_EngineRollingCntr")->GetResult();
+    setFault(FAULT_ENGINE, (out.fault.status > 0) ? true : false);
+    setOverride(OVR_ENGINE, out.driver_activity);
 
     pub_engine_report_->publish(out);
   }
@@ -1596,6 +1602,20 @@ void RaptorDbwCAN::timerCallback()
     }
 
     if (overrides_[OVR_GEAR]) {
+      NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_GearRequest");
+      message->GetSignal("AKit_PrndStateCmd")->SetResult(0);
+      message->GetSignal("AKit_PrndChecksum")->SetResult(0);
+      pub_can_->publish(message->GetFrame());
+    }
+
+    if (overrides_[OVR_DUMP_BED]) {
+      NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_GearRequest");
+      message->GetSignal("AKit_PrndStateCmd")->SetResult(0);
+      message->GetSignal("AKit_PrndChecksum")->SetResult(0);
+      pub_can_->publish(message->GetFrame());
+    }
+
+    if (overrides_[OVR_ENGINE]) {
       NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_GearRequest");
       message->GetSignal("AKit_PrndStateCmd")->SetResult(0);
       message->GetSignal("AKit_PrndChecksum")->SetResult(0);

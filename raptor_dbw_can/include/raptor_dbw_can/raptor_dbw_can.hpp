@@ -408,6 +408,8 @@ private:
     OVR_BRAKE,      /**< Brake override */
     OVR_GEAR,       /**< PRND gear override */
     OVR_STEER,      /**< Steering override */
+    OVR_DUMP_BED,   /**< Dump bed override */
+    OVR_ENGINE,     /**< Engine override */
     NUM_OVERRIDES   /**< Total number of driver overrides */
   };
 
@@ -418,6 +420,10 @@ private:
     FAULT_BRAKE,          /**< Brake fault */
     FAULT_STEER,          /**< Steering fault */
     FAULT_WATCH,          /**< Watchdog fault */
+    FAULT_ACTION,         /**< Action fault */
+    FAULT_ARTIC,          /**< Articulation fault */
+    FAULT_DUMP_BED,       /**< Dump bed fault */
+    FAULT_ENGINE,         /**< Engine fault */
     NUM_SERIOUS_FAULTS,   /**< Total number of serious faults (disables DBW) */
     FAULT_WATCH_BRAKES = NUM_SERIOUS_FAULTS,  /**< Watchdog braking fault */
     FAULT_WATCH_WARN,     /**< Watchdog non-braking fault warning */
@@ -440,13 +446,19 @@ private:
     "accelerator pedal",
     "brake",
     "PRND gear",
-    "steering"
+    "steering",
+    "dump bed",
+    "engine"
   };
   const std::string FAULT_SYSTEM[NUM_SERIOUS_FAULTS] = {
     "accelerator pedal",
     "brake",
     "steering",
-    "watchdog"
+    "watchdog",
+    "action",
+    "articulation",
+    "dump bed",
+    "engine"
   };
 
   bool overrides_[NUM_OVERRIDES];
@@ -459,14 +471,16 @@ private:
   inline bool fault()
   {
     return faults_[FAULT_BRAKE] || faults_[FAULT_ACCEL] || faults_[FAULT_STEER] ||
-           faults_[FAULT_WATCH];
+           faults_[FAULT_WATCH] || faults_[FAULT_ACTION] ||
+           faults_[FAULT_ARTIC] || faults_[FAULT_DUMP_BED] || faults_[FAULT_ENGINE];
   }
 
 /** \brief Check for an active driver override.
  * \returns TRUE if there is any active driver override, FALSE otherwise
  */
   inline bool override () {return overrides_[OVR_BRAKE] || overrides_[OVR_ACCEL] ||
-           overrides_[OVR_STEER] || overrides_[OVR_GEAR];}
+           overrides_[OVR_STEER] || overrides_[OVR_GEAR] || overrides_[OVR_DUMP_BED] ||
+           overrides_[OVR_ENGINE];}
 
 /** \brief Check for an active driver override.
  * \returns TRUE if DBW is enabled && there is any active driver override, FALSE otherwise
