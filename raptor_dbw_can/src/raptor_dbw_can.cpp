@@ -1388,8 +1388,8 @@ void RaptorDbwCAN::recvActionCmd(const ActionCmd::SharedPtr msg)
   message->GetSignal("AKit_ActionVehStopReq")->SetResult(0);
   message->GetSignal("AKit_ActionEmergencyBrkReq")->SetResult(0);
 
-  // TODO(NERaptor): Add enable checks
-  if (enabled()) {
+  // Only send values if DBW && Action Command are both enabled.
+  if (enabled() && msg->enable) {
     message->GetSignal("AKit_ActionCtrlEnblReq")->SetResult(msg->enable);
     message->GetSignal("AKit_ActionVehStopReq")->SetResult(msg->vehicle_stop.value);
     message->GetSignal("AKit_ActionEmergencyBrkReq")->SetResult(msg->emergency_brake.value);
@@ -1416,13 +1416,17 @@ void RaptorDbwCAN::recvArticulationCmd(const ArticulationCmd::SharedPtr msg)
   message->GetSignal("AKit_ArticulationIgnoreDrvrOvrd")->SetResult(0);
   message->GetSignal("AKit_ArticulationVelocityLimit")->SetResult(0);
 
-  // TODO(NERaptor): Add enable checks
-  if (enabled()) {
-    // TODO(NERaptor): add Control Mode logic
+  // Only send values if DBW && Articulation Command are both enabled.
+  if (enabled() && msg->enable) {
     // TODO(NERaptor): add angle limit check
     // Control signals
-    message->GetSignal("AKit_ArticulationReqType")->SetResult(msg->control_type.value);
-    message->GetSignal("AKit_ArticulationAngleReq")->SetResult(msg->angle);
+    if (msg->control_type.value == ArticulationControlMode::ANGLE) {
+      message->GetSignal("AKit_ArticulationReqType")->SetResult(msg->control_type.value);
+      message->GetSignal("AKit_ArticulationAngleReq")->SetResult(msg->angle);
+    } else {
+      // If mode is invalid, send mode == NONE
+      message->GetSignal("AKit_ArticulationReqType")->SetResult(ArticulationControlMode::NONE);
+    }
 
     // Enables & limits
     message->GetSignal("AKit_ArticulationCtrlEnblReq")->SetResult(msg->enable);
@@ -1453,15 +1457,21 @@ void RaptorDbwCAN::recvDumpBedCmd(const DumpBedCmd::SharedPtr msg)
   message->GetSignal("AKit_DumpBedIgnoreDriverOrvd")->SetResult(0);
   message->GetSignal("AKit_DumpBedVelocityLimit")->SetResult(0);
 
-  // TODO(NERaptor): Add enable checks
-  if (enabled()) {
-    // TODO(NERaptor): add Control Mode logic
+  // Only send values if DBW && Dump Bed Command are both enabled.
+  if (enabled() && msg->enable) {
     // TODO(NERaptor): add angle limit check
     // Control signals
-    message->GetSignal("AKit_DumpBedReqType")->SetResult(msg->control_type.value);
-    message->GetSignal("AKit_DumpBedModeReq")->SetResult(msg->mode_type.value);
-    message->GetSignal("AKit_DumpBedLeverPercentReq")->SetResult(msg->lever_pct);
-    message->GetSignal("AKit_DumpBedAnglReq")->SetResult(msg->angle);
+    if (msg->control_type.value == DumpBedControlMode::MODE) {
+      message->GetSignal("AKit_DumpBedReqType")->SetResult(msg->control_type.value);
+      message->GetSignal("AKit_DumpBedModeReq")->SetResult(msg->mode_type.value);
+      message->GetSignal("AKit_DumpBedLeverPercentReq")->SetResult(msg->lever_pct);
+    } else if (msg->control_type.value == DumpBedControlMode::ANGLE) {
+      message->GetSignal("AKit_DumpBedReqType")->SetResult(msg->control_type.value);
+      message->GetSignal("AKit_DumpBedAnglReq")->SetResult(msg->angle);
+    } else {
+      // If mode is invalid, send mode == NONE
+      message->GetSignal("AKit_DumpBedReqType")->SetResult(DumpBedControlMode::NONE);
+    }
 
     // Enables & limits
     message->GetSignal("AKit_DumpBedCtrlEnblReq")->SetResult(msg->enable);
@@ -1488,12 +1498,16 @@ void RaptorDbwCAN::recvEngineCmd(const EngineCmd::SharedPtr msg)
   message->GetSignal("AKit_EngineModeReq")->SetResult(0);
   message->GetSignal("AKit_EngineReqType")->SetResult(0);
 
-  // TODO(NERaptor): Add enable checks
-  if (enabled()) {
-    // TODO(NERaptor): add Control Mode logic
+  // Only send values if DBW && Engine Command are both enabled.
+  if (enabled() && msg->enable) {
     // Control signals
-    message->GetSignal("AKit_EngineModeReq")->SetResult(msg->mode_type.value);
-    message->GetSignal("AKit_EngineReqType")->SetResult(msg->control_type.value);
+    if (msg->control_type.value == EngineControlMode::KEY_SWITCH) {
+      message->GetSignal("AKit_EngineReqType")->SetResult(msg->control_type.value);
+      message->GetSignal("AKit_EngineModeReq")->SetResult(msg->mode_type.value);
+    } else {
+      // If mode is invalid, send mode == NONE
+      message->GetSignal("AKit_EngineReqType")->SetResult(EngineControlMode::NONE);
+    }
 
     // Enables
     message->GetSignal("AKit_EngineCtrlEnblReq")->SetResult(msg->enable);
