@@ -506,8 +506,8 @@ void RaptorDbwCAN::recvGearRpt(const Frame::SharedPtr msg)
     out.header.stamp = msg->header.stamp;
 
     out.enabled = message->GetSignal("DBW_PrndCtrlEnabled")->GetResult() ? true : false;
-    out.state.gear = message->GetSignal("DBW_PrndStateActual")->GetResult();
-    out.state_des.gear = message->GetSignal("DBW_PrndStateDes")->GetResult();
+    out.state_actual.gear = message->GetSignal("DBW_PrndStateActual")->GetResult();
+    out.state_desired.gear = message->GetSignal("DBW_PrndStateDes")->GetResult();
     out.driver_activity = driverActivity;
     out.gear_select_system_fault =
       message->GetSignal("DBW_PrndFault")->GetResult() ? true : false;
@@ -684,7 +684,7 @@ void RaptorDbwCAN::recvDriverInputRpt(const Frame::SharedPtr msg)
     out.header.stamp = msg->header.stamp;
 
     out.turn_signal.value = message->GetSignal("DBW_DrvInptTurnSignal")->GetResult();
-    out.high_beam_headlights.status = message->GetSignal("DBW_DrvInptHiBeam")->GetResult();
+    out.high_beam_headlights.value = message->GetSignal("DBW_DrvInptHiBeam")->GetResult();
     out.wiper.status = message->GetSignal("DBW_DrvInptWiper")->GetResult();
 
     out.cruise_resume_button =
@@ -878,7 +878,10 @@ void RaptorDbwCAN::recvOtherActuatorsRpt(const Frame::SharedPtr msg)
       "DBW_IgnitionState")->GetResult();
     out.horn_state.status = message->GetSignal(
       "DBW_HornState")->GetResult();
+    out.diff_lock_state = message->GetSignal(
+      "DBW_DiffLockState")->GetResult() ? true : false;
 
+    // Lights
     out.turn_signal_state.value = message->GetSignal(
       "DBW_TurnSignalState")->GetResult();
     out.high_beam_state.value = message->GetSignal(
@@ -896,11 +899,13 @@ void RaptorDbwCAN::recvOtherActuatorsRpt(const Frame::SharedPtr msg)
     out.mode_light_blue = message->GetSignal(
       "DBW_ModeLightState_Blue")->GetResult() ? true : false;
 
+    // Wipers
     out.front_wiper_state.status = message->GetSignal(
       "DBW_FrontWiperState")->GetResult();
     out.rear_wiper_state.status = message->GetSignal(
       "DBW_RearWiperState")->GetResult();
 
+    // Doors
     out.right_rear_door_state.value = message->GetSignal(
       "DBW_RightRearDoorState")->GetResult();
     out.left_rear_door_state.value = message->GetSignal(
@@ -910,6 +915,7 @@ void RaptorDbwCAN::recvOtherActuatorsRpt(const Frame::SharedPtr msg)
     out.door_lock_state.value = message->GetSignal(
       "DBW_DoorLockState")->GetResult();
 
+    // Publish report
     pub_other_actuators_report_->publish(out);
   }
 }
@@ -1337,7 +1343,7 @@ void RaptorDbwCAN::recvMiscCmd(const MiscCmd::SharedPtr msg)
     message->GetSignal("AKit_DiffLock")->SetResult(msg->diff_lock);
 
     // Lights
-    message->GetSignal("AKit_TurnSignalReq")->SetResult(msg->cmd.value);
+    message->GetSignal("AKit_TurnSignalReq")->SetResult(msg->turn_signal_cmd.value);
     message->GetSignal("AKit_HighBeamReq")->SetResult(msg->high_beam_cmd.status);
     message->GetSignal("AKit_LowBeamReq")->SetResult(msg->low_beam_cmd.status);
     message->GetSignal("AKit_RunningLightsReq")->SetResult(msg->running_lights.status);

@@ -2,6 +2,7 @@ std_msgs/Header header
 
 Ignition ignition_state 
 HornState horn_state 
+bool diff_lock_state
 
 # Lights
 TurnSignal turn_signal_state 

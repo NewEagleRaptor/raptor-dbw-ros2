@@ -1,8 +1,8 @@
 std_msgs/Header header
 
 # Current gear enumeration
-Gear state
-Gear state_des
+Gear state_actual
+Gear state_desired
 
 # Gear reject flag
 bool reject

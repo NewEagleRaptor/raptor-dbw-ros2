@@ -3,7 +3,7 @@ bool horn_cmd
 bool diff_lock
 
 # Lights
-TurnSignal cmd
+TurnSignal turn_signal_cmd
 HighBeam high_beam_cmd
 LowBeam low_beam_cmd
 RunningLights running_lights

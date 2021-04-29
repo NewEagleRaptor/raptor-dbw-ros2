@@ -137,7 +137,7 @@ void RaptorDbwJoystick::cmdCallback()
 
   // Turn signal
   MiscCmd misc_msg;
-  misc_msg.cmd.value = data_.turn_signal_cmd;
+  misc_msg.turn_signal_cmd.value = data_.turn_signal_cmd;
   misc_msg.rolling_counter = counter_;
   pub_misc_->publish(misc_msg);
 
@@ -184,7 +184,7 @@ void RaptorDbwJoystick::recvJoy(const Joy::SharedPtr msg)
   if (msg->buttons[BTN_PARK]) {
     data_.gear_cmd = Gear::PARK;
   } else if (msg->buttons[BTN_REVERSE]) {
-    data_.gear_cmd = Gear::REVERSE;
+    data_.gear_cmd = Gear::REVERSE_1;
   } else if (msg->buttons[BTN_DRIVE]) {
     data_.gear_cmd = Gear::DRIVE;
   } else if (msg->buttons[BTN_NEUTRAL]) {
