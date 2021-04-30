@@ -1,30 +1,20 @@
-raptor_dbw_interface:
-  kvaser_reader_node:
-    ros__parameters:
-      hardware_id: 22024
-      circuit_id: 0
-      bit_rate: 500000
-      enable_echo: false
-  kvaser_writer_node:
-    ros__parameters:
-      hardware_id: 22024
-      circuit_id: 0
-      bit_rate: 500000
-      enable_echo: false
-  raptor_dbw_joystick_node:
-    ros__parameters:
-      ignore: false
-      enable: true
-      svel: 0.0
-      max_steer_angle: 470.0
-  joy_node:
-    ros__parameters:
-      device_id: 0
-      device_name: "/dev/input/js0"
-      deadzone: 0.5
-      autorepeat_rate: 20.0
-      sticky_buttons: false
-      coalesce_interval_ms: 1
-  raptor_dbw_can_node:
-    ros__parameters:
-      max_steer_angle: 470.0
+/**:
+  ros__parameters:
+  # Kvaser node parameters
+    hardware_id: 22024
+    circuit_id: 0
+    bit_rate: 500000
+    enable_echo: false
+  # DBW joystick node
+    ignore: false
+    enable: true
+    svel: 0.0
+  # Shared with DBW CAN node
+    max_steer_angle: 470.0
+  # joy node
+    device_id: 0
+    device_name: "/dev/input/js0"
+    deadzone: 0.5
+    autorepeat_rate: 20.0
+    sticky_buttons: false
+    coalesce_interval_ms: 1
