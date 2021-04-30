@@ -42,7 +42,7 @@ int main(int argc, char ** argv)
   rclcpp::executors::SingleThreadedExecutor exec{};
 
   // Get parameter values
-  auto temp = std::make_shared<rclcpp::Node>("raptor_dbw_can_node", options);
+  auto temp = std::make_shared<rclcpp::Node>("get_dbw_params_node", options);
   temp->declare_parameter("dbw_dbc_file");
   temp->declare_parameter("max_steer_angle");
 

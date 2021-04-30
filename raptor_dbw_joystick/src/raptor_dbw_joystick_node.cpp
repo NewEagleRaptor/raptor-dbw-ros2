@@ -42,7 +42,7 @@ int main(int argc, char ** argv)
   rclcpp::executors::SingleThreadedExecutor exec{};
 
   // Get parameter values
-  auto temp = std::make_shared<rclcpp::Node>("raptor_dbw_joystick_node", options);
+  auto temp = std::make_shared<rclcpp::Node>("get_joy_params_node", options);
   temp->declare_parameter("ignore");
   temp->declare_parameter("enable");
   temp->declare_parameter("svel");

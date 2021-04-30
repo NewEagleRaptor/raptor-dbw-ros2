@@ -1,16 +1,9 @@
-raptor_dbw_interface:
-  kvaser_reader_node:
-    ros__parameters:
-      hardware_id: 22024
-      circuit_id: 0
-      bit_rate: 500000
-      enable_echo: false
-  kvaser_writer_node:
-    ros__parameters:
-      hardware_id: 22024
-      circuit_id: 0
-      bit_rate: 500000
-      enable_echo: false
-  raptor_dbw_can_node:
-    ros__parameters:
-      max_steer_angle: 470.0
+/**:
+  ros__parameters:
+  # Kvaser node parameters
+    hardware_id: 22024
+    circuit_id: 0
+    bit_rate: 500000
+    enable_echo: false
+  # DBW CAN node
+    max_steer_angle: 470.0
