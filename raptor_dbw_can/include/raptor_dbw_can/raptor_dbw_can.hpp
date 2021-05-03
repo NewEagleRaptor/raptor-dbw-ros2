@@ -142,7 +142,7 @@ private:
   void recvAccelPedalRpt(const can_msgs::msg::Frame::SharedPtr msg);
   void recvSteeringRpt(const can_msgs::msg::Frame::SharedPtr msg);
   void recvGearRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvCWheelSpeedRpt(const can_msgs::msg::Frame::SharedPtr msg);
+  void recvWheelSpeedRpt(const can_msgs::msg::Frame::SharedPtr msg);
   void recvWheelPositionRpt(const can_msgs::msg::Frame::SharedPtr msg);
   void recvTirePressureRpt(const can_msgs::msg::Frame::SharedPtr msg);
   void recvSurroundRpt(const can_msgs::msg::Frame::SharedPtr msg);

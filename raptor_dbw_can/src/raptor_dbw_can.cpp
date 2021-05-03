@@ -222,7 +222,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
         break;
 
       case ID_REPORT_WHEEL_SPEED:
-        recvCWheelSpeedRpt(msg);
+        recvWheelSpeedRpt(msg);
         break;
 
       case ID_REPORT_WHEEL_POSITION:
@@ -493,7 +493,7 @@ void RaptorDbwCAN::recvGearRpt(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvCWheelSpeedRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvWheelSpeedRpt(const can_msgs::msg::Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_WHEEL_SPEED);
 
