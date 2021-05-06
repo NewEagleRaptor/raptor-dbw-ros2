@@ -48,26 +48,19 @@ RaptorDbwCAN::RaptorDbwCAN(
   max_steer_angle_{max_steer_angle}
 {
   // Initialize enable state machine
-  prev_enable_ = true;
-  enable_ = false;
-  override_brake_ = false;
-  override_accelerator_pedal_ = false;
-  override_steering_ = false;
-  override_gear_ = false;
-  fault_brakes_ = false;
-  fault_accelerator_pedal_ = false;
-  fault_steering_ = false;
-  fault_steering_cal_ = false;
-  fault_watchdog_ = false;
-  fault_watchdog_using_brakes_ = false;
-  fault_watchdog_warned_ = false;
-  timeout_brakes_ = false;
-  timeout_accelerator_pedal_ = false;
-  timeout_steering_ = false;
-  enabled_brakes_ = false;
-  enabled_accelerator_pedal_ = false;
-  enabled_steering_ = false;
-  gear_warned_ = false;
+  int i{0};
+  for (i = 0; i < NUM_ENABLES; i++) {
+    enables_[i] = (i == EN_DBW_PREV) ? true : false;
+  }
+  for (i = 0; i < NUM_OVERRIDES; i++) {
+    overrides_[i] = false;
+  }
+  for (i = 0; i < NUM_FAULTS; i++) {
+    faults_[i] = false;
+  }
+  for (i = 0; i < NUM_TIMEOUTS; i++) {
+    timeouts_[i] = false;
+  }
 
   // Frame ID
   frame_id_ = "base_footprint";
@@ -309,10 +302,10 @@ void RaptorDbwCAN::recvBrakeRpt(const Frame::SharedPtr msg)
       message->GetSignal("DBW_BrakeFault")->GetResult() ? true : false;
     bool dbwSystemFault = brakeSystemFault;
 
-    faultBrakes(brakeSystemFault);
+    setFault(FAULT_BRAKE, brakeSystemFault);
     faultWatchdog(dbwSystemFault, brakeSystemFault);
 
-    overrideBrake(message->GetSignal("DBW_BrakeDriverActivity")->GetResult());
+    setOverride(OVR_BRAKE, message->GetSignal("DBW_BrakeDriverActivity")->GetResult());
     BrakeReport brakeReport;
     brakeReport.header.stamp = msg->header.stamp;
     brakeReport.pedal_position = message->GetSignal("DBW_BrakePdlDriverInput")->GetResult();
@@ -359,10 +352,10 @@ void RaptorDbwCAN::recvAccelPedalRpt(const Frame::SharedPtr msg)
       message->GetSignal("DBW_AccelPdlFault")->GetResult() ? true : false;
     bool dbwSystemFault = accelPdlSystemFault;
 
-    faultAcceleratorPedal(faultCh1 && faultCh2);
+    setFault(FAULT_ACCEL, faultCh1 && faultCh2);
     faultWatchdog(dbwSystemFault, accelPdlSystemFault);
 
-    overrideAcceleratorPedal(message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult());
+    setOverride(OVR_ACCEL, message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult());
 
     AcceleratorPedalReport accelPedalReprt;
     accelPedalReprt.header.stamp = msg->header.stamp;
@@ -407,10 +400,11 @@ void RaptorDbwCAN::recvSteeringRpt(const Frame::SharedPtr msg)
       message->GetSignal("DBW_SteeringFault")->GetResult() ? true : false;
     bool dbwSystemFault = steeringSystemFault;
 
-    faultSteering(steeringSystemFault);
+    setFault(FAULT_STEER, steeringSystemFault);
 
     faultWatchdog(dbwSystemFault);
-    overrideSteering(
+    setOverride(
+      OVR_STEER,
       message->GetSignal(
         "DBW_SteeringDriverActivity")->GetResult() ? true : false);
 
@@ -462,7 +456,7 @@ void RaptorDbwCAN::recvGearRpt(const Frame::SharedPtr msg)
     bool driverActivity =
       message->GetSignal("DBW_PrndDriverActivity")->GetResult() ? true : false;
 
-    overrideGear(driverActivity);
+    setOverride(OVR_GEAR, driverActivity);
     GearReport out;
     out.header.stamp = msg->header.stamp;
 
@@ -1179,13 +1173,13 @@ bool RaptorDbwCAN::publishDbwEnabled()
 {
   bool change = false;
   bool en = enabled();
-  if (prev_enable_ != en) {
+  if (enables_[EN_DBW_PREV] != en) {
     Bool msg;
     msg.data = en;
     pub_sys_enable_->publish(msg);
     change = true;
   }
-  prev_enable_ = en;
+  enables_[EN_DBW_PREV] = en;
   return change;
 }
 
@@ -1195,7 +1189,7 @@ void RaptorDbwCAN::timerCallback()
     Frame out;
     out.is_extended = false;
 
-    if (override_brake_) {
+    if (overrides_[OVR_BRAKE]) {
       // Might have an issue with WatchdogCntr when these are set.
       NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_BrakeRequest");
       message->GetSignal("AKit_BrakePedalReq")->SetResult(0);
@@ -1204,7 +1198,7 @@ void RaptorDbwCAN::timerCallback()
       pub_can_->publish(message->GetFrame());
     }
 
-    if (override_accelerator_pedal_) {
+    if (overrides_[OVR_ACCEL]) {
       // Might have an issue with WatchdogCntr when these are set.
       NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_AccelPdlRequest");
       message->GetSignal("AKit_AccelPdlReq")->SetResult(0);
@@ -1214,7 +1208,7 @@ void RaptorDbwCAN::timerCallback()
       pub_can_->publish(message->GetFrame());
     }
 
-    if (override_steering_) {
+    if (overrides_[OVR_STEER]) {
       // Might have an issue with WatchdogCntr when these are set.
       NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_SteeringRequest");
       message->GetSignal("AKit_SteeringWhlAngleReq")->SetResult(0);
@@ -1227,7 +1221,7 @@ void RaptorDbwCAN::timerCallback()
       pub_can_->publish(message->GetFrame());
     }
 
-    if (override_gear_) {
+    if (overrides_[OVR_GEAR]) {
       NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_GearRequest");
       message->GetSignal("AKit_PrndStateCmd")->SetResult(0);
       message->GetSignal("AKit_PrndChecksum")->SetResult(0);
@@ -1238,25 +1232,17 @@ void RaptorDbwCAN::timerCallback()
 
 void RaptorDbwCAN::enableSystem()
 {
-  if (!enable_) {
+  if (!enables_[EN_DBW]) {
     if (fault()) {
-      if (fault_steering_cal_) {
-        RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Steering calibration fault.");
-      }
-      if (fault_brakes_) {
-        RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Braking fault.");
-      }
-      if (fault_accelerator_pedal_) {
-        RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Accelerator Pedal fault.");
-      }
-      if (fault_steering_) {
-        RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Steering fault.");
-      }
-      if (fault_watchdog_) {
-        RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Watchdog fault.");
+      int i{0};
+      for (i = FAULT_ACCEL; i <= FAULT_WATCH; i++) {
+        if (faults_[i]) {
+          RCLCPP_ERROR(this->get_logger(),
+            "DBW system disabled -" + FAULT_SYSTEM[i] + " fault.");
+        }
       }
     } else {
-      enable_ = true;
+      enables_[EN_DBW] = true;
       if (publishDbwEnabled()) {
         RCLCPP_INFO(this->get_logger(), "DBW system enabled.");
       } else {
@@ -1268,8 +1254,8 @@ void RaptorDbwCAN::enableSystem()
 
 void RaptorDbwCAN::disableSystem()
 {
-  if (enable_) {
-    enable_ = false;
+  if (enables_[EN_DBW]) {
+    enables_[EN_DBW] = false;
     publishDbwEnabled();
     RCLCPP_INFO(this->get_logger(), "DBW system disabled - system disabled.");
   }
@@ -1277,202 +1263,108 @@ void RaptorDbwCAN::disableSystem()
 
 void RaptorDbwCAN::buttonCancel()
 {
-  if (enable_) {
-    enable_ = false;
+  if (enables_[EN_DBW]) {
+    enables_[EN_DBW] = false;
     publishDbwEnabled();
     RCLCPP_INFO(this->get_logger(), "DBW system disabled - button canceled.");
   }
 }
 
-void RaptorDbwCAN::overrideBrake(bool override)
+void RaptorDbwCAN::setOverride(ListOverrides which_ovr, bool override)
 {
   bool en = enabled();
   if (override && en) {
-    enable_ = false;
+    enables_[EN_DBW] = false;
   }
-  override_brake_ = override;
+  overrides_[which_ovr] = override;
   if (publishDbwEnabled()) {
     if (en) {
-      RCLCPP_WARN(this->get_logger(), "DBW system disabled - brake override");
+      RCLCPP_WARN(this->get_logger(),
+        "DBW system disabled - " + OVR_SYSTEM[which_ovr] + " override");
     } else {
-      RCLCPP_INFO(this->get_logger(), "DBW system enabled - no brake override");
+      RCLCPP_INFO(this->get_logger(),
+        "DBW system enabled - no " + OVR_SYSTEM[which_ovr] + " override");
     }
   }
 }
 
-void RaptorDbwCAN::overrideAcceleratorPedal(bool override)
+RaptorDbwCAN::ListEnables RaptorDbwCAN::convEnable(ListTimeouts in_to)
 {
-  bool en = enabled();
-  if (override && en) {
-    enable_ = false;
+  ListEnables ret{NUM_ENABLES};
+  switch (in_to) {
+    case TO_ACCEL:
+      ret = EN_ACCEL;
+      break;
+    case TO_BRAKE:
+      ret = EN_BRAKE;
+      break;
+    case TO_STEER:
+      ret = EN_STEER;
+      break;
+    default:
+      break;
   }
-  override_accelerator_pedal_ = override;
-  if (publishDbwEnabled()) {
-    if (en) {
-      RCLCPP_WARN(this->get_logger(), "DBW system disabled - accelerator pedal override");
-    } else {
-      RCLCPP_INFO(this->get_logger(), "DBW system enabled - no accelerator pedal override");
-    }
-  }
+  return ret;
 }
 
-void RaptorDbwCAN::overrideSteering(bool override)
+void RaptorDbwCAN::setTimeout(ListTimeouts which_to, bool timeout, bool enabled)
 {
-  bool en = enabled();
-  if (override && en) {
-    enable_ = false;
+  if (!timeouts_[which_to] && enables_[convEnable(which_to)] && timeout && !enabled) {
+    RCLCPP_WARN(this->get_logger(),
+      TO_SYSTEM[which_to] + " has timed out");
   }
-  override_steering_ = override;
-  if (publishDbwEnabled()) {
-    if (en) {
-      RCLCPP_WARN(this->get_logger(), "DBW system disabled - steering override");
-    } else {
-      RCLCPP_INFO(this->get_logger(), "DBW system enabled - no steering override");
-    }
-  }
+  timeouts_[which_to] = timeout;
+  enables_[convEnable(which_to)] = enabled;
 }
 
-void RaptorDbwCAN::overrideGear(bool override)
-{
-  bool en = enabled();
-  if (override && en) {
-    enable_ = false;
-  }
-  override_gear_ = override;
-  if (publishDbwEnabled()) {
-    if (en) {
-      RCLCPP_WARN(this->get_logger(), "DBW system disabled - PRND gear override");
-    } else {
-      RCLCPP_INFO(this->get_logger(), "DBW system enabled - no PRND gear override");
-    }
-  }
-}
-
-void RaptorDbwCAN::timeoutBrake(bool timeout, bool enabled)
-{
-  if (!timeout_brakes_ && enabled_brakes_ && timeout && !enabled) {
-    RCLCPP_WARN(this->get_logger(), "Brakes have timed out");
-  }
-  timeout_brakes_ = timeout;
-  enabled_brakes_ = enabled;
-}
-
-void RaptorDbwCAN::timeoutAcceleratorPedal(bool timeout, bool enabled)
-{
-  if (!timeout_accelerator_pedal_ && enabled_accelerator_pedal_ && timeout && !enabled) {
-    RCLCPP_WARN(this->get_logger(), "Accelerator Pedal has timed out");
-  }
-  timeout_accelerator_pedal_ = timeout;
-  enabled_accelerator_pedal_ = enabled;
-}
-
-void RaptorDbwCAN::timeoutSteering(bool timeout, bool enabled)
-{
-  if (!timeout_steering_ && enabled_steering_ && timeout && !enabled) {
-    RCLCPP_WARN(this->get_logger(), "Steering has timed out");
-  }
-  timeout_steering_ = timeout;
-  enabled_steering_ = enabled;
-}
-
-void RaptorDbwCAN::faultBrakes(bool fault)
+void RaptorDbwCAN::setFault(ListFaults which_fault, bool fault)
 {
   bool en = enabled();
   if (fault && en) {
-    enable_ = false;
+    enables_[EN_DBW] = false;
   }
-  fault_brakes_ = fault;
+  faults_[which_fault] = fault;
   if (publishDbwEnabled()) {
     if (en) {
-      RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Braking fault.");
+      RCLCPP_ERROR(this->get_logger(),
+        "DBW system disabled - " + FAULT_SYSTEM[which_fault] + " fault.");
     } else {
-      RCLCPP_INFO(this->get_logger(), "DBW system enabled - no braking fault");
-    }
-  }
-}
-
-void RaptorDbwCAN::faultAcceleratorPedal(bool fault)
-{
-  bool en = enabled();
-  if (fault && en) {
-    enable_ = false;
-  }
-  fault_accelerator_pedal_ = fault;
-  if (publishDbwEnabled()) {
-    if (en) {
-      RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Accelerator Pedal fault.");
-    } else {
-      RCLCPP_INFO(this->get_logger(), "DBW system enabled - no accelerator pedal fault");
-    }
-  }
-}
-
-void RaptorDbwCAN::faultSteering(bool fault)
-{
-  bool en = enabled();
-  if (fault && en) {
-    enable_ = false;
-  }
-  fault_steering_ = fault;
-  if (publishDbwEnabled()) {
-    if (en) {
-      RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Steering fault.");
-    } else {
-      RCLCPP_INFO(this->get_logger(), "DBW system enabled - no steering fault");
-    }
-  }
-}
-
-void RaptorDbwCAN::faultSteeringCal(bool fault)
-{
-  bool en = enabled();
-  if (fault && en) {
-    enable_ = false;
-  }
-  fault_steering_cal_ = fault;
-  if (publishDbwEnabled()) {
-    if (en) {
-      RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Steering calibration fault.");
-    } else {
-      RCLCPP_INFO(this->get_logger(), "DBW system enabled - no steering calibration fault");
+      RCLCPP_INFO(this->get_logger(),
+        "DBW system enabled - no " + FAULT_SYSTEM[which_fault] + " fault");
     }
   }
 }
 
 void RaptorDbwCAN::faultWatchdog(bool fault, uint8_t src, bool braking)
 {
-  bool en = enabled();
-  if (fault && en) {
-    enable_ = false;
-  }
-  fault_watchdog_ = fault;
-  if (publishDbwEnabled()) {
-    if (en) {
-      RCLCPP_ERROR(this->get_logger(), "DBW system disabled. Watchdog fault.");
-    } else {
-      RCLCPP_INFO(this->get_logger(), "DBW system enabled - no watchdog fault");
-    }
-  }
-  if (braking && !fault_watchdog_using_brakes_) {
-    RCLCPP_ERROR(this->get_logger(), "Watchdog - new braking fault.");
-  } else if (!braking && fault_watchdog_using_brakes_) {
-    RCLCPP_INFO(this->get_logger(), "Watchdog - braking fault is cleared.");
-  }
-  if (fault && src && !fault_watchdog_warned_) {
-    RCLCPP_WARN(this->get_logger(), "Watchdog - new fault warning.");
-    fault_watchdog_warned_ = true;
+  setFault(FAULT_WATCH, fault);
+
+  if (braking && !faults_[FAULT_WATCH_BRAKES]) {
+    RCLCPP_ERROR(this->get_logger(),
+      "Watchdog - new braking fault.");
+  } else if (!braking && faults_[FAULT_WATCH_BRAKES]) {
+    RCLCPP_INFO(this->get_logger(),
+      "Watchdog - braking fault is cleared.");
+  } else {}
+
+  if (fault && src && !faults_[FAULT_WATCH_WARN]) {
+    RCLCPP_WARN(this->get_logger(),
+      "Watchdog - new fault warning.");
+    faults_[FAULT_WATCH_WARN] = true;
   } else if (!fault) {
-    fault_watchdog_warned_ = false;
-  }
-  fault_watchdog_using_brakes_ = braking;
-  if (fault && !fault_watchdog_using_brakes_ && fault_watchdog_warned_) {
-    RCLCPP_ERROR(this->get_logger(), "Watchdog - new non-braking fault.");
+    faults_[FAULT_WATCH_WARN] = false;
+  } else {}
+
+  faults_[FAULT_WATCH_BRAKES] = braking;
+  if (fault && !faults_[FAULT_WATCH_BRAKES] && faults_[FAULT_WATCH_WARN]) {
+    RCLCPP_ERROR(this->get_logger(),
+      "Watchdog - new non-braking fault.");
   }
 }
 
 void RaptorDbwCAN::faultWatchdog(bool fault, uint8_t src)
 {
-  faultWatchdog(fault, src, fault_watchdog_using_brakes_);   // No change to 'using brakes' status
+  faultWatchdog(fault, src, faults_[FAULT_WATCH_BRAKES]);   // No change to 'using brakes' status
 }
 
 void RaptorDbwCAN::publishJointStates(
