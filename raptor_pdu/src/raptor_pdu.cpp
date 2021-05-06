@@ -27,7 +27,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 // Example block for PDU relay blocks.
-// raptor_pdu_msgs::msg::RelayCommand msg;
+// RelayCommand msg;
 // msg.relay_1.value = raptor_pdu_msgs::msg::RelayState::RELAY_ON;
 // pdu1_relay_pub_.publish(msg);
 
@@ -52,18 +52,18 @@ raptor_pdu::raptor_pdu(const rclcpp::NodeOptions & options)
 
   count_ = 0;
   // Set up Publishers
-  pub_can_ = this->create_publisher<can_msgs::msg::Frame>("can_tx", 100);
-  relay_report_pub_ = this->create_publisher<raptor_pdu_msgs::msg::RelayReport>("relay_report", 20);
-  fuse_report_pub_ = this->create_publisher<raptor_pdu_msgs::msg::FuseReport>("fuse_report", 20);
+  pub_can_ = this->create_publisher<Frame>("can_tx", 100);
+  relay_report_pub_ = this->create_publisher<RelayReport>("relay_report", 20);
+  fuse_report_pub_ = this->create_publisher<FuseReport>("fuse_report", 20);
 
   // Set up Subscribers
-  sub_can_ = this->create_subscription<can_msgs::msg::Frame>(
+  sub_can_ = this->create_subscription<Frame>(
     "can_rx", 500, std::bind(&raptor_pdu::recvCAN, this, std::placeholders::_1));
-  sub_relay_cmd_ = this->create_subscription<raptor_pdu_msgs::msg::RelayCommand>(
+  sub_relay_cmd_ = this->create_subscription<RelayCommand>(
     "relay_cmd", 1, std::bind(&raptor_pdu::recvRelayCmd, this, std::placeholders::_1));
 }
 
-void raptor_pdu::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
+void raptor_pdu::recvCAN(const Frame::SharedPtr msg)
 {
   if (!msg->is_rtr && !msg->is_error && msg->is_extended) {
     if (msg->id == relayStatusAddr_) {
@@ -74,7 +74,7 @@ void raptor_pdu::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
       NewEagle::DbcMessage * message = pduDbc_.GetMessage("RelayStatus");
       message->SetFrame(msg);
 
-      raptor_pdu_msgs::msg::RelayReport out;
+      RelayReport out;
 
       out.relay_1.value = message->GetSignal("Relay1")->GetResult();
       out.relay_2.value = message->GetSignal("Relay2")->GetResult();
@@ -94,7 +94,7 @@ void raptor_pdu::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
       NewEagle::DbcMessage * message = pduDbc_.GetMessage("FuseStatus");
       message->SetFrame(msg);
 
-      raptor_pdu_msgs::msg::FuseReport out;
+      FuseReport out;
 
       out.fuse_1.value = message->GetSignal("Fuse1")->GetResult();
       out.fuse_2.value = message->GetSignal("Fuse2")->GetResult();
@@ -118,7 +118,7 @@ void raptor_pdu::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void raptor_pdu::recvRelayCmd(const raptor_pdu_msgs::msg::RelayCommand::SharedPtr msg)
+void raptor_pdu::recvRelayCmd(const RelayCommand::SharedPtr msg)
 {
   RCLCPP_INFO_THROTTLE(
     this->get_logger(), m_clock, CLOCK_1_SEC,
@@ -138,7 +138,7 @@ void raptor_pdu::recvRelayCmd(const raptor_pdu_msgs::msg::RelayCommand::SharedPt
   message->GetSignal("Relay7")->SetResult(msg->relay_7.value);
   message->GetSignal("Relay8")->SetResult(msg->relay_8.value);
 
-  can_msgs::msg::Frame frame = message->GetFrame();
+  Frame frame = message->GetFrame();
 
   // DBC file has the base address.  Modify the ID to send to correct device
   frame.id = relayCommandAddr_;

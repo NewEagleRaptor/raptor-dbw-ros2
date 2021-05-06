@@ -95,7 +95,7 @@ RaptorDbwCAN::RaptorDbwCAN(
   joint_state_.name[JOINT_SR] = "steer_fr";
 
   // Set up Publishers
-  pub_can_ = this->create_publisher<can_msgs::msg::Frame>("can_rx", 20);
+  pub_can_ = this->create_publisher<Frame>("can_rx", 20);
   pub_brake_ = this->create_publisher<BrakeReport>("brake_report", 20);
   pub_accel_pedal_ = this->create_publisher<AcceleratorPedalReport>(
     "accelerator_pedal_report", 20);
@@ -131,24 +131,24 @@ RaptorDbwCAN::RaptorDbwCAN(
   pub_gps_remainder_report_ = this->create_publisher<GpsRemainderReport>(
     "gps_remainder_report", 20);
 
-  pub_imu_ = this->create_publisher<sensor_msgs::msg::Imu>("imu/data_raw", 10);
-  pub_joint_states_ = this->create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);
-  pub_twist_ = this->create_publisher<geometry_msgs::msg::TwistStamped>("twist", 10);
-  pub_vin_ = this->create_publisher<std_msgs::msg::String>("vin", 1);
+  pub_imu_ = this->create_publisher<Imu>("imu/data_raw", 10);
+  pub_joint_states_ = this->create_publisher<JointState>("joint_states", 10);
+  pub_twist_ = this->create_publisher<TwistStamped>("twist", 10);
+  pub_vin_ = this->create_publisher<String>("vin", 1);
   pub_driver_input_ = this->create_publisher<DriverInputReport>(
     "driver_input_report", 2);
   pub_misc_ = this->create_publisher<MiscReport>("misc_report", 2);
-  pub_sys_enable_ = this->create_publisher<std_msgs::msg::Bool>("dbw_enabled", 1);
+  pub_sys_enable_ = this->create_publisher<Bool>("dbw_enabled", 1);
   publishDbwEnabled();
 
   // Set up Subscribers
-  sub_enable_ = this->create_subscription<std_msgs::msg::Empty>(
+  sub_enable_ = this->create_subscription<Empty>(
     "enable", 10, std::bind(&RaptorDbwCAN::recvEnable, this, std::placeholders::_1));
 
-  sub_disable_ = this->create_subscription<std_msgs::msg::Empty>(
+  sub_disable_ = this->create_subscription<Empty>(
     "disable", 10, std::bind(&RaptorDbwCAN::recvDisable, this, std::placeholders::_1));
 
-  sub_can_ = this->create_subscription<can_msgs::msg::Frame>(
+  sub_can_ = this->create_subscription<Frame>(
     "can_tx", 500, std::bind(&RaptorDbwCAN::recvCAN, this, std::placeholders::_1));
 
   sub_brake_ = this->create_subscription<BrakeCmd>(
@@ -187,21 +187,21 @@ RaptorDbwCAN::~RaptorDbwCAN()
 {
 }
 
-void RaptorDbwCAN::recvEnable(const std_msgs::msg::Empty::SharedPtr msg)
+void RaptorDbwCAN::recvEnable(const Empty::SharedPtr msg)
 {
   if (msg != NULL) {
     enableSystem();
   }
 }
 
-void RaptorDbwCAN::recvDisable(const std_msgs::msg::Empty::SharedPtr msg)
+void RaptorDbwCAN::recvDisable(const Empty::SharedPtr msg)
 {
   if (msg != NULL) {
     disableSystem();
   }
 }
 
-void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvCAN(const Frame::SharedPtr msg)
 {
   if (!msg->is_rtr && !msg->is_error) {
     switch (msg->id) {
@@ -295,7 +295,7 @@ void RaptorDbwCAN::recvCAN(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvBrakeRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvBrakeRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_BRAKE_REPORT);
 
@@ -346,7 +346,7 @@ void RaptorDbwCAN::recvBrakeRpt(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvAccelPedalRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvAccelPedalRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_ACCEL_PEDAL_REPORT);
   if (msg->dlc >= message->GetDlc()) {
@@ -398,7 +398,7 @@ void RaptorDbwCAN::recvAccelPedalRpt(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvSteeringRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvSteeringRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_STEERING_REPORT);
   if (msg->dlc >= message->GetDlc()) {
@@ -455,7 +455,7 @@ void RaptorDbwCAN::recvSteeringRpt(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvGearRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvGearRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_GEAR_REPORT);
 
@@ -493,7 +493,7 @@ void RaptorDbwCAN::recvGearRpt(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvWheelSpeedRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvWheelSpeedRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_WHEEL_SPEED);
 
@@ -513,7 +513,7 @@ void RaptorDbwCAN::recvWheelSpeedRpt(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvWheelPositionRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvWheelPositionRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_WHEEL_POSITION);
   if (msg->dlc >= message->GetDlc()) {
@@ -531,7 +531,7 @@ void RaptorDbwCAN::recvWheelPositionRpt(const can_msgs::msg::Frame::SharedPtr ms
   }
 }
 
-void RaptorDbwCAN::recvTirePressureRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvTirePressureRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_TIRE_PRESSURE);
 
@@ -548,7 +548,7 @@ void RaptorDbwCAN::recvTirePressureRpt(const can_msgs::msg::Frame::SharedPtr msg
   }
 }
 
-void RaptorDbwCAN::recvSurroundRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvSurroundRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_SURROUND);
 
@@ -578,7 +578,7 @@ void RaptorDbwCAN::recvSurroundRpt(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvVinRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvVinRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_VIN);
 
@@ -605,20 +605,20 @@ void RaptorDbwCAN::recvVinRpt(const can_msgs::msg::Frame::SharedPtr msg)
       vin_.push_back(message->GetSignal("DBW_VinDigit_15")->GetResult());
       vin_.push_back(message->GetSignal("DBW_VinDigit_16")->GetResult());
       vin_.push_back(message->GetSignal("DBW_VinDigit_17")->GetResult());
-      std_msgs::msg::String msg; msg.data = vin_;
+      String msg; msg.data = vin_;
       pub_vin_->publish(msg);
     }
   }
 }
 
-void RaptorDbwCAN::recvImuRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvImuRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_IMU);
 
   if (msg->dlc >= message->GetDlc()) {
     message->SetFrame(msg);
 
-    sensor_msgs::msg::Imu out;
+    Imu out;
     out.header.stamp = msg->header.stamp;
     out.header.frame_id = frame_id_;
 
@@ -634,7 +634,7 @@ void RaptorDbwCAN::recvImuRpt(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvDriverInputRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvDriverInputRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_DRIVER_INPUT);
 
@@ -689,7 +689,7 @@ void RaptorDbwCAN::recvDriverInputRpt(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvMiscRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvMiscRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_MISC_REPORT);
 
@@ -722,7 +722,7 @@ void RaptorDbwCAN::recvMiscRpt(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvLowVoltageSystemRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvLowVoltageSystemRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_LOW_VOLTAGE_SYSTEM_REPORT);
 
@@ -751,7 +751,7 @@ void RaptorDbwCAN::recvLowVoltageSystemRpt(const can_msgs::msg::Frame::SharedPtr
   }
 }
 
-void RaptorDbwCAN::recvBrake2Rpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvBrake2Rpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_BRAKE_2_REPORT);
 
@@ -772,7 +772,7 @@ void RaptorDbwCAN::recvBrake2Rpt(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvSteering2Rpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvSteering2Rpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_STEERING_2_REPORT);
 
@@ -798,7 +798,7 @@ void RaptorDbwCAN::recvSteering2Rpt(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvFaultActionRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvFaultActionRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_FAULT_ACTION_REPORT);
 
@@ -828,7 +828,7 @@ void RaptorDbwCAN::recvFaultActionRpt(const can_msgs::msg::Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvOtherActuatorsRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvOtherActuatorsRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_OTHER_ACTUATORS_REPORT);
 
@@ -870,7 +870,7 @@ void RaptorDbwCAN::recvOtherActuatorsRpt(const can_msgs::msg::Frame::SharedPtr m
   }
 }
 
-void RaptorDbwCAN::recvGpsReferenceRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvGpsReferenceRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_GPS_REFERENCE_REPORT);
 
@@ -890,7 +890,7 @@ void RaptorDbwCAN::recvGpsReferenceRpt(const can_msgs::msg::Frame::SharedPtr msg
   }
 }
 
-void RaptorDbwCAN::recvGpsRemainderRpt(const can_msgs::msg::Frame::SharedPtr msg)
+void RaptorDbwCAN::recvGpsRemainderRpt(const Frame::SharedPtr msg)
 {
   NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_GPS_REMAINDER_REPORT);
 
@@ -953,7 +953,7 @@ void RaptorDbwCAN::recvBrakeCmd(const BrakeCmd::SharedPtr msg)
   NewEagle::DbcSignal * cnt = message->GetSignal("AKit_BrakeRollingCntr");
   cnt->SetResult(msg->rolling_counter);
 
-  can_msgs::msg::Frame frame = message->GetFrame();
+  Frame frame = message->GetFrame();
 
   pub_can_->publish(frame);
 }
@@ -1005,7 +1005,7 @@ void RaptorDbwCAN::recvAcceleratorPedalCmd(
     message->GetSignal("Akit_AccelPdlIgnoreDriverOvrd")->SetResult(1);
   }
 
-  can_msgs::msg::Frame frame = message->GetFrame();
+  Frame frame = message->GetFrame();
 
   pub_can_->publish(frame);
 }
@@ -1065,7 +1065,7 @@ void RaptorDbwCAN::recvSteeringCmd(const SteeringCmd::SharedPtr msg)
 
   message->GetSignal("AKit_SteerRollingCntr")->SetResult(msg->rolling_counter);
 
-  can_msgs::msg::Frame frame = message->GetFrame();
+  Frame frame = message->GetFrame();
 
   pub_can_->publish(frame);
 }
@@ -1089,7 +1089,7 @@ void RaptorDbwCAN::recvGearCmd(const GearCmd::SharedPtr msg)
 
   message->GetSignal("AKit_PrndRollingCntr")->SetResult(msg->rolling_counter);
 
-  can_msgs::msg::Frame frame = message->GetFrame();
+  Frame frame = message->GetFrame();
 
   pub_can_->publish(frame);
 }
@@ -1119,7 +1119,7 @@ void RaptorDbwCAN::recvGlobalEnableCmd(const GlobalEnableCmd::SharedPtr msg)
 
   message->GetSignal("AKit_GlobalEnblRollingCntr")->SetResult(msg->rolling_counter);
 
-  can_msgs::msg::Frame frame = message->GetFrame();
+  Frame frame = message->GetFrame();
 
   pub_can_->publish(frame);
 }
@@ -1172,7 +1172,7 @@ void RaptorDbwCAN::recvMiscCmd(const MiscCmd::SharedPtr msg)
 
   message->GetSignal("AKit_OtherRollingCntr")->SetResult(msg->rolling_counter);
 
-  can_msgs::msg::Frame frame = message->GetFrame();
+  Frame frame = message->GetFrame();
 
   pub_can_->publish(frame);
 }
@@ -1184,7 +1184,7 @@ bool RaptorDbwCAN::publishDbwEnabled()
   bool change = false;
   bool en = enabled();
   if (prev_enable_ != en) {
-    std_msgs::msg::Bool msg;
+    Bool msg;
     msg.data = en;
     pub_sys_enable_->publish(msg);
     change = true;
@@ -1196,7 +1196,7 @@ bool RaptorDbwCAN::publishDbwEnabled()
 void RaptorDbwCAN::timerCallback()
 {
   if (clear()) {
-    can_msgs::msg::Frame out;
+    Frame out;
     out.is_extended = false;
 
     if (override_brake_) {

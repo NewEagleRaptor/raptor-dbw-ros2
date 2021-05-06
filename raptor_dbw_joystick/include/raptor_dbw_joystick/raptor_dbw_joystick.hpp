@@ -44,6 +44,18 @@
 
 using namespace std::chrono_literals;  // NOLINT
 
+using sensor_msgs::msg::Joy;
+using std_msgs::msg::Empty;
+
+using raptor_dbw_msgs::msg::AcceleratorPedalCmd;
+using raptor_dbw_msgs::msg::BrakeCmd;
+using raptor_dbw_msgs::msg::Gear;
+using raptor_dbw_msgs::msg::GearCmd;
+using raptor_dbw_msgs::msg::GlobalEnableCmd;
+using raptor_dbw_msgs::msg::MiscCmd;
+using raptor_dbw_msgs::msg::SteeringCmd;
+using raptor_dbw_msgs::msg::TurnSignal;
+
 namespace raptor_dbw_joystick
 {
 typedef struct
@@ -73,20 +85,20 @@ private:
   rclcpp::Clock m_clock;
   static constexpr int64_t CLOCK_1_SEC = 1000;  // duration in milliseconds
 
-  void recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg);
+  void recvJoy(const Joy::SharedPtr msg);
   void cmdCallback();
 
   // Topics
-  rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr sub_joy_;
+  rclcpp::Subscription<Joy>::SharedPtr sub_joy_;
 
-  rclcpp::Publisher<raptor_dbw_msgs::msg::AcceleratorPedalCmd>::SharedPtr pub_accelerator_pedal_;
-  rclcpp::Publisher<raptor_dbw_msgs::msg::BrakeCmd>::SharedPtr pub_brake_;
-  rclcpp::Publisher<raptor_dbw_msgs::msg::SteeringCmd>::SharedPtr pub_steering_;
-  rclcpp::Publisher<raptor_dbw_msgs::msg::GearCmd>::SharedPtr pub_gear_;
-  rclcpp::Publisher<raptor_dbw_msgs::msg::MiscCmd>::SharedPtr pub_misc_;
-  rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr pub_enable_;
-  rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr pub_disable_;
-  rclcpp::Publisher<raptor_dbw_msgs::msg::GlobalEnableCmd>::SharedPtr pub_global_enable_;
+  rclcpp::Publisher<AcceleratorPedalCmd>::SharedPtr pub_accelerator_pedal_;
+  rclcpp::Publisher<BrakeCmd>::SharedPtr pub_brake_;
+  rclcpp::Publisher<SteeringCmd>::SharedPtr pub_steering_;
+  rclcpp::Publisher<GearCmd>::SharedPtr pub_gear_;
+  rclcpp::Publisher<MiscCmd>::SharedPtr pub_misc_;
+  rclcpp::Publisher<Empty>::SharedPtr pub_enable_;
+  rclcpp::Publisher<Empty>::SharedPtr pub_disable_;
+  rclcpp::Publisher<GlobalEnableCmd>::SharedPtr pub_global_enable_;
 
   // Parameters
   bool ignore_;     // Ignore driver overrides
@@ -97,7 +109,7 @@ private:
   // Variables
   rclcpp::TimerBase::SharedPtr timer_;
   JoystickDataStruct data_;
-  sensor_msgs::msg::Joy joy_;
+  Joy joy_;
   uint8_t counter_;
 
   enum
