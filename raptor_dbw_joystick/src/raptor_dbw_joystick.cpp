@@ -50,31 +50,29 @@ RaptorDbwJoystick::RaptorDbwJoystick(
   max_steer_angle_{max_steer_angle}
 {
   data_.brake_joy = 0.0;
-  data_.gear_cmd = raptor_dbw_msgs::msg::Gear::NONE;
+  data_.gear_cmd = Gear::NONE;
   data_.steering_joy = 0.0;
   data_.steering_mult = false;
   data_.accelerator_pedal_joy = 0.0;
-  data_.turn_signal_cmd = raptor_dbw_msgs::msg::TurnSignal::NONE;
+  data_.turn_signal_cmd = TurnSignal::NONE;
   data_.joy_accelerator_pedal_valid = false;
   data_.joy_brake_valid = false;
 
   joy_.axes.resize(AXIS_COUNT, 0);
   joy_.buttons.resize(BTN_COUNT, 0);
 
-  sub_joy_ = this->create_subscription<sensor_msgs::msg::Joy>(
+  sub_joy_ = this->create_subscription<Joy>(
     "joy", 600, std::bind(&RaptorDbwJoystick::recvJoy, this, std::placeholders::_1));
 
-  pub_accelerator_pedal_ = this->create_publisher<raptor_dbw_msgs::msg::AcceleratorPedalCmd>(
-    "accelerator_pedal_cmd", 1);
-  pub_brake_ = this->create_publisher<raptor_dbw_msgs::msg::BrakeCmd>("brake_cmd", 1);
-  pub_misc_ = this->create_publisher<raptor_dbw_msgs::msg::MiscCmd>("misc_cmd", 1);
-  pub_steering_ = this->create_publisher<raptor_dbw_msgs::msg::SteeringCmd>("steering_cmd", 1);
-  pub_global_enable_ = this->create_publisher<raptor_dbw_msgs::msg::GlobalEnableCmd>(
-    "global_enable_cmd", 1);
-  pub_gear_ = this->create_publisher<raptor_dbw_msgs::msg::GearCmd>("gear_cmd", 1);
+  pub_accelerator_pedal_ = this->create_publisher<AcceleratorPedalCmd>("accelerator_pedal_cmd", 1);
+  pub_brake_ = this->create_publisher<BrakeCmd>("brake_cmd", 1);
+  pub_misc_ = this->create_publisher<MiscCmd>("misc_cmd", 1);
+  pub_steering_ = this->create_publisher<SteeringCmd>("steering_cmd", 1);
+  pub_global_enable_ = this->create_publisher<GlobalEnableCmd>("global_enable_cmd", 1);
+  pub_gear_ = this->create_publisher<GearCmd>("gear_cmd", 1);
   if (enable_) {
-    pub_enable_ = this->create_publisher<std_msgs::msg::Empty>("enable", 1);
-    pub_disable_ = this->create_publisher<std_msgs::msg::Empty>("disable", 1);
+    pub_enable_ = this->create_publisher<Empty>("enable", 1);
+    pub_disable_ = this->create_publisher<Empty>("disable", 1);
   }
 
   timer_ = this->create_wall_timer(200ms, std::bind(&RaptorDbwJoystick::cmdCallback, this));
@@ -101,7 +99,7 @@ void RaptorDbwJoystick::cmdCallback()
   }
 
   // Accelerator Pedal
-  raptor_dbw_msgs::msg::AcceleratorPedalCmd accelerator_pedal_msg;
+  AcceleratorPedalCmd accelerator_pedal_msg;
   accelerator_pedal_msg.enable = true;
   accelerator_pedal_msg.ignore = ignore_;
   accelerator_pedal_msg.rolling_counter = counter_;
@@ -110,7 +108,7 @@ void RaptorDbwJoystick::cmdCallback()
   pub_accelerator_pedal_->publish(accelerator_pedal_msg);
 
   // Brake
-  raptor_dbw_msgs::msg::BrakeCmd brake_msg;
+  BrakeCmd brake_msg;
   brake_msg.enable = true;
   brake_msg.rolling_counter = counter_;
   brake_msg.pedal_cmd = data_.brake_joy * 100;
@@ -118,7 +116,7 @@ void RaptorDbwJoystick::cmdCallback()
   pub_brake_->publish(brake_msg);
 
   // Steering
-  raptor_dbw_msgs::msg::SteeringCmd steering_msg;
+  SteeringCmd steering_msg;
   steering_msg.enable = true;
   steering_msg.ignore = ignore_;
   steering_msg.rolling_counter = counter_;
@@ -132,26 +130,26 @@ void RaptorDbwJoystick::cmdCallback()
   pub_steering_->publish(steering_msg);
 
   // Gear
-  raptor_dbw_msgs::msg::GearCmd gear_msg;
+  GearCmd gear_msg;
   gear_msg.cmd.gear = data_.gear_cmd;
   gear_msg.enable = true;
   gear_msg.rolling_counter = counter_;
   pub_gear_->publish(gear_msg);
 
   // Turn signal
-  raptor_dbw_msgs::msg::MiscCmd misc_msg;
+  MiscCmd misc_msg;
   misc_msg.cmd.value = data_.turn_signal_cmd;
   misc_msg.rolling_counter = counter_;
   pub_misc_->publish(misc_msg);
 
-  raptor_dbw_msgs::msg::GlobalEnableCmd globalEnable_msg;
+  GlobalEnableCmd globalEnable_msg;
   globalEnable_msg.global_enable = true;
   globalEnable_msg.enable_joystick_limits = true;
   globalEnable_msg.rolling_counter = counter_;
   pub_global_enable_->publish(globalEnable_msg);
 }
 
-void RaptorDbwJoystick::recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg)
+void RaptorDbwJoystick::recvJoy(const Joy::SharedPtr msg)
 {
   // Check for expected sizes
   if (msg->axes.size() != (size_t)AXIS_COUNT) {
@@ -181,15 +179,15 @@ void RaptorDbwJoystick::recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg)
 
   // Gear
   if (msg->buttons[BTN_PARK]) {
-    data_.gear_cmd = raptor_dbw_msgs::msg::Gear::PARK;
+    data_.gear_cmd = Gear::PARK;
   } else if (msg->buttons[BTN_REVERSE]) {
-    data_.gear_cmd = raptor_dbw_msgs::msg::Gear::REVERSE;
+    data_.gear_cmd = Gear::REVERSE;
   } else if (msg->buttons[BTN_DRIVE]) {
-    data_.gear_cmd = raptor_dbw_msgs::msg::Gear::DRIVE;
+    data_.gear_cmd = Gear::DRIVE;
   } else if (msg->buttons[BTN_NEUTRAL]) {
-    data_.gear_cmd = raptor_dbw_msgs::msg::Gear::NEUTRAL;
+    data_.gear_cmd = Gear::NEUTRAL;
   } else {
-    data_.gear_cmd = raptor_dbw_msgs::msg::Gear::NONE;
+    data_.gear_cmd = Gear::NONE;
   }
 
   // Steering
@@ -201,25 +199,25 @@ void RaptorDbwJoystick::recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg)
   // Turn signal
   if (msg->axes[AXIS_TURN_SIG] != joy_.axes[AXIS_TURN_SIG]) {
     switch (data_.turn_signal_cmd) {
-      case raptor_dbw_msgs::msg::TurnSignal::NONE:
+      case TurnSignal::NONE:
         if (msg->axes[AXIS_TURN_SIG] < -0.5) {
-          data_.turn_signal_cmd = raptor_dbw_msgs::msg::TurnSignal::RIGHT;
+          data_.turn_signal_cmd = TurnSignal::RIGHT;
         } else if (msg->axes[AXIS_TURN_SIG] > 0.5) {
-          data_.turn_signal_cmd = raptor_dbw_msgs::msg::TurnSignal::LEFT;
+          data_.turn_signal_cmd = TurnSignal::LEFT;
         }
         break;
-      case raptor_dbw_msgs::msg::TurnSignal::LEFT:
+      case TurnSignal::LEFT:
         if (msg->axes[AXIS_TURN_SIG] < -0.5) {
-          data_.turn_signal_cmd = raptor_dbw_msgs::msg::TurnSignal::RIGHT;
+          data_.turn_signal_cmd = TurnSignal::RIGHT;
         } else if (msg->axes[AXIS_TURN_SIG] > 0.5) {
-          data_.turn_signal_cmd = raptor_dbw_msgs::msg::TurnSignal::NONE;
+          data_.turn_signal_cmd = TurnSignal::NONE;
         }
         break;
-      case raptor_dbw_msgs::msg::TurnSignal::RIGHT:
+      case TurnSignal::RIGHT:
         if (msg->axes[AXIS_TURN_SIG] < -0.5) {
-          data_.turn_signal_cmd = raptor_dbw_msgs::msg::TurnSignal::NONE;
+          data_.turn_signal_cmd = TurnSignal::NONE;
         } else if (msg->axes[AXIS_TURN_SIG] > 0.5) {
-          data_.turn_signal_cmd = raptor_dbw_msgs::msg::TurnSignal::LEFT;
+          data_.turn_signal_cmd = TurnSignal::LEFT;
         }
         break;
     }
@@ -227,7 +225,7 @@ void RaptorDbwJoystick::recvJoy(const sensor_msgs::msg::Joy::SharedPtr msg)
 
   // Optional enable and disable buttons
   if (enable_) {
-    const std_msgs::msg::Empty empty;
+    const Empty empty;
     if (msg->buttons[BTN_ENABLE]) {
       pub_enable_->publish(empty);
     }

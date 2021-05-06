@@ -84,6 +84,14 @@
 
 using namespace std::chrono_literals;  // NOLINT
 
+using can_msgs::msg::Frame;
+using geometry_msgs::msg::TwistStamped;
+using sensor_msgs::msg::Imu;
+using sensor_msgs::msg::JointState;
+using std_msgs::msg::Bool;
+using std_msgs::msg::Empty;
+using std_msgs::msg::String;
+
 using raptor_dbw_msgs::msg::AcceleratorPedalCmd;
 using raptor_dbw_msgs::msg::AcceleratorPedalReport;
 using raptor_dbw_msgs::msg::ActuatorControlMode;
@@ -139,30 +147,30 @@ public:
 
 private:
   void timerCallback();
-  void recvEnable(const std_msgs::msg::Empty::SharedPtr msg);
-  void recvDisable(const std_msgs::msg::Empty::SharedPtr msg);
-  void recvCAN(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvBrakeRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvAccelPedalRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvSteeringRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvGearRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvWheelSpeedRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvWheelPositionRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvTirePressureRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvSurroundRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvVinRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvImuRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvDriverInputRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvMiscRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvLowVoltageSystemRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvBrake2Rpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvSteering2Rpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvFaultActionRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvOtherActuatorsRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvGpsReferenceRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvGpsRemainderRpt(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvCanImu(const std::vector<can_msgs::msg::Frame> msgs);
-  void recvCanGps(const std::vector<can_msgs::msg::Frame> msgs);
+  void recvEnable(const Empty::SharedPtr msg);
+  void recvDisable(const Empty::SharedPtr msg);
+  void recvCAN(const Frame::SharedPtr msg);
+  void recvBrakeRpt(const Frame::SharedPtr msg);
+  void recvAccelPedalRpt(const Frame::SharedPtr msg);
+  void recvSteeringRpt(const Frame::SharedPtr msg);
+  void recvGearRpt(const Frame::SharedPtr msg);
+  void recvWheelSpeedRpt(const Frame::SharedPtr msg);
+  void recvWheelPositionRpt(const Frame::SharedPtr msg);
+  void recvTirePressureRpt(const Frame::SharedPtr msg);
+  void recvSurroundRpt(const Frame::SharedPtr msg);
+  void recvVinRpt(const Frame::SharedPtr msg);
+  void recvImuRpt(const Frame::SharedPtr msg);
+  void recvDriverInputRpt(const Frame::SharedPtr msg);
+  void recvMiscRpt(const Frame::SharedPtr msg);
+  void recvLowVoltageSystemRpt(const Frame::SharedPtr msg);
+  void recvBrake2Rpt(const Frame::SharedPtr msg);
+  void recvSteering2Rpt(const Frame::SharedPtr msg);
+  void recvFaultActionRpt(const Frame::SharedPtr msg);
+  void recvOtherActuatorsRpt(const Frame::SharedPtr msg);
+  void recvGpsReferenceRpt(const Frame::SharedPtr msg);
+  void recvGpsRemainderRpt(const Frame::SharedPtr msg);
+  void recvCanImu(const std::vector<Frame> msgs);
+  void recvCanGps(const std::vector<Frame> msgs);
   void recvBrakeCmd(const BrakeCmd::SharedPtr msg);
   void recvAcceleratorPedalCmd(const AcceleratorPedalCmd::SharedPtr msg);
   void recvSteeringCmd(const SteeringCmd::SharedPtr msg);
@@ -237,7 +245,7 @@ private:
     JOINT_COUNT,     // Number of joints
   };
 
-  sensor_msgs::msg::JointState joint_state_;
+  JointState joint_state_;
 
   void publishJointStates(
     const rclcpp::Time stamp,
@@ -261,9 +269,9 @@ private:
   double steering_ratio_;
 
   // Subscribed topics
-  rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr sub_enable_;
-  rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr sub_disable_;
-  rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr sub_can_;
+  rclcpp::Subscription<Empty>::SharedPtr sub_enable_;
+  rclcpp::Subscription<Empty>::SharedPtr sub_disable_;
+  rclcpp::Subscription<Frame>::SharedPtr sub_can_;
   rclcpp::Subscription<BrakeCmd>::SharedPtr sub_brake_;
   rclcpp::Subscription<AcceleratorPedalCmd>::SharedPtr sub_accelerator_pedal_;
   rclcpp::Subscription<SteeringCmd>::SharedPtr sub_steering_;
@@ -272,7 +280,7 @@ private:
   rclcpp::Subscription<GlobalEnableCmd>::SharedPtr sub_global_enable_;
 
   // Published topics
-  rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr pub_can_;
+  rclcpp::Publisher<Frame>::SharedPtr pub_can_;
   rclcpp::Publisher<BrakeReport>::SharedPtr pub_brake_;
   rclcpp::Publisher<AcceleratorPedalReport>::SharedPtr pub_accel_pedal_;
   rclcpp::Publisher<SteeringReport>::SharedPtr pub_steering_;
@@ -282,11 +290,11 @@ private:
   rclcpp::Publisher<WheelPositionReport>::SharedPtr pub_wheel_positions_;
   rclcpp::Publisher<TirePressureReport>::SharedPtr pub_tire_pressure_;
   rclcpp::Publisher<SurroundReport>::SharedPtr pub_surround_;
-  rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_imu_;
-  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr pub_joint_states_;
-  rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr pub_twist_;
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_vin_;
-  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr pub_sys_enable_;
+  rclcpp::Publisher<Imu>::SharedPtr pub_imu_;
+  rclcpp::Publisher<JointState>::SharedPtr pub_joint_states_;
+  rclcpp::Publisher<TwistStamped>::SharedPtr pub_twist_;
+  rclcpp::Publisher<String>::SharedPtr pub_vin_;
+  rclcpp::Publisher<Bool>::SharedPtr pub_sys_enable_;
   rclcpp::Publisher<DriverInputReport>::SharedPtr pub_driver_input_;
   rclcpp::Publisher<LowVoltageSystemReport>::SharedPtr
     pub_low_voltage_system_;

@@ -52,6 +52,11 @@
 
 #include <string>
 
+using can_msgs::msg::Frame;
+using raptor_pdu_msgs::msg::FuseReport;
+using raptor_pdu_msgs::msg::RelayCommand;
+using raptor_pdu_msgs::msg::RelayReport;
+
 namespace NewEagle
 {
 class raptor_pdu : public rclcpp::Node
@@ -80,17 +85,17 @@ private:
   NewEagle::Dbc pduDbc_;
   std::string pduFile_;
 
-  void recvCAN(const can_msgs::msg::Frame::SharedPtr msg);
-  void recvRelayCmd(const raptor_pdu_msgs::msg::RelayCommand::SharedPtr msg);
+  void recvCAN(const Frame::SharedPtr msg);
+  void recvRelayCmd(const RelayCommand::SharedPtr msg);
 
   // Subscribed topics
-  rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr sub_can_;
-  rclcpp::Subscription<raptor_pdu_msgs::msg::RelayCommand>::SharedPtr sub_relay_cmd_;
+  rclcpp::Subscription<Frame>::SharedPtr sub_can_;
+  rclcpp::Subscription<RelayCommand>::SharedPtr sub_relay_cmd_;
 
   // Published topics
-  rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr pub_can_;
-  rclcpp::Publisher<raptor_pdu_msgs::msg::FuseReport>::SharedPtr fuse_report_pub_;
-  rclcpp::Publisher<raptor_pdu_msgs::msg::RelayReport>::SharedPtr relay_report_pub_;
+  rclcpp::Publisher<Frame>::SharedPtr pub_can_;
+  rclcpp::Publisher<FuseReport>::SharedPtr fuse_report_pub_;
+  rclcpp::Publisher<RelayReport>::SharedPtr relay_report_pub_;
 };
 }  // namespace NewEagle
 
