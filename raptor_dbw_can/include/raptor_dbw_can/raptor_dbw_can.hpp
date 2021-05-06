@@ -185,50 +185,110 @@ private:
   float max_steer_angle_;
 
   // Other useful variables
-  bool prev_enable_;
-  bool enable_;
-  bool override_brake_;
-  bool override_accelerator_pedal_;
-  bool override_steering_;
-  bool override_gear_;
-  bool fault_brakes_;
-  bool fault_accelerator_pedal_;
-  bool fault_steering_;
-  bool fault_steering_cal_;
-  bool fault_watchdog_;
-  bool fault_watchdog_using_brakes_;
-  bool fault_watchdog_warned_;
-  bool timeout_brakes_;
-  bool timeout_accelerator_pedal_;
-  bool timeout_steering_;
-  bool enabled_brakes_;
-  bool enabled_accelerator_pedal_;
-  bool enabled_steering_;
-  bool gear_warned_;
+  enum ListOverrides
+  {
+    OVR_ACCEL = 0,
+    OVR_BRAKE,
+    OVR_STEER,
+    OVR_GEAR,
+    NUM_OVERRIDES
+  };
+  enum ListFaults
+  {
+    FAULT_ACCEL = 0,
+    FAULT_BRAKE,
+    FAULT_STEER,
+    FAULT_STEER_CAL,
+    FAULT_WATCH,
+    FAULT_WATCH_BRAKES,
+    FAULT_WATCH_WARN,
+    NUM_FAULTS
+  };
+  enum ListTimeouts
+  {
+    TO_ACCEL = 0,
+    TO_BRAKE,
+    TO_STEER,
+    NUM_TIMEOUTS
+  };
+  enum ListEnables
+  {
+    EN_ACCEL = 0,
+    EN_BRAKE,
+    EN_STEER,
+    EN_DBW,
+    EN_DBW_PREV,
+    NUM_ENABLES
+  };
+
+  /** \brief Convert ListTimeouts enum type to ListEnables enum type
+   * \param[in] in_to ListTimeouts enum value to convert
+   * \returns equivalent ListEnables value, or NUM_ENABLES on invalid input
+   */
+  ListEnables convEnable(ListTimeouts in_to);
+
+  const std::string OVR_SYSTEM[NUM_OVERRIDES] = {
+    "accelerator pedal",
+    "brake",
+    "PRND gear",
+    "steering"
+  };
+  const std::string FAULT_SYSTEM[NUM_FAULTS] = {
+    "accelerator pedal",
+    "brake",
+    "steering",
+    "steering calibration",
+    "watchdog",
+    "",
+    ""
+  };
+  const std::string TO_SYSTEM[NUM_TIMEOUTS] = {
+    "Accelerator Pedal",
+    "Brake",
+    "Steering"
+  };
+
+  bool overrides_[NUM_OVERRIDES];
+  bool faults_[NUM_FAULTS];
+  bool timeouts_[NUM_TIMEOUTS];
+  bool enables_[NUM_ENABLES];
+
   inline bool fault()
   {
-    return fault_brakes_ || fault_accelerator_pedal_ || fault_steering_ || fault_steering_cal_ ||
-           fault_watchdog_;
+    return faults_[FAULT_BRAKE] || faults_[FAULT_ACCEL] || faults_[FAULT_STEER] ||
+           faults_[FAULT_STEER_CAL] || faults_[FAULT_WATCH];
   }
-  inline bool override () {return override_brake_ || override_accelerator_pedal_ ||
-           override_steering_ || override_gear_;}
-  inline bool clear() {return enable_ && override ();}
-  inline bool enabled() {return enable_ && !fault() && !override ();}
+  inline bool override () {return overrides_[OVR_BRAKE] || overrides_[OVR_ACCEL] ||
+           overrides_[OVR_STEER] || overrides_[OVR_GEAR];}
+  inline bool clear() {return enables_[EN_DBW] && override ();}
+  inline bool enabled() {return enables_[EN_DBW] && !fault() && !override ();}
+
+/** \brief DBW Enabled needs to publish when its state changes.
+ * \returns TRUE when DBW enable state changes, FALSE otherwise
+ */
   bool publishDbwEnabled();
   void enableSystem();
   void disableSystem();
   void buttonCancel();
-  void overrideBrake(bool override);
-  void overrideAcceleratorPedal(bool override);
-  void overrideSteering(bool override);
-  void overrideGear(bool override);
-  void timeoutBrake(bool timeout, bool enabled);
-  void timeoutAcceleratorPedal(bool timeout, bool enabled);
-  void timeoutSteering(bool timeout, bool enabled);
-  void faultBrakes(bool fault);
-  void faultAcceleratorPedal(bool fault);
-  void faultSteering(bool fault);
-  void faultSteeringCal(bool fault);
+
+  /** \brief Set the specified override
+   * \param[in] which_ovr Which override to set
+   * \param[in] override The value to set the override to
+   */
+  void setOverride(ListOverrides which_ovr, bool override);
+
+  /** \brief Set the specified timeout
+   * \param[in] which_to Which timeout to set
+   * \param[in] timeout The value to set the timeout to
+   * \param[in] enabled Whether to enable/disable the system
+   */
+  void setTimeout(ListTimeouts which_to, bool timeout, bool enabled);
+
+  /** \brief Set the specified fault
+   * \param[in] which_fault Which fault to set
+   * \param[in] fault The value to set the fault to
+   */
+  void setFault(ListFaults which_fault, bool fault);
   void faultWatchdog(bool fault, uint8_t src, bool braking);
   void faultWatchdog(bool fault, uint8_t src = 0);
 
@@ -294,16 +354,12 @@ private:
   rclcpp::Publisher<String>::SharedPtr pub_vin_;
   rclcpp::Publisher<Bool>::SharedPtr pub_sys_enable_;
   rclcpp::Publisher<DriverInputReport>::SharedPtr pub_driver_input_;
-  rclcpp::Publisher<LowVoltageSystemReport>::SharedPtr
-    pub_low_voltage_system_;
-
+  rclcpp::Publisher<LowVoltageSystemReport>::SharedPtr pub_low_voltage_system_;
   rclcpp::Publisher<Brake2Report>::SharedPtr pub_brake_2_report_;
   rclcpp::Publisher<Steering2Report>::SharedPtr pub_steering_2_report_;
   rclcpp::Publisher<FaultActionsReport>::SharedPtr pub_fault_actions_report_;
-  rclcpp::Publisher<HmiGlobalEnableReport>::SharedPtr
-    pub_hmi_global_enable_report_;
-  rclcpp::Publisher<OtherActuatorsReport>::SharedPtr
-    pub_other_actuators_report_;
+  rclcpp::Publisher<HmiGlobalEnableReport>::SharedPtr pub_hmi_global_enable_report_;
+  rclcpp::Publisher<OtherActuatorsReport>::SharedPtr pub_other_actuators_report_;
   rclcpp::Publisher<GpsReferenceReport>::SharedPtr pub_gps_reference_report_;
   rclcpp::Publisher<GpsRemainderReport>::SharedPtr pub_gps_remainder_report_;
 
