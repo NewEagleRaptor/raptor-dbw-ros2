@@ -297,11 +297,12 @@ void RaptorDbwCAN::recvBrakeRpt(const Frame::SharedPtr msg)
     bool brakeSystemFault =
       message->GetSignal("DBW_BrakeFault")->GetResult() ? true : false;
     bool dbwSystemFault = brakeSystemFault;
+    bool driverActivity = message->GetSignal("DBW_BrakeDriverActivity")->GetResult() ? true : false;
 
     setFault(FAULT_BRAKE, brakeSystemFault);
     faultWatchdog(dbwSystemFault, brakeSystemFault);
-
-    setOverride(OVR_BRAKE, message->GetSignal("DBW_BrakeDriverActivity")->GetResult());
+    setOverride(OVR_BRAKE, driverActivity);
+    
     BrakeReport brakeReport;
     brakeReport.header.stamp = msg->header.stamp;
     brakeReport.pedal_position = message->GetSignal("DBW_BrakePdlDriverInput")->GetResult();
@@ -309,8 +310,7 @@ void RaptorDbwCAN::recvBrakeRpt(const Frame::SharedPtr msg)
 
     brakeReport.enabled =
       message->GetSignal("DBW_BrakeEnabled")->GetResult() ? true : false;
-    brakeReport.driver_activity =
-      message->GetSignal("DBW_BrakeDriverActivity")->GetResult() ? true : false;
+    brakeReport.driver_activity = driverActivity;
 
     brakeReport.fault_brake_system = brakeSystemFault;
 
@@ -399,14 +399,11 @@ void RaptorDbwCAN::recvSteeringRpt(const Frame::SharedPtr msg)
     bool steeringSystemFault =
       message->GetSignal("DBW_SteeringFault")->GetResult() ? true : false;
     bool dbwSystemFault = steeringSystemFault;
+    bool driverActivity = message->GetSignal("DBW_SteeringDriverActivity")->GetResult() ? true : false;
 
     setFault(FAULT_STEER, steeringSystemFault);
-
     faultWatchdog(dbwSystemFault);
-    setOverride(
-      OVR_STEER,
-      message->GetSignal(
-        "DBW_SteeringDriverActivity")->GetResult() ? true : false);
+    setOverride(OVR_STEER, driverActivity);
 
     SteeringReport steeringReport;
     steeringReport.header.stamp = msg->header.stamp;
@@ -419,8 +416,7 @@ void RaptorDbwCAN::recvSteeringRpt(const Frame::SharedPtr msg)
 
     steeringReport.enabled =
       message->GetSignal("DBW_SteeringEnabled")->GetResult() ? true : false;
-    steeringReport.driver_activity =
-      message->GetSignal("DBW_SteeringDriverActivity")->GetResult() ? true : false;
+    steeringReport.driver_activity = driverActivity;
 
     steeringReport.rolling_counter =
       message->GetSignal("DBW_SteeringRollingCntr")->GetResult();
