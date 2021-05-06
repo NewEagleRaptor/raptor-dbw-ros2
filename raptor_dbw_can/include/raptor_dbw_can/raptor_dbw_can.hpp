@@ -88,6 +88,8 @@ using std_msgs::msg::Bool;
 using std_msgs::msg::Empty;
 using std_msgs::msg::String;
 
+using raptor_pdu_msgs::msg::RelayCommand;
+
 using raptor_dbw_msgs::msg::AcceleratorPedalCmd;
 using raptor_dbw_msgs::msg::AcceleratorPedalReport;
 using raptor_dbw_msgs::msg::ActuatorControlMode;
@@ -308,7 +310,7 @@ private:
   NewEagle::Dbc dbwDbc_;
 
   // Test stuff
-  rclcpp::Publisher<raptor_pdu_msgs::msg::RelayCommand>::SharedPtr pdu1_relay_pub_;
+  rclcpp::Publisher<RelayCommand>::SharedPtr pdu1_relay_pub_;
   uint32_t count_;
 };
 

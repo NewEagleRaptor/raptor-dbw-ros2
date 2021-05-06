@@ -171,9 +171,8 @@ RaptorDbwCAN::RaptorDbwCAN(
     "global_enable_cmd", 1,
     std::bind(&RaptorDbwCAN::recvGlobalEnableCmd, this, std::placeholders::_1));
 
-  pdu1_relay_pub_ = this->create_publisher<raptor_pdu_msgs::msg::RelayCommand>(
-    "/pduB/relay_cmd",
-    1000);
+  pdu1_relay_pub_ = this->create_publisher<RelayCommand>(
+    "/pduB/relay_cmd", 1000);
   count_ = 0;
 
   dbwDbc_ = NewEagle::DbcBuilder().NewDbc(dbw_dbc_file_);
