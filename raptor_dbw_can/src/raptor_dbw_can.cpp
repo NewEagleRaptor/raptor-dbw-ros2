@@ -302,7 +302,7 @@ void RaptorDbwCAN::recvBrakeRpt(const Frame::SharedPtr msg)
     setFault(FAULT_BRAKE, brakeSystemFault);
     faultWatchdog(dbwSystemFault, brakeSystemFault);
     setOverride(OVR_BRAKE, driverActivity);
-    
+
     BrakeReport brakeReport;
     brakeReport.header.stamp = msg->header.stamp;
     brakeReport.pedal_position = message->GetSignal("DBW_BrakePdlDriverInput")->GetResult();
@@ -399,7 +399,8 @@ void RaptorDbwCAN::recvSteeringRpt(const Frame::SharedPtr msg)
     bool steeringSystemFault =
       message->GetSignal("DBW_SteeringFault")->GetResult() ? true : false;
     bool dbwSystemFault = steeringSystemFault;
-    bool driverActivity = message->GetSignal("DBW_SteeringDriverActivity")->GetResult() ? true : false;
+    bool driverActivity =
+      message->GetSignal("DBW_SteeringDriverActivity")->GetResult() ? true : false;
 
     setFault(FAULT_STEER, steeringSystemFault);
     faultWatchdog(dbwSystemFault);

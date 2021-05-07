@@ -35,10 +35,10 @@
 
 #include <raptor_dbw_msgs/msg/accelerator_pedal_cmd.hpp>
 #include <raptor_dbw_msgs/msg/brake_cmd.hpp>
-#include <raptor_dbw_msgs/msg/steering_cmd.hpp>
 #include <raptor_dbw_msgs/msg/gear_cmd.hpp>
-#include <raptor_dbw_msgs/msg/misc_cmd.hpp>
 #include <raptor_dbw_msgs/msg/global_enable_cmd.hpp>
+#include <raptor_dbw_msgs/msg/misc_cmd.hpp>
+#include <raptor_dbw_msgs/msg/steering_cmd.hpp>
 
 #include <chrono>
 
@@ -93,12 +93,12 @@ private:
 
   rclcpp::Publisher<AcceleratorPedalCmd>::SharedPtr pub_accelerator_pedal_;
   rclcpp::Publisher<BrakeCmd>::SharedPtr pub_brake_;
-  rclcpp::Publisher<SteeringCmd>::SharedPtr pub_steering_;
   rclcpp::Publisher<GearCmd>::SharedPtr pub_gear_;
+  rclcpp::Publisher<GlobalEnableCmd>::SharedPtr pub_global_enable_;
   rclcpp::Publisher<MiscCmd>::SharedPtr pub_misc_;
+  rclcpp::Publisher<SteeringCmd>::SharedPtr pub_steering_;
   rclcpp::Publisher<Empty>::SharedPtr pub_enable_;
   rclcpp::Publisher<Empty>::SharedPtr pub_disable_;
-  rclcpp::Publisher<GlobalEnableCmd>::SharedPtr pub_global_enable_;
 
   // Parameters
   bool ignore_;     // Ignore driver overrides
