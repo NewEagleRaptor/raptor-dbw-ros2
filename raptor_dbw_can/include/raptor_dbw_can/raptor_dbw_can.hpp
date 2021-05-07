@@ -167,8 +167,8 @@ private:
   void recvSteeringRpt(const Frame::SharedPtr msg);
   void recvSteering2Rpt(const Frame::SharedPtr msg);
   void recvSurroundRpt(const Frame::SharedPtr msg);
-  void recvVinRpt(const Frame::SharedPtr msg);
   void recvTirePressureRpt(const Frame::SharedPtr msg);
+  void recvVinRpt(const Frame::SharedPtr msg);
   void recvWheelPositionRpt(const Frame::SharedPtr msg);
   void recvWheelSpeedRpt(const Frame::SharedPtr msg);
   void recvCanImu(const std::vector<Frame> msgs);
