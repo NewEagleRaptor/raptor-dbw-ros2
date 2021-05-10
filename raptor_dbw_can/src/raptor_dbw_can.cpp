@@ -1232,7 +1232,7 @@ void RaptorDbwCAN::enableSystem()
   if (!enables_[EN_DBW]) {
     if (fault()) {
       int i{0};
-      for (i = FAULT_ACCEL; i <= FAULT_WATCH; i++) {
+      for (i = FAULT_ACCEL; i < NUM_SERIOUS_FAULTS; i++) {
         if (faults_[i]) {
           RCLCPP_ERROR(this->get_logger(),
             "DBW system disabled -" + FAULT_SYSTEM[i] + " fault.");
