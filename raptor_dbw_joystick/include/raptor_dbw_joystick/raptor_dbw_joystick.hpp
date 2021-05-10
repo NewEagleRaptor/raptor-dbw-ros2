@@ -30,6 +30,11 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+/** \brief This file defines the RaptorDbwJoystick class.
+ * \copyright Copyright 2021 New Eagle LLC
+ * \file raptor_dbw_joystick.hpp
+ */
+
 #ifndef RAPTOR_DBW_JOYSTICK__RAPTOR_DBW_JOYSTICK_HPP_
 #define RAPTOR_DBW_JOYSTICK__RAPTOR_DBW_JOYSTICK_HPP_
 
@@ -75,9 +80,17 @@ typedef struct
   bool joy_brake_valid;
 } JoystickDataStruct;
 
+/** \brief Class for sending control commands to NE Raptor DBW with a joystick. */
 class RaptorDbwJoystick : public rclcpp::Node
 {
 public:
+/** \brief Default constructor.
+ * \param[in] options The options for this node.
+ * \param[in] ignore Whether driver overrides should be ignored
+ * \param[in] enable Whether joystick node can control enable/disable
+ * \param[in] svel Steering angle velocity, deg/s
+ * \param[in] max_steer_angle Maximum steering angle allowed, deg
+ */
   explicit RaptorDbwJoystick(
     const rclcpp::NodeOptions & options,
     bool ignore,
@@ -89,7 +102,14 @@ private:
   rclcpp::Clock m_clock;
   static constexpr int64_t CLOCK_1_SEC = 1000;  // duration in milliseconds
 
+  /** \brief Convert the joystick input from the joystick hardware into ROS messages.
+   * \param[in] msg The joystick input received from the hardware.
+   */
   void recvJoy(const Joy::SharedPtr msg);
+
+  /** \brief Send the translated commands to the Drive By Wire node
+   *    via published ROS messages.
+   */
   void cmdCallback();
 
   // Topics
