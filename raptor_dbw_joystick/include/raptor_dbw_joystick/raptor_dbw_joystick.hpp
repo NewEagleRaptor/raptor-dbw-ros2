@@ -136,23 +136,27 @@ private:
   Joy joy_;
   uint8_t counter_;
 
-  enum
+  /** \brief Enumeration of joystick controls
+   *    Buttons: boolean input (on/off)
+   *    Axes: ranged input (-1.0 ~ 1.0)
+   */
+  enum ListControls
   {
-    BTN_PARK = 3,
-    BTN_REVERSE = 1,
-    BTN_NEUTRAL = 2,
-    BTN_DRIVE = 0,
-    BTN_ENABLE = 5,
-    BTN_DISABLE = 4,
-    BTN_STEER_MULT_1 = 6,
-    BTN_STEER_MULT_2 = 7,
-    BTN_COUNT = 11,
-    AXIS_ACCELERATOR_PEDAL = 5,
-    AXIS_BRAKE = 2,
-    AXIS_STEER_1 = 0,
-    AXIS_STEER_2 = 3,
-    AXIS_TURN_SIG = 6,
-    AXIS_COUNT = 8,
+    BTN_PARK = 3,           /**< Button: gear -> Park */
+    BTN_REVERSE = 1,        /**< Button: gear -> Reverse */
+    BTN_NEUTRAL = 2,        /**< Button: gear -> Neutral */
+    BTN_DRIVE = 0,          /**< Button: gear -> Drive */
+    BTN_ENABLE = 5,         /**< Button: enable DBW control */
+    BTN_DISABLE = 4,        /**< Button: disable DBW control */
+    BTN_STEER_MULT_1 = 6,   /**< Button: enable oversteer (hold) */
+    BTN_STEER_MULT_2 = 7,   /**< Button: enable oversteer (hold) */
+    BTN_COUNT = 11,         /**< Total number of buttons (including unused) */
+    AXIS_ACCELERATOR_PEDAL = 5,   /**< Axis: accelerator pedal: 0-100% */
+    AXIS_BRAKE = 2,               /**< Axis: brake: 0-100% */
+    AXIS_STEER_1 = 0,             /**< Axis: steering wheel: - = clockwise, + = counterclockwise */
+    AXIS_STEER_2 = 3,             /**< Axis: steering wheel: - = clockwise, + = counterclockwise */
+    AXIS_TURN_SIG = 6,            /**< Axis: turn signals: - = right, + = left */
+    AXIS_COUNT = 8,               /**< Total number of axes (including unused) */
   };
 };
 }  // namespace raptor_dbw_joystick

@@ -67,11 +67,12 @@ namespace NewEagle
 /** \brief Class for interacting with the PDU */
 class raptor_pdu : public rclcpp::Node
 {
-  enum
+  /** \brief Enumeration of message base addresses */
+  enum ListAddresses
   {
-    RELAY_STATUS_BASE_ADDR = 0x18ffa100,
-    FUSE_STATUS_BASE_ADDR = 0x18ffa000,
-    RELAY_COMMAND_BASE_ADDR = 0x18ef0000
+    RELAY_STATUS_BASE_ADDR = 0x18ffa100,  /**< Relay status message base address */
+    FUSE_STATUS_BASE_ADDR = 0x18ffa000,   /**< Fuse status message base address */
+    RELAY_COMMAND_BASE_ADDR = 0x18ef0000  /**< Relay command message base address */
   };
 
 public:

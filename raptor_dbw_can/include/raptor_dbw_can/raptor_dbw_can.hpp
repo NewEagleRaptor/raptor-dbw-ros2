@@ -317,41 +317,49 @@ private:
   float max_steer_angle_;
 
   // Other useful variables
+
+  /** \brief Enumeration of driver overrides */
   enum ListOverrides
   {
-    OVR_ACCEL = 0,
-    OVR_BRAKE,
-    OVR_GEAR,
-    OVR_STEER,
-    NUM_OVERRIDES
+    OVR_ACCEL = 0,  /**< Acceleration pedal override */
+    OVR_BRAKE,      /**< Brake override */
+    OVR_GEAR,       /**< PRND gear override */
+    OVR_STEER,      /**< Steering override */
+    NUM_OVERRIDES   /**< Total number of driver overrides */
   };
+
+  /** \brief Enumeration of system faults */
   enum ListFaults
   {
-    FAULT_ACCEL = 0,
-    FAULT_BRAKE,
-    FAULT_STEER,
-    FAULT_STEER_CAL,
-    FAULT_WATCH,
-    NUM_SERIOUS_FAULTS,
-    FAULT_WATCH_BRAKES = NUM_SERIOUS_FAULTS,
-    FAULT_WATCH_WARN,
-    NUM_FAULTS
+    FAULT_ACCEL = 0,      /**< Acceleration pedal fault */
+    FAULT_BRAKE,          /**< Brake fault */
+    FAULT_STEER,          /**< Steering fault */
+    FAULT_STEER_CAL,      /**< Steering calibration fault */
+    FAULT_WATCH,          /**< Watchdog fault */
+    NUM_SERIOUS_FAULTS,   /**< Total number of serious faults (disables DBW) */
+    FAULT_WATCH_BRAKES = NUM_SERIOUS_FAULTS,  /**< Watchdog braking fault */
+    FAULT_WATCH_WARN,     /**< Watchdog non-braking fault warning */
+    NUM_FAULTS            /**< Total number of system faults */
   };
+
+  /** \brief Enumeration of message timeouts */
   enum ListTimeouts
   {
-    TO_ACCEL = 0,
-    TO_BRAKE,
-    TO_STEER,
-    NUM_TIMEOUTS
+    TO_ACCEL = 0,   /**< Acceleration pedal message timeout */
+    TO_BRAKE,       /**< Brake message timeout */
+    TO_STEER,       /**< Steering message timeout */
+    NUM_TIMEOUTS    /**< Total number of message timeouts */
   };
+
+  /** \brief Enumeration of system enables */
   enum ListEnables
   {
-    EN_ACCEL = 0,
-    EN_BRAKE,
-    EN_STEER,
-    EN_DBW,
-    EN_DBW_PREV,
-    NUM_ENABLES
+    EN_ACCEL = 0,   /**< Acceleration pedal system enabled */
+    EN_BRAKE,       /**< Brake system enabled */
+    EN_STEER,       /**< Steering system enabled */
+    EN_DBW,         /**< DBW system enabled */
+    EN_DBW_PREV,    /**< DBW system previously enabled (track edge) */
+    NUM_ENABLES     /**< Total number of system enables */
   };
 
   /** \brief Convert ListTimeouts enum type to ListEnables enum type
@@ -458,15 +466,16 @@ private:
    */
   void faultWatchdog(bool fault, uint8_t src = 0);
 
-  enum
+  /** \brief Enumeration of vehicle joints */
+  enum ListJoints
   {
-    JOINT_FL = 0,     // Front left wheel
-    JOINT_FR,     // Front right wheel
-    JOINT_RL,     // Rear left wheel
-    JOINT_RR,     // Rear right wheel
-    JOINT_SL,     // Steering left
-    JOINT_SR,     // Steering right
-    JOINT_COUNT,     // Number of joints
+    JOINT_FL = 0,   /**< Front left wheel */
+    JOINT_FR,       /**< Front right wheel */
+    JOINT_RL,       /**< Rear left wheel */
+    JOINT_RR,       /**< Rear right wheel */
+    JOINT_SL,       /**< Steering left */
+    JOINT_SR,       /**< Steering right */
+    JOINT_COUNT,    /**< Number of joints */
   };
 
   JointState joint_state_;
