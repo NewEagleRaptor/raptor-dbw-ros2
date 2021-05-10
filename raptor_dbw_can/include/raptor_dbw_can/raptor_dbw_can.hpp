@@ -317,8 +317,8 @@ private:
   {
     OVR_ACCEL = 0,
     OVR_BRAKE,
-    OVR_STEER,
     OVR_GEAR,
+    OVR_STEER,
     NUM_OVERRIDES
   };
   enum ListFaults

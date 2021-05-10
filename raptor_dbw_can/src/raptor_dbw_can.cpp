@@ -1235,7 +1235,7 @@ void RaptorDbwCAN::enableSystem()
   if (!enables_[EN_DBW]) {
     if (fault()) {
       int i{0};
-      for (i = FAULT_ACCEL; i <= FAULT_WATCH; i++) {
+      for (i = FAULT_ACCEL; i < NUM_SERIOUS_FAULTS; i++) {
         if (faults_[i]) {
           RCLCPP_ERROR_THROTTLE(
             this->get_logger(), m_clock, CLOCK_1_SEC,
