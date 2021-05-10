@@ -1237,9 +1237,11 @@ void RaptorDbwCAN::enableSystem()
       int i{0};
       for (i = FAULT_ACCEL; i < NUM_SERIOUS_FAULTS; i++) {
         if (faults_[i]) {
+          std::string err_msg("DBW system disabled - ");
+          err_msg = err_msg + FAULT_SYSTEM[i];
+          err_msg = err_msg + " fault.";
           RCLCPP_ERROR_THROTTLE(
-            this->get_logger(), m_clock, CLOCK_1_SEC,
-            "DBW system disabled -" + FAULT_SYSTEM[i] + " fault.");
+            this->get_logger(), m_clock, CLOCK_1_SEC, err_msg.c_str());
         }
       }
     } else {
@@ -1289,13 +1291,17 @@ void RaptorDbwCAN::setOverride(ListOverrides which_ovr, bool override)
     overrides_[which_ovr] = override;
     if (publishDbwEnabled()) {
       if (en) {
+        std::string err_msg("DBW system disabled - ");
+        err_msg = err_msg + OVR_SYSTEM[which_ovr];
+        err_msg = err_msg + " override";
         RCLCPP_WARN_THROTTLE(
-          this->get_logger(), m_clock, CLOCK_1_SEC,
-          "DBW system disabled - " + OVR_SYSTEM[which_ovr] + " override");
+          this->get_logger(), m_clock, CLOCK_1_SEC, err_msg.c_str());
       } else {
+        std::string err_msg("DBW system enabled - no ");
+        err_msg = err_msg + OVR_SYSTEM[which_ovr];
+        err_msg = err_msg + " override";
         RCLCPP_INFO_THROTTLE(
-          this->get_logger(), m_clock, CLOCK_1_SEC,
-          "DBW system enabled - no " + OVR_SYSTEM[which_ovr] + " override");
+          this->get_logger(), m_clock, CLOCK_1_SEC, err_msg.c_str());
       }
     }
   }
@@ -1324,9 +1330,10 @@ void RaptorDbwCAN::setTimeout(ListTimeouts which_to, bool timeout, bool enabled)
 {
   if (which_to < NUM_TIMEOUTS) {
     if (!timeouts_[which_to] && enables_[convEnable(which_to)] && timeout && !enabled) {
+      std::string err_msg(TO_SYSTEM[which_to]);
+      err_msg = err_msg + " has timed out";
       RCLCPP_WARN_THROTTLE(
-        this->get_logger(), m_clock, CLOCK_1_SEC,
-        TO_SYSTEM[which_to] + " has timed out");
+        this->get_logger(), m_clock, CLOCK_1_SEC, err_msg.c_str());
     }
     timeouts_[which_to] = timeout;
     enables_[convEnable(which_to)] = enabled;
@@ -1343,13 +1350,17 @@ void RaptorDbwCAN::setFault(ListFaults which_fault, bool fault)
     faults_[which_fault] = fault;
     if (publishDbwEnabled()) {
       if (en) {
+        std::string err_msg("DBW system disabled - ");
+        err_msg = err_msg + FAULT_SYSTEM[which_fault];
+        err_msg = err_msg + " fault.";
         RCLCPP_ERROR_THROTTLE(
-          this->get_logger(), m_clock, CLOCK_1_SEC,
-          "DBW system disabled - " + FAULT_SYSTEM[which_fault] + " fault.");
+          this->get_logger(), m_clock, CLOCK_1_SEC, err_msg.c_str());
       } else {
+        std::string err_msg("DBW system enabled - no ");
+        err_msg = err_msg + FAULT_SYSTEM[which_fault];
+        err_msg = err_msg + " fault.";
         RCLCPP_INFO_THROTTLE(
-          this->get_logger(), m_clock, CLOCK_1_SEC,
-          "DBW system enabled - no " + FAULT_SYSTEM[which_fault] + " fault");
+          this->get_logger(), m_clock, CLOCK_1_SEC, err_msg.c_str());
       }
     }
   }
