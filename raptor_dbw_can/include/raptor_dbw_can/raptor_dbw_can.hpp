@@ -356,20 +356,19 @@ private:
    */
   ListEnables convEnable(ListTimeouts in_to);
 
+  // Helps print warning messages
   const std::string OVR_SYSTEM[NUM_OVERRIDES] = {
     "accelerator pedal",
     "brake",
     "PRND gear",
     "steering"
   };
-  const std::string FAULT_SYSTEM[NUM_FAULTS] = {
+  const std::string FAULT_SYSTEM[NUM_SERIOUS_FAULTS] = {
     "accelerator pedal",
     "brake",
     "steering",
     "steering calibration",
-    "watchdog",
-    "",
-    ""
+    "watchdog"
   };
   const std::string TO_SYSTEM[NUM_TIMEOUTS] = {
     "Accelerator Pedal",
