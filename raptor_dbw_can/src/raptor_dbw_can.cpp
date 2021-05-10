@@ -1269,18 +1269,20 @@ void RaptorDbwCAN::buttonCancel()
 
 void RaptorDbwCAN::setOverride(ListOverrides which_ovr, bool override)
 {
-  bool en = enabled();
-  if (override && en) {
-    enables_[EN_DBW] = false;
-  }
-  overrides_[which_ovr] = override;
-  if (publishDbwEnabled()) {
-    if (en) {
-      RCLCPP_WARN(this->get_logger(),
-        "DBW system disabled - " + OVR_SYSTEM[which_ovr] + " override");
-    } else {
-      RCLCPP_INFO(this->get_logger(),
-        "DBW system enabled - no " + OVR_SYSTEM[which_ovr] + " override");
+  if (which_ovr < NUM_OVERRIDES) {
+    bool en = enabled();
+    if (override && en) {
+      enables_[EN_DBW] = false;
+    }
+    overrides_[which_ovr] = override;
+    if (publishDbwEnabled()) {
+      if (en) {
+        RCLCPP_WARN(this->get_logger(),
+          "DBW system disabled - " + OVR_SYSTEM[which_ovr] + " override");
+      } else {
+        RCLCPP_INFO(this->get_logger(),
+          "DBW system enabled - no " + OVR_SYSTEM[which_ovr] + " override");
+      }
     }
   }
 }
@@ -1306,28 +1308,32 @@ RaptorDbwCAN::ListEnables RaptorDbwCAN::convEnable(ListTimeouts in_to)
 
 void RaptorDbwCAN::setTimeout(ListTimeouts which_to, bool timeout, bool enabled)
 {
-  if (!timeouts_[which_to] && enables_[convEnable(which_to)] && timeout && !enabled) {
-    RCLCPP_WARN(this->get_logger(),
-      TO_SYSTEM[which_to] + " has timed out");
+  if (which_to < NUM_TIMEOUTS) {
+    if (!timeouts_[which_to] && enables_[convEnable(which_to)] && timeout && !enabled) {
+      RCLCPP_WARN(this->get_logger(),
+        TO_SYSTEM[which_to] + " has timed out");
+    }
+    timeouts_[which_to] = timeout;
+    enables_[convEnable(which_to)] = enabled;
   }
-  timeouts_[which_to] = timeout;
-  enables_[convEnable(which_to)] = enabled;
 }
 
 void RaptorDbwCAN::setFault(ListFaults which_fault, bool fault)
 {
-  bool en = enabled();
-  if (fault && en) {
-    enables_[EN_DBW] = false;
-  }
-  faults_[which_fault] = fault;
-  if (publishDbwEnabled()) {
-    if (en) {
-      RCLCPP_ERROR(this->get_logger(),
-        "DBW system disabled - " + FAULT_SYSTEM[which_fault] + " fault.");
-    } else {
-      RCLCPP_INFO(this->get_logger(),
-        "DBW system enabled - no " + FAULT_SYSTEM[which_fault] + " fault");
+  if (which_fault < NUM_SERIOUS_FAULTS) {
+    bool en = enabled();
+    if (fault && en) {
+      enables_[EN_DBW] = false;
+    }
+    faults_[which_fault] = fault;
+    if (publishDbwEnabled()) {
+      if (en) {
+        RCLCPP_ERROR(this->get_logger(),
+          "DBW system disabled - " + FAULT_SYSTEM[which_fault] + " fault.");
+      } else {
+        RCLCPP_INFO(this->get_logger(),
+          "DBW system enabled - no " + FAULT_SYSTEM[which_fault] + " fault");
+      }
     }
   }
 }
