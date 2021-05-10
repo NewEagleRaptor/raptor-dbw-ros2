@@ -26,6 +26,11 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+/** \brief This file defines the raptor_pdu class.
+ * \copyright Copyright 2021 New Eagle LLC
+ * \file raptor_pdu.hpp
+ */
+
 #ifndef RAPTOR_PDU__RAPTOR_PDU_HPP_
 #define RAPTOR_PDU__RAPTOR_PDU_HPP_
 
@@ -55,6 +60,7 @@ using raptor_pdu_msgs::msg::RelayReport;
 
 namespace NewEagle
 {
+/** \brief Class for interacting with the PDU */
 class raptor_pdu : public rclcpp::Node
 {
   enum
@@ -65,6 +71,9 @@ class raptor_pdu : public rclcpp::Node
   };
 
 public:
+/** \brief Default constructor.
+ * \param[in] options The options for this node.
+ */
   explicit raptor_pdu(const rclcpp::NodeOptions & options);
 
 private:
@@ -81,7 +90,14 @@ private:
   NewEagle::Dbc pduDbc_;
   std::string pduFile_;
 
+/** \brief Convert reports received over CAN into ROS messages.
+ * \param[in] msg The message received over CAN.
+ */
   void recvCAN(const Frame::SharedPtr msg);
+
+/** \brief Send out a Relay Command over CAN
+ * \param[in] msg The RelayCommand received as a ROS message.
+ */
   void recvRelayCmd(const RelayCommand::SharedPtr msg);
 
   // Subscribed topics

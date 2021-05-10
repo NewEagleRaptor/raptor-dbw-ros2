@@ -26,6 +26,11 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+/** \brief This file defines the RaptorDbwCAN class.
+ * \copyright Copyright 2021 New Eagle LLC
+ * \file raptor_dbw_can.hpp
+ */
+
 #ifndef RAPTOR_DBW_CAN__RAPTOR_DBW_CAN_HPP_
 #define RAPTOR_DBW_CAN__RAPTOR_DBW_CAN_HPP_
 
@@ -134,9 +139,15 @@ using raptor_dbw_msgs::msg::WiperRear;
 
 namespace raptor_dbw_can
 {
+/** \brief Class for converting Raptor DBW messages between CAN & ROS */
 class RaptorDbwCAN : public rclcpp::Node
 {
 public:
+/** \brief Default constructor.
+ * \param[in] options The options for this node.
+ * \param[in] dbw_dbc_file The name of the DBC file to use.
+ * \param[in] max_steer_angle Maximum steering angle allowed, deg
+ */
   explicit RaptorDbwCAN(
     const rclcpp::NodeOptions & options,
     std::string dbw_dbc_file,
@@ -144,36 +155,153 @@ public:
   ~RaptorDbwCAN();
 
 private:
+/** \brief If DBW is enabled && there are active driver overrides,
+ *    do not send commands on the overridden system.
+ */
   void timerCallback();
+
+/** \brief Attempt to enable the DBW system.
+ * \param[in] msg Enable message (must not be null)
+ */
   void recvEnable(const Empty::SharedPtr msg);
+
+/** \brief Attempt to disable the DBW system.
+ * \param[in] msg Disable message (must not be null)
+ */
   void recvDisable(const Empty::SharedPtr msg);
+
+/** \brief Convert reports received over CAN into ROS messages.
+ * \param[in] msg The message received over CAN.
+ */
   void recvCAN(const Frame::SharedPtr msg);
+
+/** \brief Convert an Accel Pedal Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvAccelPedalRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a Brake Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvBrakeRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a Brake2 Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvBrake2Rpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a Driver Input Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvDriverInputRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a Fault Action Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvFaultActionRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a Gear Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvGearRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a GPS Reference Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvGpsReferenceRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a GPS Remainder Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvGpsRemainderRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert an IMU Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvImuRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a Low Voltage System Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvLowVoltageSystemRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a Misc. Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvMiscRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert an Other Actuators Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvOtherActuatorsRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a Steering Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvSteeringRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a Steering2 Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvSteering2Rpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a Surround Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvSurroundRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a Tire Pressure Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvTirePressureRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a VIN Report received over CAN into a ROS message. Message is sent over multiple
+ *    frames & published once all data is received.
+ * \param[in] msg The message received over CAN.
+ */
   void recvVinRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a Wheel Position Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvWheelPositionRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a Wheel Speed Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
   void recvWheelSpeedRpt(const Frame::SharedPtr msg);
+
   void recvCanImu(const std::vector<Frame> msgs);
   void recvCanGps(const std::vector<Frame> msgs);
+
+/** \brief Convert an Accelerator Pedal Command sent as a ROS message into a CAN message.
+ * \param[in] msg The message to send over CAN.
+ */
   void recvAcceleratorPedalCmd(const AcceleratorPedalCmd::SharedPtr msg);
+
+/** \brief Convert a Brake Command sent as a ROS message into a CAN message.
+ * \param[in] msg The message to send over CAN.
+ */
   void recvBrakeCmd(const BrakeCmd::SharedPtr msg);
+
+/** \brief Convert a Gear Command sent as a ROS message into a CAN message.
+ * \param[in] msg The message to send over CAN.
+ */
   void recvGearCmd(const GearCmd::SharedPtr msg);
+
+/** \brief Convert a Global Enable Command sent as a ROS message into a CAN message.
+ * \param[in] msg The message to send over CAN.
+ */
   void recvGlobalEnableCmd(const GlobalEnableCmd::SharedPtr msg);
+
+/** \brief Convert a Misc. Command sent as a ROS message into a CAN message.
+ * \param[in] msg The message to send over CAN.
+ */
   void recvMiscCmd(const MiscCmd::SharedPtr msg);
+
+/** \brief Convert a Steering Command sent as a ROS message into a CAN message.
+ * \param[in] msg The message to send over CAN.
+ */
   void recvSteeringCmd(const SteeringCmd::SharedPtr msg);
 
   rclcpp::TimerBase::SharedPtr timer_;
@@ -253,22 +381,44 @@ private:
   bool timeouts_[NUM_TIMEOUTS];
   bool enables_[NUM_ENABLES];
 
+/** \brief Check for an active fault.
+ * \returns TRUE if there is any active fault, FALSE otherwise
+ */
   inline bool fault()
   {
     return faults_[FAULT_BRAKE] || faults_[FAULT_ACCEL] || faults_[FAULT_STEER] ||
            faults_[FAULT_STEER_CAL] || faults_[FAULT_WATCH];
   }
+
+/** \brief Check for an active driver override.
+ * \returns TRUE if there is any active driver override, FALSE otherwise
+ */
   inline bool override () {return overrides_[OVR_BRAKE] || overrides_[OVR_ACCEL] ||
            overrides_[OVR_STEER] || overrides_[OVR_GEAR];}
+
+/** \brief Check for an active driver override.
+ * \returns TRUE if DBW is enabled && there is any active driver override, FALSE otherwise
+ */
   inline bool clear() {return enables_[EN_DBW] && override ();}
+
+/** \brief Check whether the DBW Node is in control of the vehicle.
+ * \returns TRUE if DBW is enabled && there are no active faults or driver overrides,
+ *          FALSE otherwise
+ */
   inline bool enabled() {return enables_[EN_DBW] && !fault() && !override ();}
 
 /** \brief DBW Enabled needs to publish when its state changes.
  * \returns TRUE when DBW enable state changes, FALSE otherwise
  */
   bool publishDbwEnabled();
+
+/** \brief Checks faults & overrides to establish DBW control */
   void enableSystem();
+
+/** \brief Disables DBW control */
   void disableSystem();
+
+/** \brief Disables DBW control due to button press */
   void buttonCancel();
 
   /** \brief Set the specified override
@@ -284,12 +434,24 @@ private:
    */
   void setTimeout(ListTimeouts which_to, bool timeout, bool enabled);
 
-  /** \brief Set the specified fault
+  /** \brief Set the specified fault; these faults disable DBW control when active
    * \param[in] which_fault Which fault to set
    * \param[in] fault The value to set the fault to
    */
   void setFault(ListFaults which_fault, bool fault);
+
+  /** \brief Set a Watchdog fault & track fault source
+   * \param[in] fault The value to set the fault to
+   * \param[in] src Fault source is a non-braking fault
+   * \param[in] braking Fault source is a braking fault
+   */
   void faultWatchdog(bool fault, uint8_t src, bool braking);
+
+  /** \brief Set a Watchdog fault & track fault source;
+   *    keep current status of braking fault source
+   * \param[in] fault The value to set the fault to
+   * \param[in] src Fault source is a non-braking fault (default == none)
+   */
   void faultWatchdog(bool fault, uint8_t src = 0);
 
   enum
@@ -305,9 +467,20 @@ private:
 
   JointState joint_state_;
 
+/** \brief Calculates & publishes joint states based on updated steering report.
+ *    Overloaded function.
+ * \param[in] stamp Updated time stamp
+ * \param[in] steering Updated steering report
+ */
   void publishJointStates(
     const rclcpp::Time stamp,
     const SteeringReport steering);
+
+/** \brief Calculates & publishes joint states based on updated wheel speed report.
+ *    Overloaded function.
+ * \param[in] stamp Updated time stamp
+ * \param[in] wheels Updated wheel speed report
+ */
   void publishJointStates(
     const rclcpp::Time stamp,
     const WheelSpeedReport wheels);
