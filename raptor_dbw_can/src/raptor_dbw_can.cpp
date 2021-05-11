@@ -514,7 +514,6 @@ void RaptorDbwCAN::recvGearRpt(const Frame::SharedPtr msg)
 
     out.reject = message->GetSignal("DBW_PrndStateReject")->GetResult() ? true : false;
 
-    out.trans_curr_gear = message->GetSignal("DBW_TransCurGear")->GetResult();
     out.gear_mismatch_flash =
       message->GetSignal("DBW_PrndMismatchFlash")->GetResult() ? true : false;
 
@@ -878,8 +877,8 @@ void RaptorDbwCAN::recvOtherActuatorsRpt(const Frame::SharedPtr msg)
       "DBW_IgnitionState")->GetResult();
     out.horn_state.status = message->GetSignal(
       "DBW_HornState")->GetResult();
-    out.diff_lock_state = message->GetSignal(
-      "DBW_DiffLockState")->GetResult() ? true : false;
+    out.diff_lock_state.status = message->GetSignal(
+      "DBW_DiffLockState")->GetResult();
 
     // Lights
     out.turn_signal_state.value = message->GetSignal(
@@ -889,6 +888,8 @@ void RaptorDbwCAN::recvOtherActuatorsRpt(const Frame::SharedPtr msg)
     out.low_beam_state.status = message->GetSignal(
       "DBW_LowBeamState")->GetResult();
     out.running_lights_state.status = message->GetSignal(
+      "DBW_RunningLightsState")->GetResult();
+    out.other_lights_state.status = message->GetSignal(
       "DBW_RunningLightsState")->GetResult();
     out.mode_light_red = message->GetSignal(
       "DBW_ModeLightState_Red")->GetResult() ? true : false;
@@ -1337,6 +1338,7 @@ void RaptorDbwCAN::recvMiscCmd(const MiscCmd::SharedPtr msg)
   message->GetSignal("AKit_LowBeamReq")->SetResult(0);
   message->GetSignal("AKit_DoorLockReq")->SetResult(0);
   message->GetSignal("AKit_RunningLightsReq")->SetResult(0);
+  message->GetSignal("AKit_OtherLightsReq")->SetResult(0);
   message->GetSignal("AKit_ModeLight_Red")->SetResult(0);
   message->GetSignal("AKit_ModeLight_Yellow")->SetResult(0);
   message->GetSignal("AKit_ModeLight_Green")->SetResult(0);
@@ -1353,6 +1355,7 @@ void RaptorDbwCAN::recvMiscCmd(const MiscCmd::SharedPtr msg)
     message->GetSignal("AKit_HighBeamReq")->SetResult(msg->high_beam_cmd.status);
     message->GetSignal("AKit_LowBeamReq")->SetResult(msg->low_beam_cmd.status);
     message->GetSignal("AKit_RunningLightsReq")->SetResult(msg->running_lights.status);
+    message->GetSignal("AKit_OtherLightsReq")->SetResult(msg->other_lights.value);
     message->GetSignal("AKit_ModeLight_Red")->SetResult(msg->mode_light_red);
     message->GetSignal("AKit_ModeLight_Yellow")->SetResult(msg->mode_light_yellow);
     message->GetSignal("AKit_ModeLight_Green")->SetResult(msg->mode_light_green);

@@ -87,6 +87,8 @@
 #include <raptor_dbw_msgs/msg/engine_key_mismatch.hpp>
 #include <raptor_dbw_msgs/msg/engine_mode_request.hpp>
 #include <raptor_dbw_msgs/msg/engine_report.hpp>
+#include <raptor_dbw_msgs/msg/on_off_state.hpp>
+#include <raptor_dbw_msgs/msg/other_lights.hpp>
 #include <raptor_dbw_msgs/msg/running_lights.hpp>
 #include <raptor_dbw_msgs/msg/vehicle_stop.hpp>
 
@@ -181,6 +183,8 @@ using raptor_dbw_msgs::msg::EngineFault;
 using raptor_dbw_msgs::msg::EngineKeyMismatch;
 using raptor_dbw_msgs::msg::EngineModeRequest;
 using raptor_dbw_msgs::msg::EngineReport;
+using raptor_dbw_msgs::msg::OnOffState;
+using raptor_dbw_msgs::msg::OtherLights;
 using raptor_dbw_msgs::msg::RunningLights;
 using raptor_dbw_msgs::msg::VehicleStop;
 

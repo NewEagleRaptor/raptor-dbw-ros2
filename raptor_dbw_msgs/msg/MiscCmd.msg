@@ -7,6 +7,7 @@ TurnSignal turn_signal_cmd
 HighBeam high_beam_cmd
 LowBeam low_beam_cmd
 RunningLights running_lights
+OtherLights other_lights
 bool mode_light_red
 bool mode_light_yellow
 bool mode_light_green

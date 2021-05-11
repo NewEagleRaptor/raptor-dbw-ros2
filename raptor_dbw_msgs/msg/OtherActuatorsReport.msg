@@ -2,13 +2,14 @@ std_msgs/Header header
 
 Ignition ignition_state 
 HornState horn_state 
-bool diff_lock_state
+OnOffState diff_lock_state
 
 # Lights
 TurnSignal turn_signal_state 
 HighBeamState high_beam_state 
 LowBeam low_beam_state 
 RunningLights running_lights_state
+OnOffState other_lights_state
 bool mode_light_red
 bool mode_light_yellow
 bool mode_light_green

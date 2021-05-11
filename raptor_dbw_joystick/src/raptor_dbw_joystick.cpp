@@ -239,8 +239,8 @@ void RaptorDbwJoystick::recvJoy(const Joy::SharedPtr msg)
     msg->axes[AXIS_STEER_1];
   data_.steering_mult = msg->buttons[BTN_STEER_MULT_1] || msg->buttons[BTN_STEER_MULT_2];
 
-  // Articulation
-  data_.articulation_joy = max_dump_angle_ *
+  // Articulation: clockwise (right) is positive in DBC, but negative on the joystick.
+  data_.articulation_joy = max_articulation_angle_ * -1.0 *
     msg->axes[AXIS_ARTICULATE];
 
   // Turn signal

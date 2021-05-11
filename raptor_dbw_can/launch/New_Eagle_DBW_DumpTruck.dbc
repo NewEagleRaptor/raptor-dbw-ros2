@@ -36,6 +36,11 @@ BS_:
 BU_: DBW AKit Pacifica MPDM_Master MPDM_Requester HMI
 
 
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ DBW_BrakeFault_Ch2 : 55|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ DBW_BrakeFault_Ch1 : 54|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ DBW_TransCurGear : 4|4@1+ (1,0) [0|15] "uint8" Vector__XXX
+
 BO_ 2147491585 DBW_Misc: 8 DBW
  SG_ DBW_MiscByWireEnabled : 0|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_MiscVehicleSpeed : 8|16@1+ (0.00217014,0) [0|142.22] "m/s" Vector__XXX
@@ -80,8 +85,6 @@ BO_ 2147491588 DBW_BrakeReport: 8 DBW
  SG_ DBW_BrakeDriverActivity : 50|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_BrakeFault : 51|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_BrakeRollingCntr : 56|4@1+ (1,0) [0|15] "" Vector__XXX
- SG_ DBW_BrakeFault_Ch1 : 54|1@1+ (1,0) [0|1] "Bool" Vector__XXX
- SG_ DBW_BrakeFault_Ch2 : 55|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_BrakePcntTorqueActual : 32|14@1+ (0.1,0) [0|100] "%-torque" Vector__XXX
  SG_ DBW_BrakeParkingBrkStatus : 52|2@1+ (1,0) [0|3] "Enum" Vector__XXX
  SG_ DBW_BrakeInterventionActv : 62|1@1+ (1,0) [0|1] "Bool" Vector__XXX
@@ -89,13 +92,12 @@ BO_ 2147491588 DBW_BrakeReport: 8 DBW
  SG_ DBW_BrakeCtrlType : 46|2@1+ (1,0) [0|3] "Enum" Vector__XXX
 
 BO_ 2147491589 DBW_PrndReport: 8 DBW
- SG_ DBW_PrndStateActual : 0|4@1+ (1,0) [0|15] "Enum" Vector__XXX
+ SG_ DBW_PrndStateActual : 0|8@1+ (1,0) [0|255] "Enum" Vector__XXX
  SG_ DBW_PrndStateReject : 8|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_PrndDriverActivity : 12|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_PrndFault : 16|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_PrndCtrlEnabled : 48|1@1+ (1,0) [0|1] "Bool" Vector__XXX
- SG_ DBW_TransCurGear : 4|4@1+ (1,0) [0|15] "uint8" Vector__XXX
- SG_ DBW_PrndStateDes : 24|4@1+ (1,0) [0|15] "Enum" Vector__XXX
+ SG_ DBW_PrndStateDes : 24|8@1+ (1,0) [0|255] "Enum" Vector__XXX
  SG_ DBW_PrndRollingCntr : 56|4@1+ (1,0) [0|15] "" Vector__XXX
  SG_ DBW_PrndMismatchFlash : 9|1@1+ (1,0) [0|1] "Bool" Vector__XXX
 
@@ -149,6 +151,7 @@ BO_ 2147495686 AKit_OtherActuators: 8 AKit
  SG_ AKit_ModeLight_Green : 42|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ AKit_ModeLight_Blue : 43|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ AKit_DiffLock : 44|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ AKit_OtherLightsReq : 46|2@1+ (1,0) [0|3] "Enum" Vector__XXX
 
 BO_ 2147495683 AKit_SteeringRequest: 8 AKit
  SG_ AKit_SteeringWhlAngleReq m1 : 0|14@1- (0.1,0) [-819.2|819.1] "deg" Vector__XXX
@@ -173,7 +176,7 @@ BO_ 2147495684 AKit_BrakeRequest: 8 AKit
  SG_ AKit_ParkingBrkReq : 14|2@1+ (1,0) [0|2] "Enum" Vector__XXX
 
 BO_ 2147495685 AKit_PrndRequest: 8 AKit
- SG_ AKit_PrndStateReq : 0|4@1+ (1,0) [0|15] "Enum" Vector__XXX
+ SG_ AKit_PrndStateReq : 0|8@1+ (1,0) [0|255] "Enum" Vector__XXX
  SG_ AKit_PrndRollingCntr : 48|4@1+ (1,0) [0|15] "" Vector__XXX
  SG_ AKit_PrndCtrlEnblReq : 52|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ AKit_PrndChecksum : 56|8@1+ (1,0) [0|255] "" Vector__XXX
@@ -346,6 +349,7 @@ BO_ 2147491604 DBW_OtherActuatorsReport: 8 DBW
  SG_ DBW_ModeLightState_Green : 42|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_ModeLightState_Blue : 43|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_DiffLockState : 44|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ DBW_OtherLightsState : 46|2@1+ (1,0) [0|3] "Enum" Vector__XXX
 
 BO_ 2147491605 DBW_FaultActionsReport: 8 DBW
  SG_ DBW_FltAct_AutonDsblNoBrakes : 0|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -443,6 +447,19 @@ BO_ 2147491619 DBW_ActionReport: 8 DBW
 CM_ BU_ Pacifica "Just added a custom VIN-read message from this module";
 CM_ BU_ MPDM_Master "Whichever module directly controls MPDM would be the MPDM Master (broadcasts status to other modules)";
 CM_ BU_ MPDM_Requester "Any module that doesn't directly control the MPDM but might want to request a state would be an MPDM_Requester";
+CM_ SG_ 3221225472 DBW_BrakeFault_Ch2 "VCU has detected hardware fault on brake sig 2
+
+
+ROS Attribute: fault_ch2
+";
+CM_ SG_ 3221225472 DBW_BrakeFault_Ch1 "VCU has detected hardware fault on brake sig 1
+
+
+ROS Attribute: fault_ch1
+";
+CM_ SG_ 3221225472 DBW_TransCurGear "Numeric gear number for step-gear (non hybrid) transmissions. This signal is just to allow the AKit to perform autostick (pseudo-manual) gear selection. 0 could be Park or Neutral. 1 could be Drive or Reverse. See DBW_PrndStateActual for P-R-N-D info.
+
+For eCVT hybrids or single-speed EVs, this will only ever be 0 or 1.";
 CM_ BO_ 2147491585 "ROS Topic: /vehicle/misc_report";
 CM_ SG_ 2147491585 DBW_MiscByWireEnabled "Actual mode of the Drive-By-Wire system. THis is NOT read by the ROS system, it's only here so its in CAN logs for debugging purposes
 
@@ -635,16 +652,6 @@ CM_ SG_ 2147491588 DBW_BrakeRollingCntr "Watchdog alive rolling counter
 
 ROS Attribute: rolling_counter
 ";
-CM_ SG_ 2147491588 DBW_BrakeFault_Ch1 "VCU has detected hardware fault on brake sig 1
-
-
-ROS Attribute: fault_ch1
-";
-CM_ SG_ 2147491588 DBW_BrakeFault_Ch2 "VCU has detected hardware fault on brake sig 2
-
-
-ROS Attribute: fault_ch2
-";
 CM_ SG_ 2147491588 DBW_BrakePcntTorqueActual "actual brake torque. This value is in % of a fixed reference value. This reference value depends only on the type of vehicle. Contact New Eagle to determine the reference value for your vehicle make/model.
 
 100% reference values for each vehicle platform:
@@ -699,9 +706,6 @@ CM_ SG_ 2147491589 DBW_PrndCtrlEnabled "PRND select system is under by-wire cont
 
 ROS Attribute: enabled
 ";
-CM_ SG_ 2147491589 DBW_TransCurGear "Numeric gear number for step-gear (non hybrid) transmissions. This signal is just to allow the AKit to perform autostick (pseudo-manual) gear selection. 0 could be Park or Neutral. 1 could be Drive or Reverse. See DBW_PrndStateActual for P-R-N-D info.
-
-For eCVT hybrids or single-speed EVs, this will only ever be 0 or 1.";
 CM_ BO_ 2147491590 "ROS Topic: /vehicle/wheel_position_report";
 CM_ SG_ 2147491590 DBW_WhlPulseCnt_FL "Wheel pulse counter
 
@@ -893,6 +897,7 @@ CM_ SG_ 2147495686 AKit_LowBeamReq "Currently supported by Prius & Volvo only. C
 Auto low beam is supported by CAT. They will turn on if the running lights are requested to be on.";
 CM_ SG_ 2147495686 AKit_RunningLightsReq "";
 CM_ SG_ 2147495686 AKit_DiffLock "Engage differential axle lock.";
+CM_ SG_ 2147495686 AKit_OtherLightsReq "Used to actuate any other accesory lighting";
 CM_ BO_ 2147495683 "Must be sent continuously, even if you're not planning to enable this actuator.
 
 ROS Topic:";
@@ -1319,6 +1324,7 @@ CM_ BO_ 2147495690 "Must be sent continuously, even if you're not planning to en
 CM_ SG_ 2147495690 AKit_ActionVehStopReq "This causes the vehicle stop and go into park. The DBW Kit must be engaged for this action to take place. Used on CAT725D";
 CM_ SG_ 2147495690 AKit_ActionEmergencyBrkReq "This applies the emergency brake to the system. Do not use this unless absolutely required. Used on CAT725D";
 CM_ BO_ 2147491617 "supported only for articulated vehicles";
+CM_ SG_ 2147491617 DBW_ArticulationAngleAct "clockwise or right is positive";
 CM_ BO_ 2147491618 "supported only for dump trucks";
 CM_ BO_ 2147491619 "";
 VAL_ 2147491585 DBW_MiscByWireEnabled 0 "ManualMode" 1 "DriveByWireMode" ;
@@ -1327,7 +1333,8 @@ VAL_ 2147491586 DBW_AccelCtrlType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Le
 VAL_ 2147491587 DBW_SteeringCtrlType 0 "Open Loop (Steering %-Torque)" 1 "Actuator-Level Closed Loop (Steering Wheel Angular Position)" 2 "Vehicle-Level Closed Loop (Vehicle Curvature)" ;
 VAL_ 2147491588 DBW_BrakeParkingBrkStatus 0 "Reserved" 1 "Off" 2 "On" 3 "Fault" ;
 VAL_ 2147491588 DBW_BrakeCtrlType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Brake %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;
-VAL_ 2147491589 DBW_PrndStateActual 1 "Park" 2 "Reverse - R1" 3 "Neutral" 4 "Drive" 5 "Low" 6 "Autostick_Hold" 7 "Autostick_Upshift" 8 "Autostick_Downshift" 9 "2" 10 "1" 11 "5" 12 "R2" ;
+VAL_ 2147491589 DBW_PrndStateActual 0 "No Request" 1 "Park" 2 "Reverse - R1" 3 "Neutral" 4 "Drive" 5 "Low" 6 "Manual" 11 "1" 12 "2" 13 "3" 14 "4" 15 "5" 16 "6" 17 "7" 18 "8" 19 "9" 20 "10" 128 "R2" 255 "SNA" ;
+VAL_ 2147491589 DBW_PrndStateDes 0 "No Request" 1 "Park" 2 "Reverse - R1" 3 "Neutral" 4 "Drive" 5 "Low" 6 "Manual" 11 "1" 12 "2" 13 "3" 14 "4" 15 "5" 16 "6" 17 "7" 18 "8" 19 "9" 20 "10" 128 "R2" 255 "SNA" ;
 VAL_ 2147495682 AKit_AccelReqType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Accelerator %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;
 VAL_ 2147495681 AKit_EnblJoystickLimits 0 "Fully Autonomous Control" 1 "Joystick Control Mode" ;
 VAL_ 2147495686 AKit_TurnSignalReq 0 "Off" 1 "Left" 2 "Right" 3 "Hazards" ;
@@ -1350,10 +1357,11 @@ VAL_ 2147495686 AKit_ModeLight_Yellow 1 "On" 0 "Off" ;
 VAL_ 2147495686 AKit_ModeLight_Green 1 "On" 0 "Off" ;
 VAL_ 2147495686 AKit_ModeLight_Blue 1 "On" 0 "Off" ;
 VAL_ 2147495686 AKit_DiffLock 1 "On" 0 "Off" ;
+VAL_ 2147495686 AKit_OtherLightsReq 0 "No Request" 1 "Other lights if lights already on" 2 "On" 3 "Reserved" ;
 VAL_ 2147495683 AKit_SteeringReqType 0 "Open Loop (Steering %-Torque)" 1 "Actuator-Level Closed Loop (Steering Wheel Angular Position)" 2 "Vehicle-Level Closed Loop (Vehicle Curvature)" ;
 VAL_ 2147495684 AKit_BrakeCtrlReqType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Brake %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;
 VAL_ 2147495684 AKit_ParkingBrkReq 0 "No Request" 1 "Off" 2 "On" ;
-VAL_ 2147495685 AKit_PrndStateReq 0 "No Request" 1 "Park" 2 "Reverse - R1" 3 "Neutral" 4 "Drive" 5 "Low" 6 "Autostick_Hold" 7 "Autostick_Upshift" 8 "Autostick_Downshift" 9 "2" 10 "1" 11 "5" 12 "R2" ;
+VAL_ 2147495685 AKit_PrndStateReq 0 "No Request" 1 "Park" 2 "Reverse - R1" 3 "Neutral" 4 "Drive" 5 "Low" 6 "Manual" 11 "1" 12 "2" 13 "3" 14 "4" 15 "5" 16 "6" 17 "7" 18 "8" 19 "9" 20 "10" 128 "R2" 255 "SNA" ;
 VAL_ 2147491599 DBW_DrvInptHiBeam 0 "Off" 1 "Auto" 2 "On" 3 "SNA" ;
 VAL_ 2147491599 DBW_DrvInptTurnSignal 0 "Off" 1 "Left" 2 "Right" 3 "SNA" ;
 VAL_ 2147491599 DBW_DrvInptWiper 0 "Off" 1 "Wiper_Intermittent1" 2 "Wiper_Intermittent2" 3 "Wiper_Intermittent3" 4 "Wiper_Intermittent4" 5 "Wiper_Intermittent5" 6 "Wiper_Intermittent6" 11 "Wiper_ConstantLowSpd" 12 "Wiper_ConstantHighSpd" 13 "Wiper_WashBrief" 14 "Wiper_WashContinuous" 15 "SNA" ;
@@ -1376,6 +1384,7 @@ VAL_ 2147491604 DBW_HornState 0 "Off" 1 "On" 3 "SNA (Faulted or Not Supported)" 
 VAL_ 2147491604 DBW_LowBeamState 0 "Undefined/Off" 2 "On" 1 "Auto" 3 "SNA (Faulted or Not Supported)" ;
 VAL_ 2147491604 DBW_RunningLightsState 0 "Undefined/Off" 2 "On" 1 "Auto" 3 "SNA (Faulted or Not Supported)" ;
 VAL_ 2147491604 DBW_DiffLockState 1 "On" 0 "Off" 3 "SNA" ;
+VAL_ 2147491604 DBW_OtherLightsState 1 "On" 0 "Off" 3 "SNA" ;
 VAL_ 2147495687 AKit_DumpBedReqType 0 "Mode" 1 "Angle" ;
 VAL_ 2147495687 AKit_DumpBedModeReq 0 "Hold" 1 "Float" 2 "Lower" 3 "Raise" 4 "Auto Lower" 5 "Auto Raise" ;
 VAL_ 2147495689 AKit_ArticulationReqType 1 "Angle" 0 "Flowrate" ;

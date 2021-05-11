@@ -84,6 +84,8 @@ set(msg_files
   "msg/EngineKeyMismatch.msg"
   "msg/EngineModeRequest.msg"
   "msg/EngineReport.msg"
+  "msg/OnOffState.msg"
+  "msg/OtherLights.msg"
   "msg/RunningLights.msg"
   "msg/VehicleStop.msg"
 )
