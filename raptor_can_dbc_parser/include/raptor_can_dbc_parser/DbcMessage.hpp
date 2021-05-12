@@ -39,6 +39,8 @@
 #include <map>
 #include <string>
 
+using can_msgs::msg::Frame;
+
 namespace NewEagle
 {
 struct DbcMessageComment
@@ -81,9 +83,9 @@ public:
   uint32_t GetId();
   IdType GetIdType();
   std::string GetName();
-  can_msgs::msg::Frame GetFrame();
+  Frame GetFrame();
   uint32_t GetSignalCount();
-  void SetFrame(const can_msgs::msg::Frame::SharedPtr msg);
+  void SetFrame(const Frame::SharedPtr msg);
   void AddSignal(std::string signalName, NewEagle::DbcSignal signal);
   NewEagle::DbcSignal * GetSignal(std::string signalName);
   void SetRawText(std::string rawText);

@@ -83,9 +83,9 @@ std::string DbcMessage::GetName()
   return _name;
 }
 
-can_msgs::msg::Frame DbcMessage::GetFrame()
+Frame DbcMessage::GetFrame()
 {
-  can_msgs::msg::Frame frame;
+  Frame frame;
 
   frame.id = _id;
   frame.dlc = _dlc;
@@ -133,7 +133,7 @@ can_msgs::msg::Frame DbcMessage::GetFrame()
   return frame;
 }
 
-void DbcMessage::SetFrame(const can_msgs::msg::Frame::SharedPtr msg)
+void DbcMessage::SetFrame(const Frame::SharedPtr msg)
 {
   uint8_t * ptr = static_cast<uint8_t *>(msg->data._M_elems);
 
