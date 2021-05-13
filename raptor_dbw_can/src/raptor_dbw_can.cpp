@@ -1084,7 +1084,7 @@ void RaptorDbwCAN::recvEngineRpt(const can_msgs::msg::Frame::SharedPtr msg)
       "DBW_EngineCtrlType")->GetResult();
     out.mode_actual.value = message->GetSignal(
       "DBW_EngineModeAct")->GetResult();
-    out.mode_actual.value = message->GetSignal(
+    out.mode_desired.value = message->GetSignal(
       "DBW_EngineModeDes")->GetResult();
 
     // Fault handling
