@@ -2,6 +2,11 @@
 Changelog for package can_dbc_parser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Change package name raptor_can_dbc_parser back to can_dbc_parser (no function change)
+* Contributors: neweagleraptor
+
 1.0.0 (2021-03-22)
 ------------------
 * Initial release
