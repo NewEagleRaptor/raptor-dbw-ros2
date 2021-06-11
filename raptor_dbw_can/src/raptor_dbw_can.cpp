@@ -54,9 +54,6 @@ RaptorDbwCAN::RaptorDbwCAN(
   for (i = 0; i < NUM_FAULTS; i++) {
     faults_[i] = false;
   }
-  for (i = 0; i < NUM_TIMEOUTS; i++) {
-    timeouts_[i] = false;
-  }
 
   // Frame ID
   frame_id_ = "base_footprint";
@@ -114,9 +111,6 @@ RaptorDbwCAN::RaptorDbwCAN(
     "steering_2_report", 20);
   pub_fault_actions_report_ = this->create_publisher<FaultActionsReport>(
     "fault_actions_report", 20);
-  pub_hmi_global_enable_report_ =
-    this->create_publisher<HmiGlobalEnableReport>(
-    "hmi_global_enable_report", 20);
   pub_other_actuators_report_ = this->create_publisher<OtherActuatorsReport>(
     "other_actuators_report", 20);
   pub_gps_reference_report_ = this->create_publisher<GpsReferenceReport>(
@@ -126,7 +120,6 @@ RaptorDbwCAN::RaptorDbwCAN(
 
   pub_imu_ = this->create_publisher<Imu>("imu/data_raw", 10);
   pub_joint_states_ = this->create_publisher<JointState>("joint_states", 10);
-  pub_twist_ = this->create_publisher<TwistStamped>("twist", 10);
   pub_vin_ = this->create_publisher<String>("vin", 1);
   pub_driver_input_ = this->create_publisher<DriverInputReport>(
     "driver_input_report", 2);
@@ -1270,17 +1263,6 @@ void RaptorDbwCAN::disableSystem()
   }
 }
 
-void RaptorDbwCAN::buttonCancel()
-{
-  if (enables_[EN_DBW]) {
-    enables_[EN_DBW] = false;
-    publishDbwEnabled();
-    RCLCPP_INFO_THROTTLE(
-      this->get_logger(), m_clock, CLOCK_1_SEC,
-      "DBW system disabled - button canceled.");
-  }
-}
-
 void RaptorDbwCAN::setOverride(ListOverrides which_ovr, bool override)
 {
   if (which_ovr < NUM_OVERRIDES) {
@@ -1304,39 +1286,6 @@ void RaptorDbwCAN::setOverride(ListOverrides which_ovr, bool override)
           this->get_logger(), m_clock, CLOCK_1_SEC, err_msg.c_str());
       }
     }
-  }
-}
-
-RaptorDbwCAN::ListEnables RaptorDbwCAN::convEnable(ListTimeouts in_to)
-{
-  ListEnables ret{NUM_ENABLES};
-  switch (in_to) {
-    case TO_ACCEL:
-      ret = EN_ACCEL;
-      break;
-    case TO_BRAKE:
-      ret = EN_BRAKE;
-      break;
-    case TO_STEER:
-      ret = EN_STEER;
-      break;
-    default:
-      break;
-  }
-  return ret;
-}
-
-void RaptorDbwCAN::setTimeout(ListTimeouts which_to, bool timeout, bool enabled)
-{
-  if (which_to < NUM_TIMEOUTS) {
-    if (!timeouts_[which_to] && enables_[convEnable(which_to)] && timeout && !enabled) {
-      std::string err_msg(TO_SYSTEM[which_to]);
-      err_msg = err_msg + " has timed out";
-      RCLCPP_WARN_THROTTLE(
-        this->get_logger(), m_clock, CLOCK_1_SEC, err_msg.c_str());
-    }
-    timeouts_[which_to] = timeout;
-    enables_[convEnable(which_to)] = enabled;
   }
 }
 
