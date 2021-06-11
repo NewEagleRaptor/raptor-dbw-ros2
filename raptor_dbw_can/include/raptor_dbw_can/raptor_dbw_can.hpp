@@ -275,9 +275,6 @@ private:
  */
   void recvWheelSpeedRpt(const Frame::SharedPtr msg);
 
-  void recvCanImu(const std::vector<Frame> msgs);
-  void recvCanGps(const std::vector<Frame> msgs);
-
 /** \brief Convert an Accelerator Pedal Command sent as a ROS message into a CAN message.
  * \param[in] msg The message to send over CAN.
  */
@@ -334,21 +331,11 @@ private:
     FAULT_ACCEL = 0,      /**< Acceleration pedal fault */
     FAULT_BRAKE,          /**< Brake fault */
     FAULT_STEER,          /**< Steering fault */
-    FAULT_STEER_CAL,      /**< Steering calibration fault */
     FAULT_WATCH,          /**< Watchdog fault */
     NUM_SERIOUS_FAULTS,   /**< Total number of serious faults (disables DBW) */
     FAULT_WATCH_BRAKES = NUM_SERIOUS_FAULTS,  /**< Watchdog braking fault */
     FAULT_WATCH_WARN,     /**< Watchdog non-braking fault warning */
     NUM_FAULTS            /**< Total number of system faults */
-  };
-
-  /** \brief Enumeration of message timeouts */
-  enum ListTimeouts
-  {
-    TO_ACCEL = 0,   /**< Acceleration pedal message timeout */
-    TO_BRAKE,       /**< Brake message timeout */
-    TO_STEER,       /**< Steering message timeout */
-    NUM_TIMEOUTS    /**< Total number of message timeouts */
   };
 
   /** \brief Enumeration of system enables */
@@ -362,12 +349,6 @@ private:
     NUM_ENABLES     /**< Total number of system enables */
   };
 
-  /** \brief Convert ListTimeouts enum type to ListEnables enum type
-   * \param[in] in_to ListTimeouts enum value to convert
-   * \returns equivalent ListEnables value, or NUM_ENABLES on invalid input
-   */
-  ListEnables convEnable(ListTimeouts in_to);
-
   // Helps print warning messages
   const std::string OVR_SYSTEM[NUM_OVERRIDES] = {
     "accelerator pedal",
@@ -379,18 +360,11 @@ private:
     "accelerator pedal",
     "brake",
     "steering",
-    "steering calibration",
     "watchdog"
-  };
-  const std::string TO_SYSTEM[NUM_TIMEOUTS] = {
-    "Accelerator Pedal",
-    "Brake",
-    "Steering"
   };
 
   bool overrides_[NUM_OVERRIDES];
   bool faults_[NUM_FAULTS];
-  bool timeouts_[NUM_TIMEOUTS];
   bool enables_[NUM_ENABLES];
 
 /** \brief Check for an active fault.
@@ -399,7 +373,7 @@ private:
   inline bool fault()
   {
     return faults_[FAULT_BRAKE] || faults_[FAULT_ACCEL] || faults_[FAULT_STEER] ||
-           faults_[FAULT_STEER_CAL] || faults_[FAULT_WATCH];
+           faults_[FAULT_WATCH];
   }
 
 /** \brief Check for an active driver override.
@@ -430,21 +404,11 @@ private:
 /** \brief Disables DBW control */
   void disableSystem();
 
-/** \brief Disables DBW control due to button press */
-  void buttonCancel();
-
   /** \brief Set the specified override
    * \param[in] which_ovr Which override to set
    * \param[in] override The value to set the override to
    */
   void setOverride(ListOverrides which_ovr, bool override);
-
-  /** \brief Set the specified timeout
-   * \param[in] which_to Which timeout to set
-   * \param[in] timeout The value to set the timeout to
-   * \param[in] enabled Whether to enable/disable the system
-   */
-  void setTimeout(ListTimeouts which_to, bool timeout, bool enabled);
 
   /** \brief Set the specified fault; these faults disable DBW control when active
    * \param[in] which_fault Which fault to set
@@ -534,7 +498,6 @@ private:
   rclcpp::Publisher<GearReport>::SharedPtr pub_gear_;
   rclcpp::Publisher<GpsReferenceReport>::SharedPtr pub_gps_reference_report_;
   rclcpp::Publisher<GpsRemainderReport>::SharedPtr pub_gps_remainder_report_;
-  rclcpp::Publisher<HmiGlobalEnableReport>::SharedPtr pub_hmi_global_enable_report_;
   rclcpp::Publisher<Imu>::SharedPtr pub_imu_;
   rclcpp::Publisher<JointState>::SharedPtr pub_joint_states_;
   rclcpp::Publisher<LowVoltageSystemReport>::SharedPtr pub_low_voltage_system_;
@@ -544,7 +507,6 @@ private:
   rclcpp::Publisher<Steering2Report>::SharedPtr pub_steering_2_report_;
   rclcpp::Publisher<SurroundReport>::SharedPtr pub_surround_;
   rclcpp::Publisher<TirePressureReport>::SharedPtr pub_tire_pressure_;
-  rclcpp::Publisher<TwistStamped>::SharedPtr pub_twist_;
   rclcpp::Publisher<String>::SharedPtr pub_vin_;
   rclcpp::Publisher<WheelPositionReport>::SharedPtr pub_wheel_positions_;
   rclcpp::Publisher<WheelSpeedReport>::SharedPtr pub_wheel_speeds_;
