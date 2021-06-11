@@ -26,57 +26,31 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#include <raptor_can_dbc_parser/Dbc.hpp>
+#ifndef CAN_DBC_PARSER__DBC_HPP_
+#define CAN_DBC_PARSER__DBC_HPP_
 
+#include <can_dbc_parser/DbcMessage.hpp>
+
+#include <cctype>
 #include <map>
 #include <string>
-#include <utility>
 
 namespace NewEagle
 {
-
-std::map<std::string, NewEagle::DbcMessage> * Dbc::GetMessages()
+class Dbc
 {
-  return &_messages;
-}
+public:
+  Dbc() = default;
 
-void Dbc::AddMessage(NewEagle::DbcMessage message)
-{
-  _messages.insert(std::pair<std::string, NewEagle::DbcMessage>(message.GetName(), message));
-}
+  void AddMessage(NewEagle::DbcMessage message);
+  NewEagle::DbcMessage * GetMessage(std::string messageName);
+  NewEagle::DbcMessage * GetMessageById(uint32_t id);
+  uint16_t GetMessageCount();
+  std::map<std::string, NewEagle::DbcMessage> * GetMessages();
 
-NewEagle::DbcMessage * Dbc::GetMessage(std::string messageName)
-{
-  std::map<std::string, NewEagle::DbcMessage>::iterator it;
-
-  it = _messages.find(messageName);
-
-  if (_messages.end() == it) {
-    return NULL;
-  }
-
-  NewEagle::DbcMessage * message = &it->second;
-
-  return message;
-}
-
-NewEagle::DbcMessage * Dbc::GetMessageById(uint32_t id)
-{
-  for (std::map<std::string, NewEagle::DbcMessage>::iterator it = _messages.begin();
-    it != _messages.end(); it++)
-  {
-    if (it->second.GetId() == id) {
-      NewEagle::DbcMessage * message = &it->second;
-
-      return message;
-    }
-  }
-
-  return NULL;
-}
-
-uint16_t Dbc::GetMessageCount()
-{
-  return _messages.size();
-}
+private:
+  std::map<std::string, NewEagle::DbcMessage> _messages;
+};
 }  // namespace NewEagle
+
+#endif  // CAN_DBC_PARSER__DBC_HPP_

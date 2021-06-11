@@ -26,78 +26,57 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef RAPTOR_CAN_DBC_PARSER__LINEPARSER_HPP_
-#define RAPTOR_CAN_DBC_PARSER__LINEPARSER_HPP_
+#include <can_dbc_parser/Dbc.hpp>
 
-#include <cctype>
-#include <stdexcept>
+#include <map>
 #include <string>
+#include <utility>
 
 namespace NewEagle
 {
-class LineParserExceptionBase : public std::exception
-{
-};
 
-class LineParserAtEOLException : public LineParserExceptionBase
+std::map<std::string, NewEagle::DbcMessage> * Dbc::GetMessages()
 {
-  virtual const char * what() const throw()
-  {
-    return "Unexpected end of line.";
+  return &_messages;
+}
+
+void Dbc::AddMessage(NewEagle::DbcMessage message)
+{
+  _messages.insert(std::pair<std::string, NewEagle::DbcMessage>(message.GetName(), message));
+}
+
+NewEagle::DbcMessage * Dbc::GetMessage(std::string messageName)
+{
+  std::map<std::string, NewEagle::DbcMessage>::iterator it;
+
+  it = _messages.find(messageName);
+
+  if (_messages.end() == it) {
+    return NULL;
   }
-};
 
-class LineParserLenZeroException : public LineParserExceptionBase
+  NewEagle::DbcMessage * message = &it->second;
+
+  return message;
+}
+
+NewEagle::DbcMessage * Dbc::GetMessageById(uint32_t id)
 {
-  virtual const char * what() const throw()
+  for (std::map<std::string, NewEagle::DbcMessage>::iterator it = _messages.begin();
+    it != _messages.end(); it++)
   {
-    return "Nothing found in search space.";
+    if (it->second.GetId() == id) {
+      NewEagle::DbcMessage * message = &it->second;
+
+      return message;
+    }
   }
-};
 
-class LineParserInvalidCharException : public LineParserExceptionBase
+  return NULL;
+}
+
+uint16_t Dbc::GetMessageCount()
 {
-  virtual const char * what() const throw()
-  {
-    return "Invalid character(s) search space.";
-  }
-};
-
-enum ReadDoubleState
-{
-  READING_WHOLE_NUMBER = 0,
-  READING_FRACTION = 1,
-  READ_E = 2,
-  READ_SIGN = 3,
-  READING_EXP = 4
-};
-
-class LineParser
-{
-public:
-  explicit LineParser(const std::string & line);
-
-  int32_t GetPosition();
-  std::string ReadCIdentifier();
-  std::string ReadCIdentifier(std::string fieldName);
-  uint32_t ReadUInt();
-  uint32_t ReadUInt(std::string fieldName);
-  void SeekSeparator(char separator);
-  char ReadNextChar(std::string fieldName);
-  int32_t ReadInt();
-  double ReadDouble();
-  double ReadDouble(std::string fieldName);
-  std::string ReadQuotedString();
-  uint32_t PeekUInt();
-
-private:
-  int32_t _position;
-  std::string _line;
-
-  void SkipWhitespace();
-  bool AtEOL();
-  char ReadNextChar();
-};
+  return _messages.size();
+}
 }  // namespace NewEagle
-
-#endif  // RAPTOR_CAN_DBC_PARSER__LINEPARSER_HPP_

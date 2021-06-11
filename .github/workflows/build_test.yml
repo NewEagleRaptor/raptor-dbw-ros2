@@ -37,7 +37,7 @@ jobs:
         uses: ros-tooling/action-ros-ci@master
         with:
           package-name: |
-            raptor_can_dbc_parser
+            can_dbc_parser
             raptor_dbw_can
             raptor_dbw_joystick
             raptor_dbw_msgs

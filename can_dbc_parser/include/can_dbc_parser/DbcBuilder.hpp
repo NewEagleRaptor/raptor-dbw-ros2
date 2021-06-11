@@ -26,11 +26,11 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef RAPTOR_CAN_DBC_PARSER__DBCBUILDER_HPP_
-#define RAPTOR_CAN_DBC_PARSER__DBCBUILDER_HPP_
+#ifndef CAN_DBC_PARSER__DBCBUILDER_HPP_
+#define CAN_DBC_PARSER__DBCBUILDER_HPP_
 
-#include <raptor_can_dbc_parser/Dbc.hpp>
-#include <raptor_can_dbc_parser/LineParser.hpp>
+#include <can_dbc_parser/Dbc.hpp>
+#include <can_dbc_parser/LineParser.hpp>
 
 #include <sstream>
 #include <string>
@@ -246,4 +246,4 @@ static NewEagle::DbcSignal ReadSignal(NewEagle::LineParser parser)
 }
 }  // namespace NewEagle
 
-#endif  // RAPTOR_CAN_DBC_PARSER__DBCBUILDER_HPP_
+#endif  // CAN_DBC_PARSER__DBCBUILDER_HPP_

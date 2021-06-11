@@ -26,11 +26,11 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef RAPTOR_CAN_DBC_PARSER__DBCUTILITIES_HPP_
-#define RAPTOR_CAN_DBC_PARSER__DBCUTILITIES_HPP_
+#ifndef CAN_DBC_PARSER__DBCUTILITIES_HPP_
+#define CAN_DBC_PARSER__DBCUTILITIES_HPP_
 
-#include <raptor_can_dbc_parser/DbcSignal.hpp>
-#include <raptor_can_dbc_parser/DbcMessage.hpp>
+#include <can_dbc_parser/DbcSignal.hpp>
+#include <can_dbc_parser/DbcMessage.hpp>
 
 #include <limits>
 #include <map>
@@ -212,4 +212,4 @@ static void Pack(uint8_t * data, const NewEagle::DbcSignal & signal)
 }
 }  // namespace NewEagle
 
-#endif  // RAPTOR_CAN_DBC_PARSER__DBCUTILITIES_HPP_
+#endif  // CAN_DBC_PARSER__DBCUTILITIES_HPP_

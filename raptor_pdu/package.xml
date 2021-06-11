@@ -16,7 +16,7 @@
   <depend>rclcpp</depend>
   <depend>can_msgs</depend>
   <depend>raptor_pdu_msgs</depend>
-  <depend>raptor_can_dbc_parser</depend>
+  <depend>can_dbc_parser</depend>
   <depend>std_msgs</depend>
 
   <test_depend>ament_lint_auto</test_depend>

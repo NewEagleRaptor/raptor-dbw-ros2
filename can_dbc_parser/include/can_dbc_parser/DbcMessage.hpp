@@ -26,31 +26,80 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef RAPTOR_CAN_DBC_PARSER__DBC_HPP_
-#define RAPTOR_CAN_DBC_PARSER__DBC_HPP_
+#ifndef CAN_DBC_PARSER__DBCMESSAGE_HPP_
+#define CAN_DBC_PARSER__DBCMESSAGE_HPP_
 
-#include <raptor_can_dbc_parser/DbcMessage.hpp>
+#include <can_msgs/msg/frame.hpp>
+#include <can_dbc_parser/DbcSignal.hpp>
 
-#include <cctype>
 #include <map>
 #include <string>
 
+using can_msgs::msg::Frame;
+
 namespace NewEagle
 {
-class Dbc
+struct DbcMessageComment
+{
+  uint32_t Id;
+  std::string Comment;
+};
+
+enum IdType
+{
+  STD = 0,
+  EXT = 1
+};
+
+typedef struct
+{
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+} EmptyData;
+
+class DbcMessage
 {
 public:
-  Dbc() = default;
+  DbcMessage();
+  DbcMessage(
+    uint8_t dlc,
+    uint32_t id,
+    IdType idType,
+    std::string name,
+    uint32_t rawId
+  );
 
-  void AddMessage(NewEagle::DbcMessage message);
-  NewEagle::DbcMessage * GetMessage(std::string messageName);
-  NewEagle::DbcMessage * GetMessageById(uint32_t id);
-  uint16_t GetMessageCount();
-  std::map<std::string, NewEagle::DbcMessage> * GetMessages();
+  uint8_t GetDlc();
+  uint32_t GetId();
+  IdType GetIdType();
+  std::string GetName();
+  Frame GetFrame();
+  uint32_t GetSignalCount();
+  void SetFrame(const Frame::SharedPtr msg);
+  void AddSignal(std::string signalName, NewEagle::DbcSignal signal);
+  NewEagle::DbcSignal * GetSignal(std::string signalName);
+  void SetRawText(std::string rawText);
+  uint32_t GetRawId();
+  void SetComment(NewEagle::DbcMessageComment comment);
+  std::map<std::string, NewEagle::DbcSignal> * GetSignals();
+  bool AnyMultiplexedSignals();
 
 private:
-  std::map<std::string, NewEagle::DbcMessage> _messages;
+  std::map<std::string, NewEagle::DbcSignal> _signals;
+  uint8_t _data[8];
+  uint8_t _dlc;
+  uint32_t _id;
+  IdType _idType;
+  std::string _name;
+  uint32_t _rawId;
+  NewEagle::DbcMessageComment _comment;
 };
 }  // namespace NewEagle
 
-#endif  // RAPTOR_CAN_DBC_PARSER__DBC_HPP_
+#endif  // CAN_DBC_PARSER__DBCMESSAGE_HPP_
