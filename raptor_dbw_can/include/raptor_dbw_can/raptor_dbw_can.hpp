@@ -76,10 +76,10 @@
 #include <std_msgs/msg/empty.hpp>
 #include <std_msgs/msg/string.hpp>
 
-#include <raptor_can_dbc_parser/DbcMessage.hpp>
-#include <raptor_can_dbc_parser/DbcSignal.hpp>
-#include <raptor_can_dbc_parser/Dbc.hpp>
-#include <raptor_can_dbc_parser/DbcBuilder.hpp>
+#include <can_dbc_parser/DbcMessage.hpp>
+#include <can_dbc_parser/DbcSignal.hpp>
+#include <can_dbc_parser/Dbc.hpp>
+#include <can_dbc_parser/DbcBuilder.hpp>
 
 #include <cmath>
 #include <string>

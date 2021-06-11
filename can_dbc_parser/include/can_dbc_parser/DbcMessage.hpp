@@ -30,78 +30,80 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef RAPTOR_CAN_DBC_PARSER__LINEPARSER_HPP_
-#define RAPTOR_CAN_DBC_PARSER__LINEPARSER_HPP_
+#ifndef CAN_DBC_PARSER__DBCMESSAGE_HPP_
+#define CAN_DBC_PARSER__DBCMESSAGE_HPP_
 
-#include <cctype>
-#include <stdexcept>
+#include <can_msgs/msg/frame.hpp>
+#include <can_dbc_parser/DbcSignal.hpp>
+
+#include <map>
 #include <string>
+
+using can_msgs::msg::Frame;
 
 namespace NewEagle
 {
-class LineParserExceptionBase : public std::exception
+struct DbcMessageComment
 {
+  uint32_t Id;
+  std::string Comment;
 };
 
-class LineParserAtEOLException : public LineParserExceptionBase
+enum IdType
 {
-  virtual const char * what() const throw()
-  {
-    return "Unexpected end of line.";
-  }
+  STD = 0,
+  EXT = 1
 };
 
-class LineParserLenZeroException : public LineParserExceptionBase
+typedef struct
 {
-  virtual const char * what() const throw()
-  {
-    return "Nothing found in search space.";
-  }
-};
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+  uint8_t : 8;
+} EmptyData;
 
-class LineParserInvalidCharException : public LineParserExceptionBase
-{
-  virtual const char * what() const throw()
-  {
-    return "Invalid character(s) search space.";
-  }
-};
-
-enum ReadDoubleState
-{
-  READING_WHOLE_NUMBER = 0,
-  READING_FRACTION = 1,
-  READ_E = 2,
-  READ_SIGN = 3,
-  READING_EXP = 4
-};
-
-class LineParser
+class DbcMessage
 {
 public:
-  explicit LineParser(const std::string & line);
+  DbcMessage();
+  DbcMessage(
+    uint8_t dlc,
+    uint32_t id,
+    IdType idType,
+    std::string name,
+    uint32_t rawId
+  );
 
-  int32_t GetPosition();
-  std::string ReadCIdentifier();
-  std::string ReadCIdentifier(std::string fieldName);
-  uint32_t ReadUInt();
-  uint32_t ReadUInt(std::string fieldName);
-  void SeekSeparator(char separator);
-  char ReadNextChar(std::string fieldName);
-  int32_t ReadInt();
-  double ReadDouble();
-  double ReadDouble(std::string fieldName);
-  std::string ReadQuotedString();
-  uint32_t PeekUInt();
+  uint8_t GetDlc();
+  uint32_t GetId();
+  IdType GetIdType();
+  std::string GetName();
+  Frame GetFrame();
+  uint32_t GetSignalCount();
+  void SetFrame(const Frame::SharedPtr msg);
+  void AddSignal(std::string signalName, NewEagle::DbcSignal signal);
+  NewEagle::DbcSignal * GetSignal(std::string signalName);
+  void SetRawText(std::string rawText);
+  uint32_t GetRawId();
+  void SetComment(NewEagle::DbcMessageComment comment);
+  std::map<std::string, NewEagle::DbcSignal> * GetSignals();
+  bool AnyMultiplexedSignals();
 
 private:
-  int32_t _position;
-  std::string _line;
-
-  void SkipWhitespace();
-  bool AtEOL();
-  char ReadNextChar();
+  std::map<std::string, NewEagle::DbcSignal> _signals;
+  uint8_t _data[8];
+  uint8_t _dlc;
+  uint32_t _id;
+  IdType _idType;
+  std::string _name;
+  uint32_t _rawId;
+  NewEagle::DbcMessageComment _comment;
 };
 }  // namespace NewEagle
 
-#endif  // RAPTOR_CAN_DBC_PARSER__LINEPARSER_HPP_
+#endif  // CAN_DBC_PARSER__DBCMESSAGE_HPP_

@@ -30,80 +30,106 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef RAPTOR_CAN_DBC_PARSER__DBCMESSAGE_HPP_
-#define RAPTOR_CAN_DBC_PARSER__DBCMESSAGE_HPP_
+#ifndef CAN_DBC_PARSER__DBCSIGNAL_HPP_
+#define CAN_DBC_PARSER__DBCSIGNAL_HPP_
 
-#include <can_msgs/msg/frame.hpp>
-#include <raptor_can_dbc_parser/DbcSignal.hpp>
-
-#include <map>
 #include <string>
-
-using can_msgs::msg::Frame;
 
 namespace NewEagle
 {
-struct DbcMessageComment
+struct DbcSignalComment
 {
   uint32_t Id;
+  std::string SignalName;
   std::string Comment;
 };
 
-enum IdType
+enum SignType
 {
-  STD = 0,
-  EXT = 1
+  UNSIGNED = 0,
+  SIGNED = 1
 };
 
-typedef struct
+enum ByteOrder
 {
-  uint8_t : 8;
-  uint8_t : 8;
-  uint8_t : 8;
-  uint8_t : 8;
-  uint8_t : 8;
-  uint8_t : 8;
-  uint8_t : 8;
-  uint8_t : 8;
-} EmptyData;
+  LITTLE_END = 0,
+  BIG_END = 1
+};
 
-class DbcMessage
+enum DataType
+{
+  INT = 0,
+  FLOAT = 1,
+  DOUBLE = 2
+};
+
+enum MultiplexerMode
+{
+  NONE = 0,
+  MUX_SWITCH = 1,
+  MUX_SIGNAL = 2
+};
+
+class DbcSignal
 {
 public:
-  DbcMessage();
-  DbcMessage(
+  DbcSignal(
     uint8_t dlc,
-    uint32_t id,
-    IdType idType,
+    double gain,
+    double offset,
+    uint8_t startBit,
+    ByteOrder endianness,
+    uint8_t length,
+    SignType sign,
     std::string name,
-    uint32_t rawId
-  );
+    MultiplexerMode multiplexerMode);
 
-  uint8_t GetDlc();
-  uint32_t GetId();
-  IdType GetIdType();
-  std::string GetName();
-  Frame GetFrame();
-  uint32_t GetSignalCount();
-  void SetFrame(const Frame::SharedPtr msg);
-  void AddSignal(std::string signalName, NewEagle::DbcSignal signal);
-  NewEagle::DbcSignal * GetSignal(std::string signalName);
-  void SetRawText(std::string rawText);
-  uint32_t GetRawId();
-  void SetComment(NewEagle::DbcMessageComment comment);
-  std::map<std::string, NewEagle::DbcSignal> * GetSignals();
-  bool AnyMultiplexedSignals();
+  DbcSignal(
+    uint8_t dlc,
+    double gain,
+    double offset,
+    uint8_t startBit,
+    ByteOrder endianness,
+    uint8_t length,
+    SignType sign,
+    std::string name,
+    MultiplexerMode multiplexerMode,
+    int32_t multiplexerSwitch);
+
+  uint8_t GetDlc() const;
+  double GetResult() const;
+  double GetGain() const;
+  double GetOffset() const;
+  uint8_t GetStartBit() const;
+  ByteOrder GetEndianness() const;
+  uint8_t GetLength() const;
+  SignType GetSign() const;
+  std::string GetName() const;
+  void SetResult(double result);
+  void SetComment(NewEagle::DbcSignalComment comment);
+  void SetInitialValue(double value);
+  double GetInitialValue();
+  DataType GetDataType();
+  void SetDataType(DataType type);
+  MultiplexerMode GetMultiplexerMode() const;
+  int32_t GetMultiplexerSwitch() const;
 
 private:
-  std::map<std::string, NewEagle::DbcSignal> _signals;
-  uint8_t _data[8];
   uint8_t _dlc;
-  uint32_t _id;
-  IdType _idType;
+  double _result;
+  double _gain;
+  double _offset;
+  uint8_t _startBit;
+  ByteOrder _endianness;
+  uint8_t _length;
+  SignType _sign;
   std::string _name;
-  uint32_t _rawId;
-  NewEagle::DbcMessageComment _comment;
+  NewEagle::DbcSignalComment _comment;
+  double _initialValue;
+  DataType _type;
+  MultiplexerMode _multiplexerMode;
+  int32_t _multiplexerSwitch;
 };
 }  // namespace NewEagle
 
-#endif  // RAPTOR_CAN_DBC_PARSER__DBCMESSAGE_HPP_
+#endif  // CAN_DBC_PARSER__DBCSIGNAL_HPP_

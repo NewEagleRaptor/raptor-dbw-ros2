@@ -30,7 +30,7 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#include <raptor_can_dbc_parser/LineParser.hpp>
+#include <can_dbc_parser/LineParser.hpp>
 
 #include <sstream>
 #include <string>

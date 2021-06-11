@@ -30,8 +30,8 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#include <raptor_can_dbc_parser/DbcMessage.hpp>
-#include <raptor_can_dbc_parser/DbcUtilities.hpp>
+#include <can_dbc_parser/DbcMessage.hpp>
+#include <can_dbc_parser/DbcUtilities.hpp>
 
 #include <cstring>
 #include <map>

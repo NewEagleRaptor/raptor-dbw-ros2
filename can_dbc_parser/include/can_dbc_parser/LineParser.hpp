@@ -30,31 +30,78 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef RAPTOR_CAN_DBC_PARSER__DBC_HPP_
-#define RAPTOR_CAN_DBC_PARSER__DBC_HPP_
-
-#include <raptor_can_dbc_parser/DbcMessage.hpp>
+#ifndef CAN_DBC_PARSER__LINEPARSER_HPP_
+#define CAN_DBC_PARSER__LINEPARSER_HPP_
 
 #include <cctype>
-#include <map>
+#include <stdexcept>
 #include <string>
 
 namespace NewEagle
 {
-class Dbc
+class LineParserExceptionBase : public std::exception
+{
+};
+
+class LineParserAtEOLException : public LineParserExceptionBase
+{
+  virtual const char * what() const throw()
+  {
+    return "Unexpected end of line.";
+  }
+};
+
+class LineParserLenZeroException : public LineParserExceptionBase
+{
+  virtual const char * what() const throw()
+  {
+    return "Nothing found in search space.";
+  }
+};
+
+class LineParserInvalidCharException : public LineParserExceptionBase
+{
+  virtual const char * what() const throw()
+  {
+    return "Invalid character(s) search space.";
+  }
+};
+
+enum ReadDoubleState
+{
+  READING_WHOLE_NUMBER = 0,
+  READING_FRACTION = 1,
+  READ_E = 2,
+  READ_SIGN = 3,
+  READING_EXP = 4
+};
+
+class LineParser
 {
 public:
-  Dbc() = default;
+  explicit LineParser(const std::string & line);
 
-  void AddMessage(NewEagle::DbcMessage message);
-  NewEagle::DbcMessage * GetMessage(std::string messageName);
-  NewEagle::DbcMessage * GetMessageById(uint32_t id);
-  uint16_t GetMessageCount();
-  std::map<std::string, NewEagle::DbcMessage> * GetMessages();
+  int32_t GetPosition();
+  std::string ReadCIdentifier();
+  std::string ReadCIdentifier(std::string fieldName);
+  uint32_t ReadUInt();
+  uint32_t ReadUInt(std::string fieldName);
+  void SeekSeparator(char separator);
+  char ReadNextChar(std::string fieldName);
+  int32_t ReadInt();
+  double ReadDouble();
+  double ReadDouble(std::string fieldName);
+  std::string ReadQuotedString();
+  uint32_t PeekUInt();
 
 private:
-  std::map<std::string, NewEagle::DbcMessage> _messages;
+  int32_t _position;
+  std::string _line;
+
+  void SkipWhitespace();
+  bool AtEOL();
+  char ReadNextChar();
 };
 }  // namespace NewEagle
 
-#endif  // RAPTOR_CAN_DBC_PARSER__DBC_HPP_
+#endif  // CAN_DBC_PARSER__LINEPARSER_HPP_

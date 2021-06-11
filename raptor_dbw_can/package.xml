@@ -16,7 +16,7 @@
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>sensor_msgs</depend>
-  <depend>raptor_can_dbc_parser</depend>
+  <depend>can_dbc_parser</depend>
   <depend>raptor_pdu</depend>
   <depend>raptor_pdu_msgs</depend>
 
