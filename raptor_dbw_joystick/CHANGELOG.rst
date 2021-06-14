@@ -2,8 +2,8 @@
 Changelog for package raptor_dbw_joystick
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.1.0 (2021-06-14)
+------------------
 * Misc. cleanup & comment improvement
 * Update DBW node to use params from launch file
 * Fix unit conversion issues - steering was in radians, should be degrees
