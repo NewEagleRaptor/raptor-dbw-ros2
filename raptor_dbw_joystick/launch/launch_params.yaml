@@ -11,6 +11,8 @@
     svel: 0.0
   # Shared with DBW CAN node
     max_steer_angle: 470.0
+    max_dump_angle: 100.0
+    max_articulation_angle: 90.0
   # joy node
     device_id: 0
     device_name: "/dev/input/js0"

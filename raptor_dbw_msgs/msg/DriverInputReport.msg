@@ -4,7 +4,7 @@ std_msgs/Header header
 TurnSignal turn_signal
 
 # High beams
-HighBeam high_beam_headlights
+HighBeamState high_beam_headlights
 
 # Front Windshield Wipers enumeration
 WiperFront wiper

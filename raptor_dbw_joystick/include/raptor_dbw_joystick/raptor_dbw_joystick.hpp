@@ -45,6 +45,19 @@
 #include <raptor_dbw_msgs/msg/misc_cmd.hpp>
 #include <raptor_dbw_msgs/msg/steering_cmd.hpp>
 
+// These are specifically for Dump Trucks
+#include <raptor_dbw_msgs/msg/action_cmd.hpp>
+#include <raptor_dbw_msgs/msg/articulation_cmd.hpp>
+#include <raptor_dbw_msgs/msg/articulation_control_mode.hpp>
+#include <raptor_dbw_msgs/msg/articulation_fault.hpp>
+#include <raptor_dbw_msgs/msg/articulation_report.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed_cmd.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed_control_mode.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed_fault.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed_mode_request.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed_report.hpp>
+#include <raptor_dbw_msgs/msg/engine_cmd.hpp>
+
 #include <chrono>
 
 using namespace std::chrono_literals;  // NOLINT
@@ -60,6 +73,18 @@ using raptor_dbw_msgs::msg::GlobalEnableCmd;
 using raptor_dbw_msgs::msg::MiscCmd;
 using raptor_dbw_msgs::msg::SteeringCmd;
 using raptor_dbw_msgs::msg::TurnSignal;
+// These are specifically for Dump Trucks
+using raptor_dbw_msgs::msg::ActionCmd;
+using raptor_dbw_msgs::msg::ArticulationCmd;
+using raptor_dbw_msgs::msg::ArticulationControlMode;
+using raptor_dbw_msgs::msg::ArticulationFault;
+using raptor_dbw_msgs::msg::ArticulationReport;
+using raptor_dbw_msgs::msg::DumpBedCmd;
+using raptor_dbw_msgs::msg::DumpBedControlMode;
+using raptor_dbw_msgs::msg::DumpBedFault;
+using raptor_dbw_msgs::msg::DumpBedModeRequest;
+using raptor_dbw_msgs::msg::DumpBedReport;
+using raptor_dbw_msgs::msg::EngineCmd;
 
 namespace raptor_dbw_joystick
 {
@@ -70,8 +95,11 @@ typedef struct
   float accelerator_pedal_joy;
   float steering_joy;
   bool steering_mult;
+  float articulation_joy;
   int gear_cmd;
   int turn_signal_cmd;
+  int dump_bed_cmd;
+  float dump_bed_lever_pct;
   bool joy_accelerator_pedal_valid;
   bool joy_brake_valid;
 } JoystickDataStruct;
@@ -92,7 +120,9 @@ public:
     bool ignore,
     bool enable,
     double svel,
-    float max_steer_angle);
+    float max_steer_angle,
+    float max_dump_angle,
+    float max_articulation_angle);
 
 private:
   rclcpp::Clock m_clock;
@@ -119,12 +149,18 @@ private:
   rclcpp::Publisher<SteeringCmd>::SharedPtr pub_steering_;
   rclcpp::Publisher<Empty>::SharedPtr pub_enable_;
   rclcpp::Publisher<Empty>::SharedPtr pub_disable_;
+  rclcpp::Publisher<ActionCmd>::SharedPtr pub_action_;
+  rclcpp::Publisher<ArticulationCmd>::SharedPtr pub_articulation_;
+  rclcpp::Publisher<DumpBedCmd>::SharedPtr pub_dump_bed_;
+  rclcpp::Publisher<EngineCmd>::SharedPtr pub_engine_;
 
   // Parameters
   bool ignore_;     // Ignore driver overrides
   bool enable_;     // Use enable and disable buttons
   double svel_;     // Steering command speed
   float max_steer_angle_;  // Maximum steering angle allowed
+  float max_dump_angle_;   // Maximum dumping angle allowed
+  float max_articulation_angle_;  // Maximum articulation angle allowed
 
   // Variables
   rclcpp::TimerBase::SharedPtr timer_;
@@ -150,8 +186,9 @@ private:
     AXIS_ACCELERATOR_PEDAL = 5,   /**< Axis: accelerator pedal: 0-100% */
     AXIS_BRAKE = 2,               /**< Axis: brake: 0-100% */
     AXIS_STEER_1 = 0,             /**< Axis: steering wheel: - = clockwise, + = counterclockwise */
-    AXIS_STEER_2 = 3,             /**< Axis: steering wheel: - = clockwise, + = counterclockwise */
+    AXIS_ARTICULATE = 3,          /**< Axis: articulation: - = counterclockwise, + = clockwise */
     AXIS_TURN_SIG = 6,            /**< Axis: turn signals: - = right, + = left */
+    AXIS_DUMP_BED = 7,            /**< Axis: dump bed: + = raise, - = lower */
     AXIS_COUNT = 8,               /**< Total number of axes (including unused) */
   };
 };
