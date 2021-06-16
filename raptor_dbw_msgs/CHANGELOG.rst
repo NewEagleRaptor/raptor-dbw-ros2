@@ -2,8 +2,8 @@
 Changelog for package raptor_dbw_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.1.1 (2021-06-16)
+------------------
 * Update to control dump trucks: initial release
 * Contributors: neweagleraptor
 
