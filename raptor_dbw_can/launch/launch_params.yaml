@@ -7,3 +7,5 @@
     enable_echo: false
   # DBW CAN node
     max_steer_angle: 470.0
+    max_dump_angle: 100.0
+    max_articulation_angle: 90.0
