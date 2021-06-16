@@ -2,6 +2,11 @@
 Changelog for package raptor_pdu
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update to control dump trucks: initial release
+* Contributors: neweagleraptor
+
 1.1.0 (2021-06-14)
 ------------------
 * Misc. cleanup & comment improvement (no function change)
