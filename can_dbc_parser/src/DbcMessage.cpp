@@ -101,7 +101,7 @@ Frame DbcMessage::GetFrame()
     // While we're at it, we can pick out the mutliplexer switch.
     // Perform a second loop to find the mulitplexed signal based on the multiplexer switch.
 
-    NewEagle::DbcSignal * muxSwitch;  // only one multiplexer switch per message is allowed
+    NewEagle::DbcSignal * muxSwitch = NULL;  // only one multiplexer switch per message is allowed
 
     for (std::map<std::string, NewEagle::DbcSignal>::iterator it = _signals.begin();
       it != _signals.end(); it++)
@@ -119,7 +119,9 @@ Frame DbcMessage::GetFrame()
       it != _signals.end(); it++)
     {
       if (NewEagle::MUX_SIGNAL == it->second.GetMultiplexerMode()) {
-        if (muxSwitch->GetResult() == it->second.GetMultiplexerSwitch()) {
+        if ( (muxSwitch != NULL) &&
+          (muxSwitch->GetResult() == it->second.GetMultiplexerSwitch()))
+        {
           Pack(ptr, it->second);
         }
       }
@@ -145,7 +147,7 @@ void DbcMessage::SetFrame(const Frame::SharedPtr msg)
     // While we're at it, we can pick out the mutliplexer switch.
     // Perform a second loop to find the mulitplexed signal based on the multiplexer switch.
 
-    NewEagle::DbcSignal * muxSwitch;  // only one multiplexer switch per message is allowed
+    NewEagle::DbcSignal * muxSwitch = NULL;  // only one multiplexer switch per message is allowed
 
     for (std::map<std::string, NewEagle::DbcSignal>::iterator it = _signals.begin();
       it != _signals.end(); it++)
@@ -165,7 +167,9 @@ void DbcMessage::SetFrame(const Frame::SharedPtr msg)
       it != _signals.end(); it++)
     {
       if (NewEagle::MUX_SIGNAL == it->second.GetMultiplexerMode()) {
-        if (muxSwitch->GetResult() == it->second.GetMultiplexerSwitch()) {
+        if ((muxSwitch != NULL) &&
+          (muxSwitch->GetResult() == it->second.GetMultiplexerSwitch()))
+        {
           double res = Unpack(ptr, it->second);
           it->second.SetResult(res);
         }
