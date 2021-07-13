@@ -2,6 +2,9 @@
 Changelog for package raptor_pdu_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.1.0 (2021-06-14)
 ------------------
 * Misc. cleanup & comment improvement (no function change)
