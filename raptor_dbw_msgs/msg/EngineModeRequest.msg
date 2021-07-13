@@ -1,0 +1,7 @@
+uint8 value
+
+uint8 HOLD = 0
+uint8 ENGINE_KEY_OFF = 1
+uint8 KEY_ON_ACCESSORY = 2
+uint8 ENGINE_KEY_ON = 3
+uint8 ENGINE_FORCE_OFF = 4

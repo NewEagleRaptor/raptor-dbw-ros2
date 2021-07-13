@@ -2,6 +2,11 @@
 Changelog for package raptor_dbw_joystick
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.2 (2021-07-13)
+------------------
+* Update to control dump trucks
+* Contributors: neweagleraptor
+
 1.1.1 (2021-07-13)
 ------------------
 

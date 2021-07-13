@@ -66,6 +66,32 @@
 #include <raptor_dbw_msgs/msg/tire_pressure_report.hpp>
 #include <raptor_dbw_msgs/msg/wheel_position_report.hpp>
 #include <raptor_dbw_msgs/msg/wheel_speed_report.hpp>
+
+// These are specifically for Dump Trucks
+#include <raptor_dbw_msgs/msg/action_cmd.hpp>
+#include <raptor_dbw_msgs/msg/action_fault.hpp>
+#include <raptor_dbw_msgs/msg/action_report.hpp>
+#include <raptor_dbw_msgs/msg/articulation_cmd.hpp>
+#include <raptor_dbw_msgs/msg/articulation_control_mode.hpp>
+#include <raptor_dbw_msgs/msg/articulation_fault.hpp>
+#include <raptor_dbw_msgs/msg/articulation_report.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed_cmd.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed_control_mode.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed_fault.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed_mode_request.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed_report.hpp>
+#include <raptor_dbw_msgs/msg/emergency_brake.hpp>
+#include <raptor_dbw_msgs/msg/engine_cmd.hpp>
+#include <raptor_dbw_msgs/msg/engine_control_mode.hpp>
+#include <raptor_dbw_msgs/msg/engine_fault.hpp>
+#include <raptor_dbw_msgs/msg/engine_key_mismatch.hpp>
+#include <raptor_dbw_msgs/msg/engine_mode_request.hpp>
+#include <raptor_dbw_msgs/msg/engine_report.hpp>
+#include <raptor_dbw_msgs/msg/on_off_state.hpp>
+#include <raptor_dbw_msgs/msg/other_lights.hpp>
+#include <raptor_dbw_msgs/msg/running_lights.hpp>
+#include <raptor_dbw_msgs/msg/vehicle_stop.hpp>
+
 #include <sensor_msgs/msg/imu.hpp>
 #include <sensor_msgs/msg/joint_state.hpp>
 #include <std_msgs/msg/bool.hpp>
@@ -137,6 +163,31 @@ using raptor_dbw_msgs::msg::WheelSpeedReport;
 using raptor_dbw_msgs::msg::WiperFront;
 using raptor_dbw_msgs::msg::WiperRear;
 
+// These are specifically for Dump Trucks
+using raptor_dbw_msgs::msg::ActionCmd;
+using raptor_dbw_msgs::msg::ActionFault;
+using raptor_dbw_msgs::msg::ActionReport;
+using raptor_dbw_msgs::msg::ArticulationCmd;
+using raptor_dbw_msgs::msg::ArticulationControlMode;
+using raptor_dbw_msgs::msg::ArticulationFault;
+using raptor_dbw_msgs::msg::ArticulationReport;
+using raptor_dbw_msgs::msg::DumpBedCmd;
+using raptor_dbw_msgs::msg::DumpBedControlMode;
+using raptor_dbw_msgs::msg::DumpBedFault;
+using raptor_dbw_msgs::msg::DumpBedModeRequest;
+using raptor_dbw_msgs::msg::DumpBedReport;
+using raptor_dbw_msgs::msg::EmergencyBrake;
+using raptor_dbw_msgs::msg::EngineCmd;
+using raptor_dbw_msgs::msg::EngineControlMode;
+using raptor_dbw_msgs::msg::EngineFault;
+using raptor_dbw_msgs::msg::EngineKeyMismatch;
+using raptor_dbw_msgs::msg::EngineModeRequest;
+using raptor_dbw_msgs::msg::EngineReport;
+using raptor_dbw_msgs::msg::OnOffState;
+using raptor_dbw_msgs::msg::OtherLights;
+using raptor_dbw_msgs::msg::RunningLights;
+using raptor_dbw_msgs::msg::VehicleStop;
+
 namespace raptor_dbw_can
 {
 /** \brief Class for converting Raptor DBW messages between CAN & ROS */
@@ -151,7 +202,9 @@ public:
   explicit RaptorDbwCAN(
     const rclcpp::NodeOptions & options,
     std::string dbw_dbc_file,
-    float max_steer_angle);
+    float max_steer_angle,
+    float max_dump_angle,
+    float max_articulation_angle);
   ~RaptorDbwCAN();
 
 private:
@@ -271,6 +324,26 @@ private:
  */
   void recvWheelSpeedRpt(const Frame::SharedPtr msg);
 
+  /** \brief Receives the Action Report from the vehicle via CAN
+   * \param[in] msg The received report
+   */
+  void recvActionRpt(const can_msgs::msg::Frame::SharedPtr msg);
+
+  /** \brief Receives the Articulation Report from the vehicle via CAN
+   * \param[in] msg The received report
+   */
+  void recvArticulationRpt(const can_msgs::msg::Frame::SharedPtr msg);
+
+  /** \brief Receives the Dump Bed Report from the vehicle via CAN
+   * \param[in] msg The received report
+   */
+  void recvDumpBedRpt(const can_msgs::msg::Frame::SharedPtr msg);
+
+  /** \brief Receives the Engine Report from the vehicle via CAN
+   * \param[in] msg The received report
+   */
+  void recvEngineRpt(const can_msgs::msg::Frame::SharedPtr msg);
+
 /** \brief Convert an Accelerator Pedal Command sent as a ROS message into a CAN message.
  * \param[in] msg The message to send over CAN.
  */
@@ -300,6 +373,25 @@ private:
  * \param[in] msg The message to send over CAN.
  */
   void recvSteeringCmd(const SteeringCmd::SharedPtr msg);
+  /** \brief Sends the Action Command to the vehicle via CAN
+   * \param[in] msg The received command
+   */
+  void recvActionCmd(const ActionCmd::SharedPtr msg);
+
+  /** \brief Sends the Articulation Command to the vehicle via CAN
+   * \param[in] msg The received command
+   */
+  void recvArticulationCmd(const ArticulationCmd::SharedPtr msg);
+
+  /** \brief Sends the Dump Bed Command to the vehicle via CAN
+   * \param[in] msg The received command
+   */
+  void recvDumpBedCmd(const DumpBedCmd::SharedPtr msg);
+
+  /** \brief Sends the Engine Command to the vehicle via CAN
+   * \param[in] msg The received command
+   */
+  void recvEngineCmd(const EngineCmd::SharedPtr msg);
 
   rclcpp::TimerBase::SharedPtr timer_;
   rclcpp::Clock m_clock;
@@ -308,6 +400,8 @@ private:
   // Parameters from launch
   std::string dbw_dbc_file_;
   float max_steer_angle_;
+  float max_dump_angle_;
+  float max_articulation_angle_;
 
   // Other useful variables
 
@@ -318,6 +412,8 @@ private:
     OVR_BRAKE,      /**< Brake override */
     OVR_GEAR,       /**< PRND gear override */
     OVR_STEER,      /**< Steering override */
+    OVR_DUMP_BED,   /**< Dump bed override */
+    OVR_ENGINE,     /**< Engine override */
     NUM_OVERRIDES   /**< Total number of driver overrides */
   };
 
@@ -328,6 +424,10 @@ private:
     FAULT_BRAKE,          /**< Brake fault */
     FAULT_STEER,          /**< Steering fault */
     FAULT_WATCH,          /**< Watchdog fault */
+    FAULT_ACTION,         /**< Action fault */
+    FAULT_ARTIC,          /**< Articulation fault */
+    FAULT_DUMP_BED,       /**< Dump bed fault */
+    FAULT_ENGINE,         /**< Engine fault */
     NUM_SERIOUS_FAULTS,   /**< Total number of serious faults (disables DBW) */
     FAULT_WATCH_BRAKES = NUM_SERIOUS_FAULTS,  /**< Watchdog braking fault */
     FAULT_WATCH_WARN,     /**< Watchdog non-braking fault warning */
@@ -350,13 +450,19 @@ private:
     "accelerator pedal",
     "brake",
     "PRND gear",
-    "steering"
+    "steering",
+    "dump bed",
+    "engine"
   };
   const std::string FAULT_SYSTEM[NUM_SERIOUS_FAULTS] = {
     "accelerator pedal",
     "brake",
     "steering",
-    "watchdog"
+    "watchdog",
+    "action",
+    "articulation",
+    "dump bed",
+    "engine"
   };
 
   bool overrides_[NUM_OVERRIDES];
@@ -369,14 +475,16 @@ private:
   inline bool fault()
   {
     return faults_[FAULT_BRAKE] || faults_[FAULT_ACCEL] || faults_[FAULT_STEER] ||
-           faults_[FAULT_WATCH];
+           faults_[FAULT_WATCH] || faults_[FAULT_ACTION] ||
+           faults_[FAULT_ARTIC] || faults_[FAULT_DUMP_BED] || faults_[FAULT_ENGINE];
   }
 
 /** \brief Check for an active driver override.
  * \returns TRUE if there is any active driver override, FALSE otherwise
  */
   inline bool override () {return overrides_[OVR_BRAKE] || overrides_[OVR_ACCEL] ||
-           overrides_[OVR_STEER] || overrides_[OVR_GEAR];}
+           overrides_[OVR_STEER] || overrides_[OVR_GEAR] || overrides_[OVR_DUMP_BED] ||
+           overrides_[OVR_ENGINE];}
 
 /** \brief Check for an active driver override.
  * \returns TRUE if DBW is enabled && there is any active driver override, FALSE otherwise
@@ -482,6 +590,10 @@ private:
   rclcpp::Subscription<GlobalEnableCmd>::SharedPtr sub_global_enable_;
   rclcpp::Subscription<MiscCmd>::SharedPtr sub_misc_;
   rclcpp::Subscription<SteeringCmd>::SharedPtr sub_steering_;
+  rclcpp::Subscription<ActionCmd>::SharedPtr sub_action_;
+  rclcpp::Subscription<ArticulationCmd>::SharedPtr sub_articulation_;
+  rclcpp::Subscription<DumpBedCmd>::SharedPtr sub_dump_bed_;
+  rclcpp::Subscription<EngineCmd>::SharedPtr sub_engine_;
 
   // Published topics
   rclcpp::Publisher<Bool>::SharedPtr pub_sys_enable_;
@@ -506,6 +618,10 @@ private:
   rclcpp::Publisher<String>::SharedPtr pub_vin_;
   rclcpp::Publisher<WheelPositionReport>::SharedPtr pub_wheel_positions_;
   rclcpp::Publisher<WheelSpeedReport>::SharedPtr pub_wheel_speeds_;
+  rclcpp::Publisher<ActionReport>::SharedPtr pub_action_report_;
+  rclcpp::Publisher<ArticulationReport>::SharedPtr pub_articulation_report_;
+  rclcpp::Publisher<DumpBedReport>::SharedPtr pub_dump_bed_report_;
+  rclcpp::Publisher<EngineReport>::SharedPtr pub_engine_report_;
 
   NewEagle::Dbc dbwDbc_;
 

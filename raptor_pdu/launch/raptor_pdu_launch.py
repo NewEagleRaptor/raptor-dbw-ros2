@@ -56,13 +56,24 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
-            Node(
+            Node(  # PDU node - 12V (ID 0xB0)
                 package='raptor_pdu',
                 executable='pdu_node',
                 output='screen',
-                namespace='raptor_power_distribution_interface',
+                namespace='raptor_power_distribution_interface_12V',
                 parameters=[
-                    {'pdu_dbc_file': dbc_file_path}
+                    {'pdu_dbc_file': dbc_file_path},
+                    {"id": 0xB0}
+                ],
+            ),
+            Node(  # PDU node - 24V (ID 0xB1)
+                package='raptor_pdu',
+                executable='pdu_node',
+                output='screen',
+                namespace='raptor_power_distribution_interface_24V',
+                parameters=[
+                    {'pdu_dbc_file': dbc_file_path},
+                    {"id": 0xB1}
                 ],
             ),
         ]

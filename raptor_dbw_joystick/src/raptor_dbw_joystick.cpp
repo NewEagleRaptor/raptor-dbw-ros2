@@ -38,19 +38,26 @@ RaptorDbwJoystick::RaptorDbwJoystick(
   bool ignore,
   bool enable,
   double svel,
-  float max_steer_angle)
+  float max_steer_angle,
+  float max_dump_angle,
+  float max_articulation_angle)
 : Node("raptor_dbw_joystick_node", options),
   ignore_{ignore},
   enable_{enable},
   svel_{svel},
-  max_steer_angle_{max_steer_angle}
+  max_steer_angle_{max_steer_angle},
+  max_dump_angle_{max_dump_angle},
+  max_articulation_angle_{max_articulation_angle}
 {
   data_.brake_joy = 0.0;
   data_.gear_cmd = Gear::NONE;
   data_.steering_joy = 0.0;
   data_.steering_mult = false;
   data_.accelerator_pedal_joy = 0.0;
+  data_.articulation_joy = 0.0;
   data_.turn_signal_cmd = TurnSignal::NONE;
+  data_.dump_bed_cmd = DumpBedModeRequest::HOLD;
+  data_.dump_bed_lever_pct = 0.0;
   data_.joy_accelerator_pedal_valid = false;
   data_.joy_brake_valid = false;
 
@@ -66,6 +73,11 @@ RaptorDbwJoystick::RaptorDbwJoystick(
   pub_steering_ = this->create_publisher<SteeringCmd>("steering_cmd", 1);
   pub_global_enable_ = this->create_publisher<GlobalEnableCmd>("global_enable_cmd", 1);
   pub_gear_ = this->create_publisher<GearCmd>("gear_cmd", 1);
+  pub_action_ = this->create_publisher<ActionCmd>("action_cmd", 1);
+  pub_articulation_ = this->create_publisher<ArticulationCmd>(
+    "articulation_cmd", 1);
+  pub_dump_bed_ = this->create_publisher<DumpBedCmd>("dump_bed_cmd", 1);
+  pub_engine_ = this->create_publisher<EngineCmd>("engine_cmd", 1);
   if (enable_) {
     pub_enable_ = this->create_publisher<Empty>("enable", 1);
     pub_disable_ = this->create_publisher<Empty>("disable", 1);
@@ -133,7 +145,7 @@ void RaptorDbwJoystick::cmdCallback()
 
   // Turn signal
   MiscCmd misc_msg;
-  misc_msg.cmd.value = data_.turn_signal_cmd;
+  misc_msg.turn_signal_cmd.value = data_.turn_signal_cmd;
   misc_msg.rolling_counter = counter_;
   pub_misc_->publish(misc_msg);
 
@@ -142,6 +154,39 @@ void RaptorDbwJoystick::cmdCallback()
   globalEnable_msg.enable_joystick_limits = true;
   globalEnable_msg.rolling_counter = counter_;
   pub_global_enable_->publish(globalEnable_msg);
+
+  // Action (disabled)
+  ActionCmd action_msg{};
+  action_msg.enable = false;
+  action_msg.rolling_counter = counter_;
+  pub_action_->publish(action_msg);
+
+  // Articulation
+  ArticulationCmd articulation_msg{};
+  articulation_msg.enable = true;
+  articulation_msg.ignore_driver = ignore_;
+  articulation_msg.velocity_limit = max_articulation_angle_;
+  articulation_msg.control_type.value = ArticulationControlMode::ANGLE;
+  articulation_msg.angle_cmd = data_.articulation_joy;
+  articulation_msg.rolling_counter = counter_;
+  pub_articulation_->publish(articulation_msg);
+
+  // Dump Bed
+  DumpBedCmd dump_bed_msg{};
+  dump_bed_msg.enable = true;
+  dump_bed_msg.ignore_driver = ignore_;
+  dump_bed_msg.velocity_limit = max_dump_angle_;
+  dump_bed_msg.control_type.value = DumpBedControlMode::MODE;
+  dump_bed_msg.mode_type.value = data_.dump_bed_cmd;
+  dump_bed_msg.lever_pct = data_.dump_bed_lever_pct;
+  dump_bed_msg.rolling_counter = counter_;
+  pub_dump_bed_->publish(dump_bed_msg);
+
+  // Engine (disabled)
+  EngineCmd engine_msg{};
+  engine_msg.enable = false;
+  engine_msg.rolling_counter = counter_;
+  pub_engine_->publish(engine_msg);
 }
 
 void RaptorDbwJoystick::recvJoy(const Joy::SharedPtr msg)
@@ -180,7 +225,7 @@ void RaptorDbwJoystick::recvJoy(const Joy::SharedPtr msg)
   if (msg->buttons[BTN_PARK]) {
     data_.gear_cmd = Gear::PARK;
   } else if (msg->buttons[BTN_REVERSE]) {
-    data_.gear_cmd = Gear::REVERSE;
+    data_.gear_cmd = Gear::REVERSE_1;
   } else if (msg->buttons[BTN_DRIVE]) {
     data_.gear_cmd = Gear::DRIVE;
   } else if (msg->buttons[BTN_NEUTRAL]) {
@@ -191,9 +236,12 @@ void RaptorDbwJoystick::recvJoy(const Joy::SharedPtr msg)
 
   // Steering
   data_.steering_joy = max_steer_angle_ *
-    ((fabs(msg->axes[AXIS_STEER_1]) >
-    fabs(msg->axes[AXIS_STEER_2])) ? msg->axes[AXIS_STEER_1] : msg->axes[AXIS_STEER_2]);
+    msg->axes[AXIS_STEER_1];
   data_.steering_mult = msg->buttons[BTN_STEER_MULT_1] || msg->buttons[BTN_STEER_MULT_2];
+
+  // Articulation: clockwise (right) is positive in DBC, but negative on the joystick.
+  data_.articulation_joy = max_articulation_angle_ * -1.0 *
+    msg->axes[AXIS_ARTICULATE];
 
   // Turn signal
   if (msg->axes[AXIS_TURN_SIG] != joy_.axes[AXIS_TURN_SIG]) {
@@ -219,6 +267,20 @@ void RaptorDbwJoystick::recvJoy(const Joy::SharedPtr msg)
           data_.turn_signal_cmd = TurnSignal::LEFT;
         }
         break;
+    }
+  }
+
+  // Dump bed raise/lower
+  if (msg->axes[AXIS_DUMP_BED] != joy_.axes[AXIS_DUMP_BED]) {
+    if (msg->axes[AXIS_DUMP_BED] < -0.5) {
+      data_.dump_bed_cmd = DumpBedModeRequest::LOWER;
+      data_.dump_bed_lever_pct = 50.0;
+    } else if (msg->axes[AXIS_DUMP_BED] > 0.5) {
+      data_.dump_bed_cmd = DumpBedModeRequest::RAISE;
+      data_.dump_bed_lever_pct = 50.0;
+    } else {
+      data_.dump_bed_cmd = DumpBedModeRequest::HOLD;
+      data_.dump_bed_lever_pct = 0.0;
     }
   }
 
