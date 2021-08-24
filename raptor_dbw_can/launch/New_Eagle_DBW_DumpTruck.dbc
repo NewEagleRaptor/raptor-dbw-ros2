@@ -52,8 +52,8 @@ BO_ 2147491585 DBW_Misc: 8 DBW
  SG_ DBW_MiscAKitCommFault : 4|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_AmbientTemp : 48|7@1+ (1,-40) [-40|87] "C" Vector__XXX
  SG_ DBW_VehReadyToDrive : 7|1@1+ (1,0) [0|1] "Bool" Vector__XXX
- SG_ DBW_Estop : 1|1@1+ (1,0) [0|1] "Bool" Vector__XXX
- SG_ DBW_RemoteEstop : 1|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ DBW_Estop : 56|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ DBW_RemoteEstop : 57|1@1+ (1,0) [0|1] "Bool" Vector__XXX
 
 BO_ 2147491586 DBW_AccelPdlReport: 8 DBW
  SG_ DBW_AccelPdlDriverInput : 0|16@1+ (0.1,0) [0|100] "%-pedal" Vector__XXX
@@ -1288,7 +1288,7 @@ CM_ BO_ 2147491606 "Supported only on Grand Cherokee, unless a standalone GPS is
 
 The DBW module splits the GPS reading into a Reference and Remainder because most embedded modules only support single floating-point resolution, not double floating-point. With a single data type, the resolution near 180 degrees of longitude is +/- several meters per bit. The Reference/Remainder approach allows the single datatype (or uint32 in this case) to have a resolution of 0.001 m/bit at 180degrees longitude. Note that the actual resolution of the GPS sensor may be worse than 0.001 m/bit, depending on what GPS sensor is used in a given vehicle platform. However, this CAN message will be able to support all types of GPS sensors without changing the scaling of this message.
 
-ROS Topic: /raptor_dbw_interface/gps_reference_report";
+ROS Topic: /raptor";
 CM_ SG_ 2147491606 DBW_GpsRefLat "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles. 
 
 Low-res GPS reference point TX'ed slowly. Higher res information will be sent in the DBW_GpsRemainder message in units of meters, relative to this reference

@@ -2,8 +2,8 @@
 Changelog for package raptor_dbw_can
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.1.3 (2021-08-24)
+------------------
 * Updated DBC for new messages & signals
 * Contributors: neweagleraptor
 
