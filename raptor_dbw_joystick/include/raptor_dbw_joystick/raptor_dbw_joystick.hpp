@@ -56,6 +56,7 @@
 #include <raptor_dbw_msgs/msg/dump_bed_fault.hpp>
 #include <raptor_dbw_msgs/msg/dump_bed_mode_request.hpp>
 #include <raptor_dbw_msgs/msg/dump_bed_report.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed2_report.hpp>
 #include <raptor_dbw_msgs/msg/engine_cmd.hpp>
 
 #include <chrono>
@@ -84,6 +85,7 @@ using raptor_dbw_msgs::msg::DumpBedControlMode;
 using raptor_dbw_msgs::msg::DumpBedFault;
 using raptor_dbw_msgs::msg::DumpBedModeRequest;
 using raptor_dbw_msgs::msg::DumpBedReport;
+using raptor_dbw_msgs::msg::DumpBed2Report;
 using raptor_dbw_msgs::msg::EngineCmd;
 
 namespace raptor_dbw_joystick

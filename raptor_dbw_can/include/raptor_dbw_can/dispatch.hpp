@@ -81,6 +81,7 @@ enum ListMessageIDs
   ID_ARTICULATION_REPORT        = 0x1F21,   /**< Articulation report ID */
   ID_DUMP_BED_REPORT            = 0x1F22,   /**< Dump bed report ID */
   ID_ACTION_REPORT              = 0x1F23,   /**< Action report ID */
+  ID_DUMP_BED_2_REPORT          = 0x1F24,   /**< Dump bed 2 report ID */
   ID_DUMP_BED_CMD               = 0x2F07,   /**< Dump bed command ID */
   ID_ENGINE_CMD                 = 0x2F08,   /**< Engine command ID */
   ID_ARTICULATION_CMD           = 0x2F09,   /**< Articulation command ID */

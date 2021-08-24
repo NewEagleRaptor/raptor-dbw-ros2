@@ -80,6 +80,7 @@
 #include <raptor_dbw_msgs/msg/dump_bed_fault.hpp>
 #include <raptor_dbw_msgs/msg/dump_bed_mode_request.hpp>
 #include <raptor_dbw_msgs/msg/dump_bed_report.hpp>
+#include <raptor_dbw_msgs/msg/dump_bed2_report.hpp>
 #include <raptor_dbw_msgs/msg/emergency_brake.hpp>
 #include <raptor_dbw_msgs/msg/engine_cmd.hpp>
 #include <raptor_dbw_msgs/msg/engine_control_mode.hpp>
@@ -176,6 +177,7 @@ using raptor_dbw_msgs::msg::DumpBedControlMode;
 using raptor_dbw_msgs::msg::DumpBedFault;
 using raptor_dbw_msgs::msg::DumpBedModeRequest;
 using raptor_dbw_msgs::msg::DumpBedReport;
+using raptor_dbw_msgs::msg::DumpBed2Report;
 using raptor_dbw_msgs::msg::EmergencyBrake;
 using raptor_dbw_msgs::msg::EngineCmd;
 using raptor_dbw_msgs::msg::EngineControlMode;
@@ -338,6 +340,11 @@ private:
    * \param[in] msg The received report
    */
   void recvDumpBedRpt(const can_msgs::msg::Frame::SharedPtr msg);
+
+  /** \brief Receives the Dump Bed 2 Report from the vehicle via CAN
+   * \param[in] msg The received report
+   */
+  void recvDumpBed2Rpt(const can_msgs::msg::Frame::SharedPtr msg);
 
   /** \brief Receives the Engine Report from the vehicle via CAN
    * \param[in] msg The received report
@@ -621,6 +628,7 @@ private:
   rclcpp::Publisher<ActionReport>::SharedPtr pub_action_report_;
   rclcpp::Publisher<ArticulationReport>::SharedPtr pub_articulation_report_;
   rclcpp::Publisher<DumpBedReport>::SharedPtr pub_dump_bed_report_;
+  rclcpp::Publisher<DumpBed2Report>::SharedPtr pub_dump_bed_2_report_;
   rclcpp::Publisher<EngineReport>::SharedPtr pub_engine_report_;
 
   NewEagle::Dbc dbwDbc_;

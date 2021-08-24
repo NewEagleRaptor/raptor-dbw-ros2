@@ -77,6 +77,7 @@ set(msg_files
   "msg/DumpBedFault.msg"
   "msg/DumpBedModeRequest.msg"
   "msg/DumpBedReport.msg"
+  "msg/DumpBed2Report.msg"
   "msg/EmergencyBrake.msg"
   "msg/EngineCmd.msg"
   "msg/EngineControlMode.msg"

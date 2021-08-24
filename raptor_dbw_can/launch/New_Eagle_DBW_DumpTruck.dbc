@@ -52,6 +52,8 @@ BO_ 2147491585 DBW_Misc: 8 DBW
  SG_ DBW_MiscAKitCommFault : 4|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_AmbientTemp : 48|7@1+ (1,-40) [-40|87] "C" Vector__XXX
  SG_ DBW_VehReadyToDrive : 7|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ DBW_Estop : 1|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ DBW_RemoteEstop : 1|1@1+ (1,0) [0|1] "Bool" Vector__XXX
 
 BO_ 2147491586 DBW_AccelPdlReport: 8 DBW
  SG_ DBW_AccelPdlDriverInput : 0|16@1+ (0.1,0) [0|100] "%-pedal" Vector__XXX
@@ -332,22 +334,22 @@ BO_ 2147491603 DBW_SteeringReport2: 8 DBW
 
 BO_ 2147491604 DBW_OtherActuatorsReport: 8 DBW
  SG_ DBW_TurnSignalState : 4|3@1+ (1,0) [0|7] "Enum" Vector__XXX
- SG_ DBW_RightRearDoorState : 8|2@1+ (1,0) [0|3] "" Vector__XXX
- SG_ DBW_HighBeamState : 28|2@1+ (1,0) [0|3] "" Vector__XXX
- SG_ DBW_FrontWiperState : 16|4@1+ (1,0) [0|15] "" Vector__XXX
- SG_ DBW_RearWiperState : 20|4@1+ (1,0) [0|15] "" Vector__XXX
- SG_ DBW_IgnitionState : 24|3@1+ (1,0) [0|7] "" Vector__XXX
- SG_ DBW_LeftRearDoorState : 10|2@1+ (1,0) [0|3] "" Vector__XXX
- SG_ DBW_LiftgateDoorState : 32|2@1+ (1,0) [0|3] "" Vector__XXX
- SG_ DBW_HornState : 12|2@1+ (1,0) [0|3] "" Vector__XXX
- SG_ DBW_LowBeamState : 30|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ DBW_RightRearDoorState : 8|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ DBW_HighBeamState : 28|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ DBW_FrontWiperState : 16|4@1+ (1,0) [0|15] "Enum" Vector__XXX
+ SG_ DBW_RearWiperState : 20|4@1+ (1,0) [0|15] "Enum" Vector__XXX
+ SG_ DBW_IgnitionState : 24|3@1+ (1,0) [0|7] "Enum" Vector__XXX
+ SG_ DBW_LeftRearDoorState : 10|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ DBW_LiftgateDoorState : 32|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ DBW_HornState : 12|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ DBW_LowBeamState : 30|2@1+ (1,0) [0|3] "Enum" Vector__XXX
  SG_ DBW_OtherActRollingCntr : 56|4@1+ (1,0) [0|15] "" Vector__XXX
  SG_ DBW_DoorLockState : 0|2@1+ (1,0) [0|3] "Enum" Vector__XXX
- SG_ DBW_RunningLightsState : 34|2@1+ (1,0) [0|3] "" Vector__XXX
- SG_ DBW_ModeLightState_Red : 40|1@1+ (1,0) [0|1] "Bool" Vector__XXX
- SG_ DBW_ModeLightState_Yellow : 41|1@1+ (1,0) [0|1] "Bool" Vector__XXX
- SG_ DBW_ModeLightState_Green : 42|1@1+ (1,0) [0|1] "Bool" Vector__XXX
- SG_ DBW_ModeLightState_Blue : 43|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ DBW_RunningLightsState : 34|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ DBW_ModeLightState_Red : 40|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ DBW_ModeLightState_Yellow : 42|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ DBW_ModeLightState_Green : 48|2@1+ (1,0) [0|3] "Enum" Vector__XXX
+ SG_ DBW_ModeLightState_Blue : 50|2@1+ (1,0) [0|3] "Enum" Vector__XXX
  SG_ DBW_DiffLockState : 44|2@1+ (1,0) [0|3] "Enum" Vector__XXX
  SG_ DBW_OtherLightsState : 46|2@1+ (1,0) [0|3] "Enum" Vector__XXX
 
@@ -442,6 +444,10 @@ BO_ 2147491619 DBW_ActionReport: 8 DBW
  SG_ DBW_ActionEmergencyBrk : 8|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ DBW_ActionFault : 52|4@1+ (1,0) [0|15] "" Vector__XXX
 
+BO_ 2147491620 DBW_DumpBedReport2: 8 DBW
+ SG_ DBW_Payload : 0|16@1+ (0.1,0) [0|6535.5] "metric ton" Vector__XXX
+ SG_ DBW_DumpBed2RllngCntr : 56|4@1+ (1,0) [0|15] "" Vector__XXX
+
 
 
 CM_ BU_ Pacifica "Just added a custom VIN-read message from this module";
@@ -508,6 +514,8 @@ ROS Attribute:";
 CM_ SG_ 2147491585 DBW_VehReadyToDrive "Indicates vehicle is ready to drive. For combustion-engine vehicles, it means the engine is started. For hybrids and electric vehicles, the engine may not be running but it means the driver has properly started the vehicle by pressing the ignition & brakes as needed.
 
 This bit is NOT true if the vehicle is just in an ignition-on-engine-off state";
+CM_ SG_ 2147491585 DBW_Estop "Indicates if the in-vehicle ESTOP is pressed.";
+CM_ SG_ 2147491585 DBW_RemoteEstop "Indicates if the remote ESTOP is pressed. The presense of this ESTOP is vehicle dependent.";
 CM_ BO_ 2147491586 "ROS Topic: /raptor_dbw_interface/accelerator_pedal_report";
 CM_ SG_ 2147491586 DBW_AccelPdlDriverInput "
 ROS Attribute: pedal_input
@@ -800,7 +808,7 @@ If vehicle is in reverse, this signal will still limit the accelerator pedal val
 ROS Attribute: ";
 CM_ BO_ 2147495681 "Must be sent continuously, even if you're not planning to enable this actuator.
 
-ROS Topic: /raptor_dbw_interface/misc_cmd";
+ROS Topic: /raptor_dbw_interface/global_enable_cmd";
 CM_ SG_ 2147495681 AKit_GlobalEnblRollingCntr "0-15 rolling counter
 
 
@@ -824,7 +832,7 @@ ROS Attribute: ecu_build_number
 CM_ SG_ 2147495681 AKit_GlobalEnblChecksum "J1850 checksum (initial value 0xFF, polynomial 0x11D)";
 CM_ BO_ 2147495686 "Must be sent continuously, even if you're not planning to enable this actuator.
 
-ROS Topic:";
+ROS Topic: /raptor_dbw_interface/misc_cmd";
 CM_ SG_ 2147495686 AKit_TurnSignalReq "Currently supported by Prius only. Contact New Eagle if you are interested in adding support for Hazards on a Pacifica or Volvo vehicle.
 
 
@@ -888,13 +896,15 @@ ROS Attribute: rolling_counter
 ";
 CM_ SG_ 2147495686 AKit_OtherChecksum "J1850 checksum (initial value 0xFF, polynomial 0x11D)";
 CM_ SG_ 2147495686 AKit_HornReq "Currently supported by Prius & Volvo only. Contact New Eagle if you are interested in adding support for Horn on a Pacifica vehicle.";
-CM_ SG_ 2147495686 AKit_LowBeamReq "Currently supported by Prius & Volvo only. Contact New Eagle if you are interested in adding support for Low Beam control on a Pacifica (in addition to the automatic-low-beam feature on the OEM vehicle).";
+CM_ SG_ 2147495686 AKit_LowBeamReq "Currently supported by Prius & Volvo only. Contact New Eagle if you are interested in adding support for Low Beam control on a Pacifica (in addition to the automatic-low-beam feature on the OEM vehicle).
+
+They will turn on if the running lights are requested to be on.";
 CM_ SG_ 2147495686 AKit_RunningLightsReq "";
 CM_ SG_ 2147495686 AKit_DiffLock "Engage differential axle lock.";
 CM_ SG_ 2147495686 AKit_OtherLightsReq "Used to actuate any other accesory lighting";
 CM_ BO_ 2147495683 "Must be sent continuously, even if you're not planning to enable this actuator.
 
-ROS Topic:";
+ROS Topic: /raptor_dbw_interface/steering_cmd";
 CM_ SG_ 2147495683 AKit_SteeringWhlAngleReq "counterclockwise = positive. Not all vehicles support the full range of travel. The Pacifica supports +/- 540deg, the Volvo VNR supports +/-750deg, Prius +/-500deg, and the Grand Cherokee +/-560 deg. See the signal DBW_SteeringWhlAngleDes to see if the DBW system is clipping an out-of-range request for your vehicle.
 
 
@@ -1110,7 +1120,7 @@ CM_ BO_ 2147491592 "ROS Topic: /raptor_dbw_interface/vin";
 CM_ SG_ 2147491592 DBW_VinMultiplexor "message multiplexor";
 CM_ BO_ 2147491593 "Message ID reserved for future additions
 
-ROS Topic:";
+ROS Topic: N/A";
 CM_ BO_ 2147491594 "IMU = Intertial Measurement Unit
 
 ROS Topic: /raptor_dbw_interface/imu/data_raw";
@@ -1131,7 +1141,7 @@ ROS Attribute: linear_acceleration.y
 ";
 CM_ BO_ 2147491595 "Some vehicles send an RPM, others a speed in km/h. Both are multiplexed into this message so that a common DBC can be maintained for New Eagle DBW vehicles
 
-ROS Topic:";
+ROS Topic: /raptor_dbw_interface/wheel_speed_report";
 CM_ SG_ 2147491595 DBW_WhlSpd_RR "positive is forward. Used on Pacifica.
 
 
@@ -1193,7 +1203,7 @@ ROS Attribute: rear_radar_object_distance
 ";
 CM_ BO_ 1807 "ASCII names of faults present in the DBW system
 
-ROS Topic:";
+ROS Topic: N/A";
 CM_ SG_ 1807 FltTxt_PageNum "Multiplexor";
 CM_ SG_ 1807 FltTxt_FaultId "Index of the fault in Raptor. This number is the output of the Raptor Fault Iterator block. this array can also be accessed by the raptor_get_faults() command in MATLAB.";
 CM_ SG_ 1807 FltTxt_NumPages "number of pages in the packet for this one fault, varies depending on how many characters in the fault name";
@@ -1269,11 +1279,16 @@ Chrylser Pacifica: 100% = 105 Nm
 Volvo VNR:\t  100% = 40 Nm
 Toyota Prius:\t  100% = 20,000 (unitless)";
 CM_ SG_ 2147491603 DBW_PacificaSteerTrq "For development purposes only";
-CM_ BO_ 2147491604 "Status feedback for the various actuators commanded via AKit_OtherActuators. These will set if either the driver turns them on OR the autonomous system.";
+CM_ BO_ 2147491604 "Status feedback for the various actuators commanded via AKit_OtherActuators. These will set if either the driver turns them on OR the autonomous system.
+
+ROS Topic: /raptor_dbw_interface/other_actuators_report";
 CM_ SG_ 2147491604 DBW_OtherActRollingCntr "Watchdog alive rolling counter";
+CM_ BO_ 2147491605 "ROS Topic: /raptor_dbw_interface/fault_actions_report";
 CM_ BO_ 2147491606 "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles. Low-res GPS reference point broadcasted slowly (doesnt change often). Higher res information will be sent in the DBW_GpsRemainder message in units of meters, relative to this reference
 
-The DBW module splits the GPS reading into a Reference and Remainder because most embedded modules only support single floating-point resolution, not double floating-point. With a single data type, the resolution near 180 degrees of longitude is +/- several meters per bit. The Reference/Remainder approach allows the single datatype (or uint32 in this case) to have a resolution of 0.001 m/bit at 180degrees longitude. Note that the actual resolution of the GPS sensor may be worse than 0.001 m/bit, depending on what GPS sensor is used in a given vehicle platform. However, this CAN message will be able to support all types of GPS sensors without changing the scaling of this message. ";
+The DBW module splits the GPS reading into a Reference and Remainder because most embedded modules only support single floating-point resolution, not double floating-point. With a single data type, the resolution near 180 degrees of longitude is +/- several meters per bit. The Reference/Remainder approach allows the single datatype (or uint32 in this case) to have a resolution of 0.001 m/bit at 180degrees longitude. Note that the actual resolution of the GPS sensor may be worse than 0.001 m/bit, depending on what GPS sensor is used in a given vehicle platform. However, this CAN message will be able to support all types of GPS sensors without changing the scaling of this message.
+
+ROS Topic: /raptor_dbw_interface/gps_reference_report";
 CM_ SG_ 2147491606 DBW_GpsRefLat "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles. 
 
 Low-res GPS reference point TX'ed slowly. Higher res information will be sent in the DBW_GpsRemainder message in units of meters, relative to this reference
@@ -1286,7 +1301,9 @@ Low-res GPS reference point  TX'ed slowly. Higher res information will be sent i
 0.005deg is about 555meters. ";
 CM_ BO_ 2147491607 "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles. Position, in meters, relative to the GpsReference sent in the other message.
 
-The DBW module splits the GPS reading into a Reference and Remainder because most embedded modules only support single floating-point resolution, not double floating-point. With a single data type, the resolution near 180 degrees of longitude is +/- several meters per bit. The Reference/Remainder approach allows the single datatype (or uint32 in this case) to have a resolution of 0.001 m/bit at 180degrees longitude. Note that the actual resolution of the GPS sensor may be worse than 0.001 m/bit, depending on what GPS sensor is used in a given vehicle platform. However, this CAN message will be able to support all types of GPS sensors without changing the scaling of this message. ";
+The DBW module splits the GPS reading into a Reference and Remainder because most embedded modules only support single floating-point resolution, not double floating-point. With a single data type, the resolution near 180 degrees of longitude is +/- several meters per bit. The Reference/Remainder approach allows the single datatype (or uint32 in this case) to have a resolution of 0.001 m/bit at 180degrees longitude. Note that the actual resolution of the GPS sensor may be worse than 0.001 m/bit, depending on what GPS sensor is used in a given vehicle platform. However, this CAN message will be able to support all types of GPS sensors without changing the scaling of this message.
+
+ROS Topic: /raptor_dbw_interface/gps_remainder_report";
 CM_ SG_ 2147491607 DBW_GpsRemainderLat "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles.
 
 hi-res remainder from the reference signal, converted to meters. The meters conversion uses the basic Haversine formula, assuming 111,000m per deg latitude, and 111,321m per deg longitude at the equator";
@@ -1303,7 +1320,6 @@ CM_ BO_ 2147495689 "Must be sent continuously, even if you're not planning to en
 
 ROS Topic: /raptor_dbw_interface/articulation_cmd";
 CM_ SG_ 2147495689 AKit_ArticulationReqType "Only Angle is available right now";
-CM_ SG_ 2147495689 AKit_ArticulationAngleReq "";
 CM_ SG_ 2147495689 AKit_ArticulationVelocityLimit "0 = infinite rate limit. Used only when ArticulationReqType = 1
 
 ";
@@ -1329,8 +1345,11 @@ CM_ BO_ 2147491618 "supported only for dump trucks
 
 ROS Topic: /raptor_dbw_interface/dump_bed_report";
 CM_ BO_ 2147491619 "ROS Topic: /raptor_dbw_interface/action_report";
+CM_ BO_ 2147491620 "ROS Topic: /raptor_dbw_interface/dump_bed_2_report";
 VAL_ 2147491585 DBW_MiscByWireEnabled 0 "ManualMode" 1 "DriveByWireMode" ;
 VAL_ 2147491585 DBW_MiscByWireReady 0 "Not_Ready" 1 "Ready" ;
+VAL_ 2147491585 DBW_Estop 1 "Pressed" 0 "Not Pressed" ;
+VAL_ 2147491585 DBW_RemoteEstop 1 "Pressed" 0 "Not Pressed" ;
 VAL_ 2147491586 DBW_AccelCtrlType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Accelerator %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;
 VAL_ 2147491587 DBW_SteeringCtrlType 0 "Open Loop (Steering %-Torque)" 1 "Actuator-Level Closed Loop (Steering Wheel Angular Position)" 2 "Vehicle-Level Closed Loop (Vehicle Curvature)" ;
 VAL_ 2147491588 DBW_BrakeParkingBrkStatus 0 "Reserved" 1 "Off" 2 "On" 3 "Fault" ;
@@ -1385,6 +1404,10 @@ VAL_ 2147491604 DBW_LiftgateDoorState 0 "Undefined" 1 "Closed" 2 "Open" 3 "SNA (
 VAL_ 2147491604 DBW_HornState 0 "Off" 1 "On" 3 "SNA (Faulted or Not Supported)" ;
 VAL_ 2147491604 DBW_LowBeamState 0 "Undefined/Off" 2 "On" 1 "Auto" 3 "SNA (Faulted or Not Supported)" ;
 VAL_ 2147491604 DBW_RunningLightsState 0 "Undefined/Off" 2 "On" 1 "Auto" 3 "SNA (Faulted or Not Supported)" ;
+VAL_ 2147491604 DBW_ModeLightState_Red 0 "Off" 1 "On" 3 "SNA" ;
+VAL_ 2147491604 DBW_ModeLightState_Yellow 0 "Off" 1 "On" 3 "SNA" ;
+VAL_ 2147491604 DBW_ModeLightState_Green 0 "Off" 1 "On" 3 "SNA" ;
+VAL_ 2147491604 DBW_ModeLightState_Blue 0 "Off" 1 "On" 3 "SNA" ;
 VAL_ 2147491604 DBW_DiffLockState 1 "On" 0 "Off" 3 "SNA" ;
 VAL_ 2147491604 DBW_OtherLightsState 1 "On" 0 "Off" 3 "SNA" ;
 VAL_ 2147495687 AKit_DumpBedReqType 0 "Mode" 1 "Angle" ;

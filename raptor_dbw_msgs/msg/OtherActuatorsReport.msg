@@ -10,10 +10,10 @@ HighBeamState high_beam_state
 LowBeam low_beam_state 
 RunningLights running_lights_state
 OnOffState other_lights_state
-bool mode_light_red
-bool mode_light_yellow
-bool mode_light_green
-bool mode_light_blue
+OnOffState mode_light_red
+OnOffState mode_light_yellow
+OnOffState mode_light_green
+OnOffState mode_light_blue
 
 # Wipers
 WiperFront front_wiper_state 

@@ -127,6 +127,8 @@ RaptorDbwCAN::RaptorDbwCAN(
     "articulation_report", 20);
   pub_dump_bed_report_ = this->create_publisher<DumpBedReport>(
     "dump_bed_report", 20);
+  pub_dump_bed_2_report_ = this->create_publisher<DumpBed2Report>(
+    "dump_bed_2_report", 20);
   pub_engine_report_ = this->create_publisher<EngineReport>(
     "engine_report", 20);
 
@@ -308,6 +310,10 @@ void RaptorDbwCAN::recvCAN(const Frame::SharedPtr msg)
 
       case ID_ACTION_REPORT:
         recvActionRpt(msg);
+        break;
+
+      case ID_DUMP_BED_2_REPORT:
+        recvDumpBed2Rpt(msg);
         break;
 
       case ID_BRAKE_CMD:
@@ -755,6 +761,10 @@ void RaptorDbwCAN::recvMiscRpt(const Frame::SharedPtr msg)
       message->GetSignal("DBW_MiscAKitCommFault")->GetResult() ? true : false;
     out.ambient_temp =
       static_cast<double>(message->GetSignal("DBW_AmbientTemp")->GetResult());
+    out.estop_in_vehicle =
+      message->GetSignal("DBW_Estop")->GetResult() ? true : false;
+    out.estop_remote =
+      message->GetSignal("DBW_RemoteEstop")->GetResult() ? true : false;
 
     pub_misc_->publish(out);
   }
@@ -891,14 +901,14 @@ void RaptorDbwCAN::recvOtherActuatorsRpt(const Frame::SharedPtr msg)
       "DBW_RunningLightsState")->GetResult();
     out.other_lights_state.status = message->GetSignal(
       "DBW_RunningLightsState")->GetResult();
-    out.mode_light_red = message->GetSignal(
-      "DBW_ModeLightState_Red")->GetResult() ? true : false;
-    out.mode_light_yellow = message->GetSignal(
-      "DBW_ModeLightState_Yellow")->GetResult() ? true : false;
-    out.mode_light_green = message->GetSignal(
-      "DBW_ModeLightState_Green")->GetResult() ? true : false;
-    out.mode_light_blue = message->GetSignal(
-      "DBW_ModeLightState_Blue")->GetResult() ? true : false;
+    out.mode_light_red.status = message->GetSignal(
+      "DBW_ModeLightState_Red")->GetResult();
+    out.mode_light_yellow.status = message->GetSignal(
+      "DBW_ModeLightState_Yellow")->GetResult();
+    out.mode_light_green.status = message->GetSignal(
+      "DBW_ModeLightState_Green")->GetResult();
+    out.mode_light_blue.status = message->GetSignal(
+      "DBW_ModeLightState_Blue")->GetResult();
 
     // Wipers
     out.front_wiper_state.status = message->GetSignal(
@@ -1064,6 +1074,25 @@ void RaptorDbwCAN::recvDumpBedRpt(const can_msgs::msg::Frame::SharedPtr msg)
     setOverride(OVR_DUMP_BED, out.driver_activity);
 
     pub_dump_bed_report_->publish(out);
+  }
+}
+
+void RaptorDbwCAN::recvDumpBed2Rpt(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_DUMP_BED_2_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    DumpBed2Report out{};
+    out.header.stamp = msg->header.stamp;
+
+    out.payload = message->GetSignal(
+      "DBW_Payload")->GetResult();
+    out.rolling_counter = message->GetSignal(
+      "DBW_DumpBed2RllngCntr")->GetResult();
+
+    pub_dump_bed_2_report_->publish(out);
   }
 }
 
