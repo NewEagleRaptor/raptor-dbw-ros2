@@ -2,6 +2,11 @@
 Changelog for package raptor_dbw_can
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Updated DBC - moved EStop signals
+* Contributors: neweagleraptor
+
 1.1.3 (2021-08-24)
 ------------------
 * Updated DBC for new messages & signals

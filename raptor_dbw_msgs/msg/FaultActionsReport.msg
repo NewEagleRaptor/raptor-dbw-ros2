@@ -7,3 +7,5 @@ bool inverter_contactor_disabled
 bool prevent_enter_autonomous_mode 
 bool warn_driver_only 
 bool chime_fcw_beeps
+bool estop_in_vehicle
+OnOffState estop_remote

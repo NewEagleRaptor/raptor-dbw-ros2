@@ -761,10 +761,6 @@ void RaptorDbwCAN::recvMiscRpt(const Frame::SharedPtr msg)
       message->GetSignal("DBW_MiscAKitCommFault")->GetResult() ? true : false;
     out.ambient_temp =
       static_cast<double>(message->GetSignal("DBW_AmbientTemp")->GetResult());
-    out.estop_in_vehicle =
-      message->GetSignal("DBW_Estop")->GetResult() ? true : false;
-    out.estop_remote =
-      message->GetSignal("DBW_RemoteEstop")->GetResult() ? true : false;
 
     pub_misc_->publish(out);
   }
@@ -868,6 +864,10 @@ void RaptorDbwCAN::recvFaultActionRpt(const Frame::SharedPtr msg)
       message->GetSignal("DBW_FltAct_WarnDriverOnly")->GetResult();
     faultActionsReport.chime_fcw_beeps =
       message->GetSignal("DBW_FltAct_Chime_FcwBeeps")->GetResult();
+    faultActionsReport.estop_in_vehicle =
+      message->GetSignal("DBW_EmgrStopBtnPrssd")->GetResult() ? true : false;
+    faultActionsReport.estop_remote.status =
+      message->GetSignal("DBW_RemoteEmgrStopBtnPrssd")->GetResult();
 
     pub_fault_actions_report_->publish(faultActionsReport);
   }

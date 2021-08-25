@@ -52,8 +52,6 @@ BO_ 2147491585 DBW_Misc: 8 DBW
  SG_ DBW_MiscAKitCommFault : 4|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_AmbientTemp : 48|7@1+ (1,-40) [-40|87] "C" Vector__XXX
  SG_ DBW_VehReadyToDrive : 7|1@1+ (1,0) [0|1] "Bool" Vector__XXX
- SG_ DBW_Estop : 56|1@1+ (1,0) [0|1] "Bool" Vector__XXX
- SG_ DBW_RemoteEstop : 57|1@1+ (1,0) [0|1] "Bool" Vector__XXX
 
 BO_ 2147491586 DBW_AccelPdlReport: 8 DBW
  SG_ DBW_AccelPdlDriverInput : 0|16@1+ (0.1,0) [0|100] "%-pedal" Vector__XXX
@@ -361,6 +359,8 @@ BO_ 2147491605 DBW_FaultActionsReport: 8 DBW
  SG_ DBW_FltAct_PreventEnterAutonMode : 4|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ DBW_FltAct_WarnDriverOnly : 5|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ DBW_FltAct_Chime_FcwBeeps : 12|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ DBW_EmgrStopBtnPrssd : 8|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ DBW_RemoteEmgrStopBtnPrssd : 9|2@1+ (1,0) [0|3] "Enum" Vector__XXX
 
 BO_ 2147491606 DBW_GpsReference: 8 DBW
  SG_ DBW_GpsRefLat : 0|16@1- (0.005,0) [-90|-90] "deg" Vector__XXX
@@ -514,8 +514,6 @@ ROS Attribute:";
 CM_ SG_ 2147491585 DBW_VehReadyToDrive "Indicates vehicle is ready to drive. For combustion-engine vehicles, it means the engine is started. For hybrids and electric vehicles, the engine may not be running but it means the driver has properly started the vehicle by pressing the ignition & brakes as needed.
 
 This bit is NOT true if the vehicle is just in an ignition-on-engine-off state";
-CM_ SG_ 2147491585 DBW_Estop "Indicates if the in-vehicle ESTOP is pressed.";
-CM_ SG_ 2147491585 DBW_RemoteEstop "Indicates if the remote ESTOP is pressed. The presense of this ESTOP is vehicle dependent.";
 CM_ BO_ 2147491586 "ROS Topic: /raptor_dbw_interface/accelerator_pedal_report";
 CM_ SG_ 2147491586 DBW_AccelPdlDriverInput "
 ROS Attribute: pedal_input
@@ -1284,6 +1282,8 @@ CM_ BO_ 2147491604 "Status feedback for the various actuators commanded via AKit
 ROS Topic: /raptor_dbw_interface/other_actuators_report";
 CM_ SG_ 2147491604 DBW_OtherActRollingCntr "Watchdog alive rolling counter";
 CM_ BO_ 2147491605 "ROS Topic: /raptor_dbw_interface/fault_actions_report";
+CM_ SG_ 2147491605 DBW_EmgrStopBtnPrssd "Indicates if the in-vehicle ESTOP is pressed.";
+CM_ SG_ 2147491605 DBW_RemoteEmgrStopBtnPrssd "Indicates if the remote ESTOP is pressed. The presense of this ESTOP is vehicle dependent. Value of 0x3 indicates the sensor is not present.";
 CM_ BO_ 2147491606 "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles. Low-res GPS reference point broadcasted slowly (doesnt change often). Higher res information will be sent in the DBW_GpsRemainder message in units of meters, relative to this reference
 
 The DBW module splits the GPS reading into a Reference and Remainder because most embedded modules only support single floating-point resolution, not double floating-point. With a single data type, the resolution near 180 degrees of longitude is +/- several meters per bit. The Reference/Remainder approach allows the single datatype (or uint32 in this case) to have a resolution of 0.001 m/bit at 180degrees longitude. Note that the actual resolution of the GPS sensor may be worse than 0.001 m/bit, depending on what GPS sensor is used in a given vehicle platform. However, this CAN message will be able to support all types of GPS sensors without changing the scaling of this message.
@@ -1348,8 +1348,6 @@ CM_ BO_ 2147491619 "ROS Topic: /raptor_dbw_interface/action_report";
 CM_ BO_ 2147491620 "ROS Topic: /raptor_dbw_interface/dump_bed_2_report";
 VAL_ 2147491585 DBW_MiscByWireEnabled 0 "ManualMode" 1 "DriveByWireMode" ;
 VAL_ 2147491585 DBW_MiscByWireReady 0 "Not_Ready" 1 "Ready" ;
-VAL_ 2147491585 DBW_Estop 1 "Pressed" 0 "Not Pressed" ;
-VAL_ 2147491585 DBW_RemoteEstop 1 "Pressed" 0 "Not Pressed" ;
 VAL_ 2147491586 DBW_AccelCtrlType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Accelerator %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;
 VAL_ 2147491587 DBW_SteeringCtrlType 0 "Open Loop (Steering %-Torque)" 1 "Actuator-Level Closed Loop (Steering Wheel Angular Position)" 2 "Vehicle-Level Closed Loop (Vehicle Curvature)" ;
 VAL_ 2147491588 DBW_BrakeParkingBrkStatus 0 "Reserved" 1 "Off" 2 "On" 3 "Fault" ;
@@ -1410,6 +1408,8 @@ VAL_ 2147491604 DBW_ModeLightState_Green 0 "Off" 1 "On" 3 "SNA" ;
 VAL_ 2147491604 DBW_ModeLightState_Blue 0 "Off" 1 "On" 3 "SNA" ;
 VAL_ 2147491604 DBW_DiffLockState 1 "On" 0 "Off" 3 "SNA" ;
 VAL_ 2147491604 DBW_OtherLightsState 1 "On" 0 "Off" 3 "SNA" ;
+VAL_ 2147491605 DBW_EmgrStopBtnPrssd 1 "Pressed" 0 "Not Pressed" ;
+VAL_ 2147491605 DBW_RemoteEmgrStopBtnPrssd 0 "Not Pressed" 1 "Pressed" 3 "SNA" ;
 VAL_ 2147495687 AKit_DumpBedReqType 0 "Mode" 1 "Angle" ;
 VAL_ 2147495687 AKit_DumpBedModeReq 0 "Hold" 1 "Float" 2 "Lower" 3 "Raise" 4 "Auto Lower" 5 "Auto Raise" ;
 VAL_ 2147495689 AKit_ArticulationReqType 1 "Angle" 0 "Flowrate" ;
