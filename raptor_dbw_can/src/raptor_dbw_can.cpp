@@ -297,7 +297,7 @@ void RaptorDbwCAN::recvBrakeRpt(const Frame::SharedPtr msg)
 
     setFault(FAULT_BRAKE, brakeSystemFault);
     faultWatchdog(dbwSystemFault, brakeSystemFault);
-    setOverride(OVR_BRAKE, driverActivity);
+    setOverride(OVR_BRAKE, driverActivity, false);
 
     BrakeReport brakeReport;
     brakeReport.header.stamp = msg->header.stamp;
@@ -451,7 +451,7 @@ void RaptorDbwCAN::recvGearRpt(const Frame::SharedPtr msg)
     bool driverActivity =
       message->GetSignal("DBW_PrndDriverActivity")->GetResult() ? true : false;
 
-    setOverride(OVR_GEAR, driverActivity);
+    setOverride(OVR_GEAR, driverActivity, false);
     GearReport out;
     out.header.stamp = msg->header.stamp;
 
@@ -1272,7 +1272,7 @@ void RaptorDbwCAN::disableSystem()
   }
 }
 
-void RaptorDbwCAN::setOverride(ListOverrides which_ovr, bool override, bool ignore=false)
+void RaptorDbwCAN::setOverride(ListOverrides which_ovr, bool override, bool ignore)
 {
   if (which_ovr < NUM_OVERRIDES && !ignore) {
     bool en = enabled();

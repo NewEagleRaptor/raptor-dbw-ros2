@@ -311,7 +311,7 @@ private:
 
   // Other useful variables
 
-  /** \brief Enumeration of driver overrides */
+  /** \brief Enumeration of driver ignores */
   enum ListIgnores
   {
     IGNORE_ACCEL = 0,  /**< Acceleration pedal ignore */
@@ -412,8 +412,9 @@ private:
   /** \brief Set the specified override
    * \param[in] which_ovr Which override to set
    * \param[in] override The value to set the override to
+   * \param[in] ignore The value to skip the override
    */
-  void setOverride(ListOverrides which_ovr, bool override);
+  void setOverride(ListOverrides which_ovr, bool override, bool ignore);
 
   /** \brief Set the specified fault; these faults disable DBW control when active
    * \param[in] which_fault Which fault to set
