@@ -312,6 +312,14 @@ private:
   // Other useful variables
 
   /** \brief Enumeration of driver overrides */
+  enum ListIgnores
+  {
+    IGNORE_ACCEL = 0,  /**< Acceleration pedal ignore */
+    IGNORE_STEER,      /**< Steering ignore */
+    NUM_IGNORES   /**< Total number of driver ignores */
+  };
+
+  /** \brief Enumeration of driver overrides */
   enum ListOverrides
   {
     OVR_ACCEL = 0,  /**< Acceleration pedal override */
@@ -359,6 +367,7 @@ private:
     "watchdog"
   };
 
+  bool ignores_[NUM_OVERRIDES];
   bool overrides_[NUM_OVERRIDES];
   bool faults_[NUM_FAULTS];
   bool enables_[NUM_ENABLES];

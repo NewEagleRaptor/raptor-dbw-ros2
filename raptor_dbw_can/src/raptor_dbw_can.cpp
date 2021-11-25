@@ -51,6 +51,9 @@ RaptorDbwCAN::RaptorDbwCAN(
   for (i = 0; i < NUM_OVERRIDES; i++) {
     overrides_[i] = false;
   }
+  for (i = 0; i < NUM_IGNORES; i++) {
+    ignores_[i] = false;
+  }
   for (i = 0; i < NUM_FAULTS; i++) {
     faults_[i] = false;
   }
@@ -345,8 +348,8 @@ void RaptorDbwCAN::recvAccelPedalRpt(const Frame::SharedPtr msg)
 
     setFault(FAULT_ACCEL, faultCh1 && faultCh2);
     faultWatchdog(dbwSystemFault, accelPdlSystemFault);
-
-    setOverride(OVR_ACCEL, message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult());
+    setOverride(OVR_ACCEL, message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult(), ignores_[IGNORE_ACCEL]);
+    // Can be message->GetSignal("DBW_AccelPdlIgnoreDriver")->GetResult() ? true : false;
 
     AcceleratorPedalReport accelPedalReprt;
     accelPedalReprt.header.stamp = msg->header.stamp;
@@ -397,7 +400,7 @@ void RaptorDbwCAN::recvSteeringRpt(const Frame::SharedPtr msg)
 
     setFault(FAULT_STEER, steeringSystemFault);
     faultWatchdog(dbwSystemFault);
-    setOverride(OVR_STEER, driverActivity);
+    setOverride(OVR_STEER, driverActivity, ignores_[IGNORE_STEER]);
 
     SteeringReport steeringReport;
     steeringReport.header.stamp = msg->header.stamp;
@@ -986,6 +989,9 @@ void RaptorDbwCAN::recvAcceleratorPedalCmd(
 
   if (msg->ignore) {
     message->GetSignal("Akit_AccelPdlIgnoreDriverOvrd")->SetResult(1);
+    ignores_[IGNORE_ACCEL] = true;
+  } else {
+    ignores_[IGNORE_ACCEL] = false;
   }
 
   Frame frame = message->GetFrame();
@@ -1044,6 +1050,9 @@ void RaptorDbwCAN::recvSteeringCmd(const SteeringCmd::SharedPtr msg)
 
   if (msg->ignore) {
     message->GetSignal("AKit_SteeringWhlIgnoreDriverOvrd")->SetResult(1);
+    ignores_[IGNORE_STEER] = true;
+  } else {
+    ignores_[IGNORE_STEER] = false;
   }
 
   message->GetSignal("AKit_SteerRollingCntr")->SetResult(msg->rolling_counter);
@@ -1263,9 +1272,9 @@ void RaptorDbwCAN::disableSystem()
   }
 }
 
-void RaptorDbwCAN::setOverride(ListOverrides which_ovr, bool override)
+void RaptorDbwCAN::setOverride(ListOverrides which_ovr, bool override, bool ignore=false)
 {
-  if (which_ovr < NUM_OVERRIDES) {
+  if (which_ovr < NUM_OVERRIDES && !ignore) {
     bool en = enabled();
     if (override && en) {
       enables_[EN_DBW] = false;
