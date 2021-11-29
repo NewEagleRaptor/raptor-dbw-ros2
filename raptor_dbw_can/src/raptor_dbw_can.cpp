@@ -348,7 +348,9 @@ void RaptorDbwCAN::recvAccelPedalRpt(const Frame::SharedPtr msg)
 
     setFault(FAULT_ACCEL, faultCh1 && faultCh2);
     faultWatchdog(dbwSystemFault, accelPdlSystemFault);
-    setOverride(OVR_ACCEL, message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult(), ignores_[IGNORE_ACCEL]);
+    setOverride(
+      OVR_ACCEL, message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult(),
+      ignores_[IGNORE_ACCEL]);
     // Can be message->GetSignal("DBW_AccelPdlIgnoreDriver")->GetResult() ? true : false;
 
     AcceleratorPedalReport accelPedalReprt;
