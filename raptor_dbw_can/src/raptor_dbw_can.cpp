@@ -51,6 +51,9 @@ RaptorDbwCAN::RaptorDbwCAN(
   for (i = 0; i < NUM_OVERRIDES; i++) {
     overrides_[i] = false;
   }
+  for (i = 0; i < NUM_IGNORES; i++) {
+    ignores_[i] = false;
+  }
   for (i = 0; i < NUM_FAULTS; i++) {
     faults_[i] = false;
   }
@@ -294,7 +297,7 @@ void RaptorDbwCAN::recvBrakeRpt(const Frame::SharedPtr msg)
 
     setFault(FAULT_BRAKE, brakeSystemFault);
     faultWatchdog(dbwSystemFault, brakeSystemFault);
-    setOverride(OVR_BRAKE, driverActivity);
+    setOverride(OVR_BRAKE, driverActivity, false);
 
     BrakeReport brakeReport;
     brakeReport.header.stamp = msg->header.stamp;
@@ -345,8 +348,10 @@ void RaptorDbwCAN::recvAccelPedalRpt(const Frame::SharedPtr msg)
 
     setFault(FAULT_ACCEL, faultCh1 && faultCh2);
     faultWatchdog(dbwSystemFault, accelPdlSystemFault);
-
-    setOverride(OVR_ACCEL, message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult());
+    setOverride(
+      OVR_ACCEL, message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult(),
+      ignores_[IGNORE_ACCEL]);
+    // Can be message->GetSignal("DBW_AccelPdlIgnoreDriver")->GetResult() ? true : false;
 
     AcceleratorPedalReport accelPedalReprt;
     accelPedalReprt.header.stamp = msg->header.stamp;
@@ -397,7 +402,7 @@ void RaptorDbwCAN::recvSteeringRpt(const Frame::SharedPtr msg)
 
     setFault(FAULT_STEER, steeringSystemFault);
     faultWatchdog(dbwSystemFault);
-    setOverride(OVR_STEER, driverActivity);
+    setOverride(OVR_STEER, driverActivity, ignores_[IGNORE_STEER]);
 
     SteeringReport steeringReport;
     steeringReport.header.stamp = msg->header.stamp;
@@ -448,7 +453,7 @@ void RaptorDbwCAN::recvGearRpt(const Frame::SharedPtr msg)
     bool driverActivity =
       message->GetSignal("DBW_PrndDriverActivity")->GetResult() ? true : false;
 
-    setOverride(OVR_GEAR, driverActivity);
+    setOverride(OVR_GEAR, driverActivity, false);
     GearReport out;
     out.header.stamp = msg->header.stamp;
 
@@ -986,6 +991,9 @@ void RaptorDbwCAN::recvAcceleratorPedalCmd(
 
   if (msg->ignore) {
     message->GetSignal("Akit_AccelPdlIgnoreDriverOvrd")->SetResult(1);
+    ignores_[IGNORE_ACCEL] = true;
+  } else {
+    ignores_[IGNORE_ACCEL] = false;
   }
 
   Frame frame = message->GetFrame();
@@ -1044,6 +1052,9 @@ void RaptorDbwCAN::recvSteeringCmd(const SteeringCmd::SharedPtr msg)
 
   if (msg->ignore) {
     message->GetSignal("AKit_SteeringWhlIgnoreDriverOvrd")->SetResult(1);
+    ignores_[IGNORE_STEER] = true;
+  } else {
+    ignores_[IGNORE_STEER] = false;
   }
 
   message->GetSignal("AKit_SteerRollingCntr")->SetResult(msg->rolling_counter);
@@ -1263,19 +1274,25 @@ void RaptorDbwCAN::disableSystem()
   }
 }
 
-void RaptorDbwCAN::setOverride(ListOverrides which_ovr, bool override)
+void RaptorDbwCAN::setOverride(ListOverrides which_ovr, bool override, bool ignore)
 {
   if (which_ovr < NUM_OVERRIDES) {
     bool en = enabled();
-    if (override && en) {
+    if (override && en && !ignore) {
       enables_[EN_DBW] = false;
     }
     overrides_[which_ovr] = override;
     if (publishDbwEnabled()) {
-      if (en) {
+      if (en && !ignore) {
         std::string err_msg("DBW system disabled - ");
         err_msg = err_msg + OVR_SYSTEM[which_ovr];
         err_msg = err_msg + " override";
+        RCLCPP_WARN_THROTTLE(
+          this->get_logger(), m_clock, CLOCK_1_SEC, err_msg.c_str());
+      } else if (en && ignore) {
+        std::string err_msg("DBW system enabled - ");
+        err_msg = err_msg + OVR_SYSTEM[which_ovr];
+        err_msg = err_msg + " ignored";
         RCLCPP_WARN_THROTTLE(
           this->get_logger(), m_clock, CLOCK_1_SEC, err_msg.c_str());
       } else {

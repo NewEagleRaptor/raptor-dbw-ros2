@@ -311,6 +311,14 @@ private:
 
   // Other useful variables
 
+  /** \brief Enumeration of driver ignores */
+  enum ListIgnores
+  {
+    IGNORE_ACCEL = 0,  /**< Acceleration pedal ignore */
+    IGNORE_STEER,      /**< Steering ignore */
+    NUM_IGNORES   /**< Total number of driver ignores */
+  };
+
   /** \brief Enumeration of driver overrides */
   enum ListOverrides
   {
@@ -359,6 +367,7 @@ private:
     "watchdog"
   };
 
+  bool ignores_[NUM_IGNORES];
   bool overrides_[NUM_OVERRIDES];
   bool faults_[NUM_FAULTS];
   bool enables_[NUM_ENABLES];
@@ -375,8 +384,9 @@ private:
 /** \brief Check for an active driver override.
  * \returns TRUE if there is any active driver override, FALSE otherwise
  */
-  inline bool override () {return overrides_[OVR_BRAKE] || overrides_[OVR_ACCEL] ||
-           overrides_[OVR_STEER] || overrides_[OVR_GEAR];}
+  inline bool override () {return overrides_[OVR_BRAKE] ||
+           (!ignores_[IGNORE_ACCEL] && overrides_[OVR_ACCEL]) ||
+           (!ignores_[IGNORE_STEER] && overrides_[OVR_STEER]) || overrides_[OVR_GEAR];}
 
 /** \brief Check for an active driver override.
  * \returns TRUE if DBW is enabled && there is any active driver override, FALSE otherwise
@@ -403,8 +413,9 @@ private:
   /** \brief Set the specified override
    * \param[in] which_ovr Which override to set
    * \param[in] override The value to set the override to
+   * \param[in] ignore The value to skip the override
    */
-  void setOverride(ListOverrides which_ovr, bool override);
+  void setOverride(ListOverrides which_ovr, bool override, bool ignore);
 
   /** \brief Set the specified fault; these faults disable DBW control when active
    * \param[in] which_fault Which fault to set
