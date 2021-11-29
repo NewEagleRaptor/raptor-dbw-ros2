@@ -351,7 +351,6 @@ void RaptorDbwCAN::recvAccelPedalRpt(const Frame::SharedPtr msg)
     setOverride(
       OVR_ACCEL, message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult(),
       ignores_[IGNORE_ACCEL]);
-    // Can be message->GetSignal("DBW_AccelPdlIgnoreDriver")->GetResult() ? true : false;
 
     AcceleratorPedalReport accelPedalReprt;
     accelPedalReprt.header.stamp = msg->header.stamp;
@@ -1202,7 +1201,7 @@ void RaptorDbwCAN::timerCallback()
       pub_can_->publish(message->GetFrame());
     }
 
-    if (overrides_[OVR_ACCEL]) {
+    if (overrides_[OVR_ACCEL] && !ignores_[IGNORE_ACCEL]) {
       // Might have an issue with WatchdogCntr when these are set.
       NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_AccelPdlRequest");
       message->GetSignal("AKit_AccelPdlReq")->SetResult(0);
@@ -1212,7 +1211,7 @@ void RaptorDbwCAN::timerCallback()
       pub_can_->publish(message->GetFrame());
     }
 
-    if (overrides_[OVR_STEER]) {
+    if (overrides_[OVR_STEER] && !ignores_[IGNORE_STEER]) {
       // Might have an issue with WatchdogCntr when these are set.
       NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_SteeringRequest");
       message->GetSignal("AKit_SteeringWhlAngleReq")->SetResult(0);
