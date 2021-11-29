@@ -367,7 +367,7 @@ private:
     "watchdog"
   };
 
-  bool ignores_[NUM_OVERRIDES];
+  bool ignores_[NUM_IGNORES];
   bool overrides_[NUM_OVERRIDES];
   bool faults_[NUM_FAULTS];
   bool enables_[NUM_ENABLES];
