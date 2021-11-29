@@ -1276,17 +1276,23 @@ void RaptorDbwCAN::disableSystem()
 
 void RaptorDbwCAN::setOverride(ListOverrides which_ovr, bool override, bool ignore)
 {
-  if (which_ovr < NUM_OVERRIDES && !ignore) {
+  if (which_ovr < NUM_OVERRIDES) {
     bool en = enabled();
-    if (override && en) {
+    if (override && en && !ignore) {
       enables_[EN_DBW] = false;
     }
     overrides_[which_ovr] = override;
     if (publishDbwEnabled()) {
-      if (en) {
+      if (en && !ignore) {
         std::string err_msg("DBW system disabled - ");
         err_msg = err_msg + OVR_SYSTEM[which_ovr];
         err_msg = err_msg + " override";
+        RCLCPP_WARN_THROTTLE(
+          this->get_logger(), m_clock, CLOCK_1_SEC, err_msg.c_str());
+      } else if (en && ignore) {
+        std::string err_msg("DBW system enabled - ");
+        err_msg = err_msg + OVR_SYSTEM[which_ovr];
+        err_msg = err_msg + " ignored";
         RCLCPP_WARN_THROTTLE(
           this->get_logger(), m_clock, CLOCK_1_SEC, err_msg.c_str());
       } else {

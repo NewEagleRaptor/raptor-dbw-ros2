@@ -384,8 +384,9 @@ private:
 /** \brief Check for an active driver override.
  * \returns TRUE if there is any active driver override, FALSE otherwise
  */
-  inline bool override () {return overrides_[OVR_BRAKE] || overrides_[OVR_ACCEL] ||
-           overrides_[OVR_STEER] || overrides_[OVR_GEAR];}
+  inline bool override () {return overrides_[OVR_BRAKE] ||
+           (!ignores_[IGNORE_ACCEL] && overrides_[OVR_ACCEL]) ||
+           (!ignores_[IGNORE_STEER] && overrides_[OVR_STEER]) || overrides_[OVR_GEAR];}
 
 /** \brief Check for an active driver override.
  * \returns TRUE if DBW is enabled && there is any active driver override, FALSE otherwise
