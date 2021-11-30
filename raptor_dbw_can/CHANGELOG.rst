@@ -2,8 +2,8 @@
 Changelog for package raptor_dbw_can
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.2.0 (2021-11-30)
+------------------
 * Fix accel and steer ignore to not disable the system on overrides (`#11 <https://github.com/NewEagleRaptor/raptor-dbw-ros2/issues/11>`_)
   * Also add Driver Ignore control for articulation & dump bed
 * Contributors: Benjamin Gervan, neweagleraptor
