@@ -2,8 +2,8 @@
 Changelog for package raptor_dbw_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.2.0 (2021-11-30)
+------------------
 * Update DBC to version 3.4
 * Contributors: neweagleraptor
 

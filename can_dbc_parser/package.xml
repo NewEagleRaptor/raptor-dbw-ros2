@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>can_dbc_parser</name>
-  <version>1.1.1</version>
+  <version>1.2.0</version>
   <description>
     DBC file interface.  Read a DBC file, unpack CAN messages and convert to engineering units, pack values into CAN messages for publishing.
   </description>

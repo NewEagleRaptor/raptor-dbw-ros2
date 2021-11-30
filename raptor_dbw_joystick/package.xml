@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>raptor_dbw_joystick</name>
-  <version>1.1.1</version>
+  <version>1.2.0</version>
   <description>
     Joystick controller that interfaces with raptor_dbw_can node
   </description>
