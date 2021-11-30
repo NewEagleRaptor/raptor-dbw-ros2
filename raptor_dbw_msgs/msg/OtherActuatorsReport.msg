@@ -7,7 +7,7 @@ HornState horn_state
 TurnSignal turn_signal_state 
 bool turn_signal_sync
 HighBeamState high_beam_state 
-LowBeam low_beam_state 
+LowBeamState low_beam_state 
 
 # Wipers
 WiperFront front_wiper_state 

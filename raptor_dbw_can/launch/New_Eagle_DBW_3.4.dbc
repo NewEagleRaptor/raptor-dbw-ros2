@@ -36,10 +36,6 @@ BS_:
 BU_: DBW AKit Pacifica MPDM_Master MPDM_Requester HMI
 
 
-BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
- SG_ DBW_GpsLong : 0|32@1+ (0.301749,0) [-648000000|648000000] "mas" Vector__XXX
- SG_ DBW_GpsLat : 32|32@1+ (0.301749,0) [-324000000|324000000] "mas" Vector__XXX
-
 BO_ 2147491585 DBW_Misc: 8 DBW
  SG_ DBW_MiscByWireEnabled : 0|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_MiscVehicleSpeed : 8|16@1+ (0.00217014,0) [0|142.22] "m/s" Vector__XXX
@@ -345,22 +341,47 @@ BO_ 2147491605 DBW_FaultActionsReport: 8 DBW
  SG_ DBW_FltAct_PreventEnterAutonMode : 4|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ DBW_FltAct_WarnDriverOnly : 5|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ DBW_FltAct_Chime_FcwBeeps : 12|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ DBW_IdxOfLastActiveFault : 33|10@0+ (1,0) [0|1024] "" Vector__XXX
+ SG_ DBW_EmgrStopBtnPrssd : 8|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ DBW_RemoteEmgrStopBtnPrssd : 9|2@1+ (1,0) [0|3] "Enum" Vector__XXX
 
 BO_ 2147491606 DBW_GpsReference: 8 DBW
- SG_ DBW_GpsRefLat : 0|16@1- (0.005,0) [-90|-90] "deg" Vector__XXX
- SG_ DBW_GpsRefLong : 16|16@1- (0.005,0) [-180|-180] "deg" Vector__XXX
+ SG_ DBW_GpsRefLat : 0|16@1- (0.01,0) [-90|90] "deg" Vector__XXX
+ SG_ DBW_GpsRefLong : 16|16@1- (0.01,0) [-180|180] "deg" Vector__XXX
+ SG_ Dbw_GpsHeading : 32|12@1+ (0.1,0) [0|360] "deg" Vector__XXX
 
 BO_ 2147491607 DBW_GpsRemainder: 8 DBW
  SG_ DBW_GpsRemainderLat : 0|24@1- (0.001,0) [-8388.607|8388.608] "m" Vector__XXX
  SG_ DBW_GpsRemainderLong : 32|24@1- (0.001,0) [-8388.607|8388.61] "m" Vector__XXX
+
+BO_ 2147491620 DBW_ExitReport: 8 DBW
+ SG_ DBW_Exit_AKitDsbl : 0|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ DBW_Exit_DrvInCtrl : 1|1@1+ (1,0) [0|1] "Bool" Vector__XXX
+ SG_ DBW_Exit_AutonDsblNoBrakes : 8|10@1+ (1,0) [0|1024] "Index" Vector__XXX
+ SG_ DBW_Exit_AutonDsblAppyBrakes : 24|10@1+ (1,0) [0|1024] "Index" Vector__XXX
+ SG_ DBW_Exit_Cntr : 40|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 2147491616 DBW_Reserved_1F20: 8 DBW
+
+BO_ 2147491617 DBW_Reserved_1F21: 8 DBW
+
+BO_ 2147491618 DBW_Reserved_1F22: 8 DBW
+
+BO_ 2147491619 DBW_Reserved_1F23: 8 DBW
+
+BO_ 2147495687 AKit_Reserved_2F07: 8 AKit
+
+BO_ 2147495688 AKit_Reserved_2F08: 8 AKit
+
+BO_ 2147495689 AKit_Reserved_2F09: 8 AKit
+
+BO_ 2147491621 DBW_Reserved_1F25: 8 DBW
 
 
 
 CM_ BU_ Pacifica "Just added a custom VIN-read message from this module";
 CM_ BU_ MPDM_Master "Whichever module directly controls MPDM would be the MPDM Master (broadcasts status to other modules)";
 CM_ BU_ MPDM_Requester "Any module that doesn't directly control the MPDM but might want to request a state would be an MPDM_Requester";
-CM_ SG_ 3221225472 DBW_GpsLong "need to determing what \"mas\" scaling is. negative means west.";
-CM_ SG_ 3221225472 DBW_GpsLat "need to determing what \"mas\" scaling is. negative means south.";
 CM_ BO_ 2147491585 "ROS Topic: /vehicle/misc_report";
 CM_ SG_ 2147491585 DBW_MiscByWireEnabled "Actual mode of the Drive-By-Wire system. THis is NOT read by the ROS system, it's only here so its in CAN logs for debugging purposes
 
@@ -708,7 +729,8 @@ If vehicle is in reverse, this signal will still limit the accelerator pedal val
 For normal driving (non-emergency maneuvers), 1 m/s^3  is the suggested starting value.
 
 
-ROS Attribute: ";
+ROS Attribute: accel_positive_jerk_limit
+";
 CM_ BO_ 2147495681 "Must be sent continuously, even if you're not planning to enable this actuator.
 
 ROS Topic: /vehicle/misc_cmd";
@@ -736,7 +758,7 @@ CM_ SG_ 2147495681 Akit_GlobalEnblChecksum "J1850 checksum (initial value 0xFF, 
 CM_ BO_ 2147495686 "Must be sent continuously, even if you're not planning to enable this actuator.
 
 ROS Topic:";
-CM_ SG_ 2147495686 AKit_TurnSignalReq "Currently supported by Prius only. Contact New Eagle if you are interested in adding support for Hazards on a Pacifica or Volvo vehicle.
+CM_ SG_ 2147495686 AKit_TurnSignalReq "All vehicles support turn signals, but hazards are currently supported by Prius & Transit only. Contact New Eagle if you are interested in adding support for Hazards on a Pacifica or Volvo vehicle.
 
 
 ROS Attribute: cmd
@@ -904,10 +926,13 @@ Overshoot & settling time requirements cannot be guaranteed with a limit below X
 For normal driving (non-emergency maneuvers), 1 m/s^3  is the suggested starting value.
 
 
-ROS Attribute:";
+ROS Attribute: decel_negative_jerk_limit
+";
 CM_ SG_ 2147495684 AKit_ParkingBrkReq "Currently support only as an add-on option to the Pacifica. Contact New Eagle if you are interested in adding this option to a different vehicle platform.
 
-On the Pacifica, the parking brake can be applied in any ignition state and any autonomous state. the parking brake can be released in any autonomous state, but can NOT be released if the vehicle ignition is Off or Accessory. it must be in Run to release the parking brake.";
+On the Pacifica, the parking brake can be applied in any ignition state and any autonomous state. the parking brake can be released in any autonomous state, but can NOT be released if the vehicle ignition is Off or Accessory. it must be in Run to release the parking brake.
+ROS Attribute: park_brake_cmd
+";
 CM_ BO_ 2147495685 "Must be sent continuously, even if you're not planning to enable this actuator.
 
 ROS Topic: /vehicle/gear_cmd ";
@@ -990,11 +1015,21 @@ ROS Attribute: turn_signal
 CM_ SG_ 2147491599 DBW_DrvInptWiper "
 ROS Attribute: wiper
 ";
-CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnA "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.";
-CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnB "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.";
-CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnC "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.";
-CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnD "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.";
-CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnE "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.";
+CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnA "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.
+ROS Attribute: steer_wheel_button_a
+";
+CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnB "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.
+ROS Attribute: steer_wheel_button_b
+";
+CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnC "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.
+ROS Attribute: steer_wheel_button_c
+";
+CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnD "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.
+ROS Attribute: steer_wheel_button_d
+";
+CM_ SG_ 2147491599 DBW_DrvInputStrWhlBtnE "0 = not pressed, 1 = pressed. This button varies across New Eagle vehicle platforms (Pacifica, Prius, Volvo, etc) because all steering wheels have different numbers and types of buttons available on the CAN bus. Contact New Eagle to find out which buttons are used on your platform, or press all the steering wheel buttons and see which of these signals respond.
+ROS Attribute: steer_wheel_button_e
+";
 CM_ BO_ 2147491591 "ROS Topic: /vehicle/tire_pressure_report";
 CM_ SG_ 2147491591 DBW_TirePressRR "pacifica scaling goes from 0 to 126, 1 psi per bit. convert to kpa for standard units here.
 
@@ -1173,41 +1208,72 @@ CM_ SG_ 2147491603 DBW_SteerTrq_Driver "% of the max torque the driver can apply
 
 Chrylser Pacifica: 100% = 5 Nm
 Volvo VNR:\t  100% = 128 (unitless)
-Toyota Prius:\t  100% = 700 (unitless)";
+Toyota Prius:\t  100% = 700 (unitless)
+ROS Attribute: max_torque_driver
+";
 CM_ SG_ 2147491603 DBW_SteerTrq_Motor "% of the max torque the motor can apply. The max changes based on the vehicle platform. See the DBW User Manual to see what the max value is on your vehicle.
 
 Chrylser Pacifica: 100% = 105 Nm
 Volvo VNR:\t  100% = 40 Nm
-Toyota Prius:\t  100% = 20,000 (unitless)";
+Toyota Prius:\t  100% = 20,000 (unitless)
+ROS Attribute: max_torque_motor
+";
 CM_ SG_ 2147491603 DBW_PacificaSteerTrq "For development purposes only";
-CM_ BO_ 2147491604 "Status feedback for the various actuators commanded via AKit_OtherActuators. These will set if either the driver turns them on OR the autonomous system.";
-CM_ SG_ 2147491604 DBW_TurnSignalState "This is a constant value while the driver or AKit is sending a request. It does not oscillate as the bulbs actually flash on and off. To see the actual bulb on/off state, see DBW_TurnSignalSyncBit below";
+CM_ SG_ 2147491603 DBW_SteerTrq_DriverExpectedValue "Expected value on the driver torque sensor based on the angular acceleration & moment of inertia of the steering wheel itself while driving in by-wire mode. This value is subracted from DBW_SteerTrq_Driver to determine the final driver input torque used to declare a driver override.
+ROS Attribute: expect_torque_driver
+";
+CM_ BO_ 2147491604 "Status feedback for the various actuators commanded via AKit_OtherActuators. These will set if either the driver turns them on OR the autonomous system.
+ROS Topic: /vehicle/other_actuators_report";
+CM_ SG_ 2147491604 DBW_TurnSignalState "This is a constant value while the driver or AKit is sending a request. It does not oscillate as the bulbs actually flash on and off. To see the actual bulb on/off state, see DBW_TurnSignalSyncBit below
+ROS Attribute: turn_signal_state
+";
 CM_ SG_ 2147491604 DBW_OtherActRollingCntr "Watchdog alive rolling counter";
 CM_ SG_ 2147491604 DBW_TurnSignalSyncBit "Used to tell the DBW HMI when to flash the indicators on & off. DBW_TurnSignalState is always a constant value and doesn't turn on/off as the bulbs blink.
 
-Note: many vehicles do not have feedback of whether the bulb is on or off. If so, DBW_TurnSignalState will still reflect the current left/right/hazard request, but this bit will be zero all the time";
+Note: many vehicles do not have feedback of whether the bulb is on or off. If so, DBW_TurnSignalState will still reflect the current left/right/hazard request, but this bit will be zero all the time
+ROS Attribute: turn_signal_sync
+";
+CM_ SG_ 2147491605 DBW_IdxOfLastActiveFault "index of the last fault to set. This index is in alphabetical order, so it changes across software versions as other faults are added or removed from software. For this reason, this signal is normally not helpful for debugging and instead you should look at the 0x70F fault text message that has the same fault names across software versions. However, this can be helpful for a particular software version to more-quickly see if a reoccurence of a fault is due to a previously known issue.";
+CM_ SG_ 2147491605 DBW_EmgrStopBtnPrssd "Red mushroom button is pressed and has removed power from the DBW actuators";
+CM_ SG_ 2147491605 DBW_RemoteEmgrStopBtnPrssd "Remote red button is pressed and has disabled the DBW kit. This does not remove power. Not all vehicles have a remote estop.";
 CM_ BO_ 2147491606 "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles. Low-res GPS reference point broadcasted slowly (doesnt change often). Higher res information will be sent in the DBW_GpsRemainder message in units of meters, relative to this reference
 
-The DBW module splits the GPS reading into a Reference and Remainder because most embedded modules only support single floating-point resolution, not double floating-point. With a single data type, the resolution near 180 degrees of longitude is +/- several meters per bit. The Reference/Remainder approach allows the single datatype (or uint32 in this case) to have a resolution of 0.001 m/bit at 180degrees longitude. Note that the actual resolution of the GPS sensor may be worse than 0.001 m/bit, depending on what GPS sensor is used in a given vehicle platform. However, this CAN message will be able to support all types of GPS sensors without changing the scaling of this message. ";
+The DBW module splits the GPS reading into a Reference and Remainder because most embedded modules only support single floating-point resolution, not double floating-point. With a single data type, the resolution near 180 degrees of longitude is +/- several meters per bit. The Reference/Remainder approach allows the single datatype (or uint32 in this case) to have a resolution of 0.001 m/bit at 180degrees longitude. Note that the actual resolution of the GPS sensor may be worse than 0.001 m/bit, depending on what GPS sensor is used in a given vehicle platform. However, this CAN message will be able to support all types of GPS sensors without changing the scaling of this message.
+ROS Topic: /vehicle";
 CM_ SG_ 2147491606 DBW_GpsRefLat "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles. 
 
 Low-res GPS reference point TX'ed slowly. Higher res information will be sent in the DBW_GpsRemainder message in units of meters, relative to this reference
 
-0.005deg is about 555meters. ";
+0.005deg is about 555meters.
+ROS Attribute: ref_latitude
+";
 CM_ SG_ 2147491606 DBW_GpsRefLong "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles.
 
 Low-res GPS reference point  TX'ed slowly. Higher res information will be sent in the DBW_GpsRemainder message in units of meters, relative to this reference.
 
-0.005deg is about 555meters. ";
+0.005deg is about 555meters.
+ROS Attribute: ref_longitude
+";
 CM_ BO_ 2147491607 "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles. Position, in meters, relative to the GpsReference sent in the other message.
 
-The DBW module splits the GPS reading into a Reference and Remainder because most embedded modules only support single floating-point resolution, not double floating-point. With a single data type, the resolution near 180 degrees of longitude is +/- several meters per bit. The Reference/Remainder approach allows the single datatype (or uint32 in this case) to have a resolution of 0.001 m/bit at 180degrees longitude. Note that the actual resolution of the GPS sensor may be worse than 0.001 m/bit, depending on what GPS sensor is used in a given vehicle platform. However, this CAN message will be able to support all types of GPS sensors without changing the scaling of this message. ";
+The DBW module splits the GPS reading into a Reference and Remainder because most embedded modules only support single floating-point resolution, not double floating-point. With a single data type, the resolution near 180 degrees of longitude is +/- several meters per bit. The Reference/Remainder approach allows the single datatype (or uint32 in this case) to have a resolution of 0.001 m/bit at 180degrees longitude. Note that the actual resolution of the GPS sensor may be worse than 0.001 m/bit, depending on what GPS sensor is used in a given vehicle platform. However, this CAN message will be able to support all types of GPS sensors without changing the scaling of this message.
+ROS Topic: /vehicle/gps_remainder";
 CM_ SG_ 2147491607 DBW_GpsRemainderLat "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles.
 
-hi-res remainder from the reference signal, converted to meters. The meters conversion uses the basic Haversine formula, assuming 111,000m per deg latitude, and 111,321m per deg longitude at the equator";
+hi-res remainder from the reference signal, converted to meters. The meters conversion uses the basic Haversine formula, assuming 111,000m per deg latitude, and 111,321m per deg longitude at the equator
+ROS Attribute: rem_latitude
+";
 CM_ SG_ 2147491607 DBW_GpsRemainderLong "Supported only on Grand Cherokee, unless a standalone GPS is added to the base DBW kit on other vehicles.
 
-hi-res remainder from the reference signal, converted to meters. The meters conversion uses the basic Haversine formula, assuming 111,000m per deg latitude, and 111,321m per deg longitude at the equator";
+hi-res remainder from the reference signal, converted to meters. The meters conversion uses the basic Haversine formula, assuming 111,000m per deg latitude, and 111,321m per deg longitude at the equator
+ROS Attribute: rem_longitude
+";
+CM_ BO_ 2147491620 "Reports the cause(s) of the last DBW system disable.";
+CM_ SG_ 2147491620 DBW_Exit_AKitDsbl "State of AKitEnbl when the DBW kit disables. If true, the DBW kit disabled because the AKit set global enable to 0.";
+CM_ SG_ 2147491620 DBW_Exit_DrvInCtrl "State of DriverInCtrl detection when the DBW kit disables.";
+CM_ SG_ 2147491620 DBW_Exit_AutonDsblNoBrakes "Index of Fault Action AutonDsblNoBrakes when the DBW kit disables.";
+CM_ SG_ 2147491620 DBW_Exit_AutonDsblAppyBrakes "Index of Fault Action AutonDsblApplyBrakes when the DBW kit disables.";
+CM_ SG_ 2147491620 DBW_Exit_Cntr "Counter of how many times the Auton mode has been exited. Resets upon key cycle.";
 VAL_ 2147491585 DBW_MiscByWireEnabled 0 "ManualMode" 1 "DriveByWireMode" ;
 VAL_ 2147491585 DBW_MiscByWireReady 0 "Not_Ready" 1 "Ready" ;
 VAL_ 2147491586 DBW_AccelCtrlType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Accelerator %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;
@@ -1217,9 +1283,9 @@ VAL_ 2147491588 DBW_BrakeCtrlType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Le
 VAL_ 2147491589 DBW_PrndStateActual 1 "Park" 2 "Reverse" 3 "Neutral" 4 "Drive" 5 "Low" 6 "Autostick_Hold" 7 "Autostick_Upshift" 8 "Autostick_Downshift" ;
 VAL_ 2147495682 AKit_AccelReqType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Accelerator %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;
 VAL_ 2147495681 AKit_EnblJoystickLimits 0 "Fully Autonomous Control" 1 "Joystick Control Mode" ;
-VAL_ 2147495686 AKit_TurnSignalReq 0 "Off" 1 "Left" 2 "Right" ;
+VAL_ 2147495686 AKit_TurnSignalReq 0 "Off" 1 "Left" 2 "Right" 3 "Hazards (if supported)" ;
 VAL_ 2147495686 AKit_RightRearDoorReq 0 "NoRequest" 1 "Close Door" 2 "Open Door" 3 "Undefined" ;
-VAL_ 2147495686 AKit_HighBeamReq 0 "No Request" 1 "High Beam If Lights Already On" 2 "Force High Beam On" 3 "Reserved (Force Off Not Supported)" ;
+VAL_ 2147495686 AKit_HighBeamReq 0 "No Request (Pass Through Driver On/Off Request)" 1 "High Beam If Low-Beam Lights Already On" 2 "Force High Beam On" 3 "Force High Beam Off (not supported on all platforms)" ;
 VAL_ 2147495686 AKit_FrontWiperReq 0 "Off" 1 "Wiper_Intermittent1" 2 "Wiper_Intermittent2" 3 "Wiper_Intermittent3" 4 "Wiper_Intermittent4" 5 "Wiper_Intermittent5" 6 "Wiper_Intermittent6" 11 "Wiper_ConstantLowSpd" 12 "Wiper_ConstantHighSpd" 13 "Wiper_WashBrief" 14 "Wiper_WashContinuous" ;
 VAL_ 2147495686 AKit_RearWiperReq 0 "Off" 1 "Wiper_Intermittent1" 11 "Wiper_ConstantLowSpd" 12 "Wiper_ConstantHighSpd" 13 "Wiper_WashBrief" 14 "Wiper_WashContinuous" ;
 VAL_ 2147495686 AKit_IgnitionReq 0 "No Request (Use Key Position)" 1 "Off (Supported on Pacifica but not Volvo)" 2 "Accessory (Supported on Pacifica but not Volvo)" 3 "Run" 4 "Crank" ;
@@ -1229,12 +1295,12 @@ VAL_ 2147495686 AKit_BlockBasicCruiseCtrlBtns 0 "Pass Through" 1 "Block" ;
 VAL_ 2147495686 AKit_BlockAdapCruiseCtrlBtns 0 "Pass Through" 1 "Block" ;
 VAL_ 2147495686 AKit_BlockTurnSigStalkInpts 0 "Pass Through" 1 "Block" ;
 VAL_ 2147495686 AKit_HornReq 0 "No Request" 1 "Horn On" ;
-VAL_ 2147495686 AKit_LowBeamReq 0 "No Request" 1 "Reserved (Auto mode not supported)" 2 "On" 3 "Reserved" ;
-VAL_ 2147495686 AKit_DoorLockReq 0 "DoorLock_NoRequest" 1 "Unlock_Doors" 2 "Lock_Doors" ;
+VAL_ 2147495686 AKit_LowBeamReq 0 "No Request (Pass Through Driver On/Off Request)" 1 "Reserved (Auto mode not supported)" 2 "Force Low Beam On" 3 "Force Low Beam Off (not supported on all platforms)" ;
+VAL_ 2147495686 AKit_DoorLockReq 0 "DoorLock_NoRequest" 1 "Unlock_Doors" 2 "Lock_Doors" 3 "Reserved" ;
 VAL_ 2147495683 AKit_SteeringReqType 0 "Open Loop (Steering %-Torque)" 1 "Actuator-Level Closed Loop (Steering Wheel Angular Position)" 2 "Vehicle-Level Closed Loop (Vehicle Curvature)" ;
 VAL_ 2147495684 AKit_BrakeCtrlReqType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Brake %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;
 VAL_ 2147495684 AKit_ParkingBrkReq 0 "No Request" 1 "Off" 2 "On" ;
-VAL_ 2147495685 AKit_PrndStateReq 1 "Park" 2 "Reverse" 3 "Neutral" 4 "Drive" 5 "Low" 0 "No Request" ;
+VAL_ 2147495685 AKit_PrndStateReq 0 "No Request" 1 "Park" 2 "Reverse" 3 "Neutral" 4 "Drive" 5 "Low" 6 "Autostick_Hold" 7 "Autostick_Upshift" 8 "Autostick_Downshift" ;
 VAL_ 2147491599 DBW_DrvInptHiBeam 0 "Off" 1 "On" 2 "Flash" ;
 VAL_ 2147491599 DBW_DrvInptTurnSignal 0 "Off" 1 "Left" 2 "Right" ;
 VAL_ 2147491599 DBW_DrvInptWiper 0 "Off" 1 "Wiper_Intermittent1" 2 "Wiper_Intermittent2" 3 "Wiper_Intermittent3" 4 "Wiper_Intermittent4" 5 "Wiper_Intermittent5" 6 "Wiper_Intermittent6" 11 "Wiper_ConstantLowSpd" 12 "Wiper_ConstantHighSpd" 13 "Wiper_WashBrief" 14 "Wiper_WashContinuous" ;
@@ -1247,13 +1313,16 @@ VAL_ 2147491600 DBW_SonarArcNumFC 15 "No ARC" 8 "ARC8" 7 "ARC7" 6 "ARC6" 5 "ARC5
 VAL_ 1807 FltTxt_FaultStatus 1 "Occurred" 2 "Active" ;
 VAL_ 2147491604 DBW_TurnSignalState 0 "Off" 1 "Left" 2 "Right" 3 "Hazards" 7 "SNA (Fault or Not Supported)" ;
 VAL_ 2147491604 DBW_RightRearDoorState 0 "Undefined" 1 "Closed" 2 "Open" 3 "SNA (Faulted or Not Supported)" ;
-VAL_ 2147491604 DBW_HighBeamState 0 "SNA (Faulted or Not Supported)" 1 "Reserved" 2 "On" 3 "Off" ;
+VAL_ 2147491604 DBW_HighBeamState 0 "Off" 1 "Reserved" 2 "On" 3 "Fault or Not Supported" ;
 VAL_ 2147491604 DBW_FrontWiperState 0 "Off" 1 "Wiper_Intermittent1" 2 "Wiper_Intermittent2" 3 "Wiper_Intermittent3" 4 "Wiper_Intermittent4" 5 "Wiper_Intermittent5" 6 "Wiper_Intermittent6" 11 "Wiper_ConstantLowSpd" 12 "Wiper_ConstantHighSpd" 13 "Wiper_WashBrief" 14 "Wiper_WashContinuous" 15 "SNA (Faulted or Not Supported)" ;
 VAL_ 2147491604 DBW_RearWiperState 0 "Off" 1 "Wiper_Intermittent1" 11 "Wiper_ConstantLowSpd" 12 "Wiper_ConstantHighSpd" 13 "Wiper_WashBrief" 14 "Wiper_WashContinuous" 15 "SNA (Faulted or Not Supported)" ;
 VAL_ 2147491604 DBW_IgnitionState 0 "Undefined" 1 "Off" 2 "Accessory" 3 "Run" 4 "Crank" 7 "SNA (Faulted or Not Supported)" ;
 VAL_ 2147491604 DBW_LeftRearDoorState 0 "Undefined" 1 "Closed" 2 "Open" 3 "SNA (Faulted or Not Supported)" ;
 VAL_ 2147491604 DBW_LiftgateDoorState 0 "Undefined" 1 "Closed" 2 "Open" 3 "SNA (Faulted or Not Supported)" ;
 VAL_ 2147491604 DBW_HornState 0 "Off" 1 "On" 3 "SNA (Faulted or Not Supported)" ;
-VAL_ 2147491604 DBW_LowBeamState 0 "Undefined" 1 "On" 2 "Reserved" 3 "SNA (Faulted or Not Supported)" ;
+VAL_ 2147491604 DBW_LowBeamState 0 "Off" 1 "Reserved" 2 "On" 3 "Fault or Not Supported" ;
+VAL_ 2147491604 DBW_DoorLockState 0 "Reserved" 1 "Unlock_Doors" 2 "Lock_Doors" 3 "DoorLock_FaultOrNotSupported" ;
 VAL_ 2147491604 DBW_TurnSignalSyncBit 0 "Bulb Off or State Unknown" 1 "Bulb On" ;
+VAL_ 2147491605 DBW_EmgrStopBtnPrssd 1 "Pressed" 0 "Not Pressed" ;
+VAL_ 2147491605 DBW_RemoteEmgrStopBtnPrssd 0 "Not Pressed" 1 "Pressed" 3 "SNA" ;
 

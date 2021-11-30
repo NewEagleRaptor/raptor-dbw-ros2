@@ -112,6 +112,8 @@ RaptorDbwCAN::RaptorDbwCAN(
     20);
   pub_steering_2_report_ = this->create_publisher<Steering2Report>(
     "steering_2_report", 20);
+  pub_exit_report_ = this->create_publisher<ExitReport>(
+    "exit_report", 20);
   pub_fault_actions_report_ = this->create_publisher<FaultActionsReport>(
     "fault_actions_report", 20);
   pub_other_actuators_report_ = this->create_publisher<OtherActuatorsReport>(
@@ -267,6 +269,10 @@ void RaptorDbwCAN::recvCAN(const Frame::SharedPtr msg)
 
       case ID_GPS_REMAINDER_REPORT:
         recvGpsRemainderRpt(msg);
+        break;
+
+      case ID_EXIT_REPORT:
+        recvExitRpt(msg);
         break;
 
       case ID_BRAKE_CMD:
@@ -810,6 +816,12 @@ void RaptorDbwCAN::recvFaultActionRpt(const Frame::SharedPtr msg)
       message->GetSignal("DBW_FltAct_WarnDriverOnly")->GetResult();
     faultActionsReport.chime_fcw_beeps =
       message->GetSignal("DBW_FltAct_Chime_FcwBeeps")->GetResult();
+    faultActionsReport.last_active_fault_idx =
+      message->GetSignal("DBW_IdxOfLastActiveFault")->GetResult();
+    faultActionsReport.estop_btn_pressed =
+      message->GetSignal("DBW_EmgrStopBtnPrssd")->GetResult();
+    faultActionsReport.remote_estop_btn_pressed.value =
+      message->GetSignal("DBW_RemoteEmgrStopBtnPrssd")->GetResult();
 
     pub_fault_actions_report_->publish(faultActionsReport);
   }
@@ -873,6 +885,9 @@ void RaptorDbwCAN::recvGpsReferenceRpt(const Frame::SharedPtr msg)
     out.ref_longitude = message->GetSignal(
       "DBW_GpsRefLong")->GetResult();
 
+    out.ref_heading = message->GetSignal(
+      "Dbw_GpsHeading")->GetResult();
+
     pub_gps_reference_report_->publish(out);
   }
 }
@@ -894,6 +909,35 @@ void RaptorDbwCAN::recvGpsRemainderRpt(const Frame::SharedPtr msg)
       "DBW_GpsRemainderLong")->GetResult();
 
     pub_gps_remainder_report_->publish(out);
+  }
+}
+
+void RaptorDbwCAN::recvExitRpt(const Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_EXIT_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    ExitReport out;
+    out.header.stamp = msg->header.stamp;
+
+    out.akit_disable = message->GetSignal(
+      "DBW_Exit_AKitDsbl")->GetResult();
+
+    out.driver_in_control = message->GetSignal(
+      "DBW_Exit_DrvInCtrl")->GetResult();
+
+    out.idx_auton_disable_no_brakes = message->GetSignal(
+      "DBW_Exit_AutonDsblNoBrakes")->GetResult();
+
+    out.idx_auton_disable_apply_brakes = message->GetSignal(
+      "DBW_Exit_AutonDsblAppyBrakes")->GetResult();
+
+    out.auton_counter = message->GetSignal(
+      "DBW_Exit_Cntr")->GetResult();
+
+    pub_exit_report_->publish(out);
   }
 }
 

@@ -48,6 +48,7 @@
 #include <raptor_dbw_msgs/msg/brake_cmd.hpp>
 #include <raptor_dbw_msgs/msg/brake_report.hpp>
 #include <raptor_dbw_msgs/msg/driver_input_report.hpp>
+#include <raptor_dbw_msgs/msg/exit_report.hpp>
 #include <raptor_dbw_msgs/msg/fault_actions_report.hpp>
 #include <raptor_dbw_msgs/msg/gear_cmd.hpp>
 #include <raptor_dbw_msgs/msg/gear_report.hpp>
@@ -101,10 +102,12 @@ using raptor_dbw_msgs::msg::ActuatorControlMode;
 using raptor_dbw_msgs::msg::Brake2Report;
 using raptor_dbw_msgs::msg::BrakeCmd;
 using raptor_dbw_msgs::msg::BrakeReport;
+using raptor_dbw_msgs::msg::ButtonState;
 using raptor_dbw_msgs::msg::DoorLock;
 using raptor_dbw_msgs::msg::DoorRequest;
 using raptor_dbw_msgs::msg::DoorState;
 using raptor_dbw_msgs::msg::DriverInputReport;
+using raptor_dbw_msgs::msg::ExitReport;
 using raptor_dbw_msgs::msg::FaultActionsReport;
 using raptor_dbw_msgs::msg::Gear;
 using raptor_dbw_msgs::msg::GearCmd;
@@ -118,6 +121,7 @@ using raptor_dbw_msgs::msg::HmiGlobalEnableReport;
 using raptor_dbw_msgs::msg::HornState;
 using raptor_dbw_msgs::msg::Ignition;
 using raptor_dbw_msgs::msg::LowBeam;
+using raptor_dbw_msgs::msg::LowBeamState;
 using raptor_dbw_msgs::msg::LowVoltageSystemReport;
 using raptor_dbw_msgs::msg::MiscCmd;
 using raptor_dbw_msgs::msg::MiscReport;
@@ -194,6 +198,11 @@ private:
  * \param[in] msg The message received over CAN.
  */
   void recvDriverInputRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert an Exit Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
+  void recvExitRpt(const Frame::SharedPtr msg);
 
 /** \brief Convert a Fault Action Report received over CAN into a ROS message.
  * \param[in] msg The message received over CAN.
@@ -501,6 +510,7 @@ private:
   rclcpp::Publisher<BrakeReport>::SharedPtr pub_brake_;
   rclcpp::Publisher<Brake2Report>::SharedPtr pub_brake_2_report_;
   rclcpp::Publisher<DriverInputReport>::SharedPtr pub_driver_input_;
+  rclcpp::Publisher<ExitReport>::SharedPtr pub_exit_report_;
   rclcpp::Publisher<FaultActionsReport>::SharedPtr pub_fault_actions_report_;
   rclcpp::Publisher<GearReport>::SharedPtr pub_gear_;
   rclcpp::Publisher<GpsReferenceReport>::SharedPtr pub_gps_reference_report_;

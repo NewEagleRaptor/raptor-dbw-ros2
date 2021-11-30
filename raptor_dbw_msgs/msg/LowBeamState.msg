@@ -1,4 +1,4 @@
-uint8 value
+uint8 status
 
 uint8 OFF = 0
 uint8 RESERVED = 1
