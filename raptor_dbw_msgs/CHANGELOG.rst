@@ -2,6 +2,9 @@
 Changelog for package raptor_dbw_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.1.4 (2021-08-25)
 ------------------
 * Updated DBC - moved EStop signals
