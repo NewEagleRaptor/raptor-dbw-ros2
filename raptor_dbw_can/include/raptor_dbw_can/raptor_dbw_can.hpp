@@ -412,6 +412,16 @@ private:
 
   // Other useful variables
 
+  /** \brief Enumeration of driver ignores */
+  enum ListIgnores
+  {
+    IGNORE_ACCEL = 0,  /**< Acceleration pedal ignore */
+    IGNORE_STEER,      /**< Steering ignore */
+    IGNORE_ARTIC,      /**< Articulation ignore */
+    IGNORE_DUMP_BED,   /**< Dump bed ignore */
+    NUM_IGNORES   /**< Total number of driver ignores */
+  };
+
   /** \brief Enumeration of driver overrides */
   enum ListOverrides
   {
@@ -419,6 +429,7 @@ private:
     OVR_BRAKE,      /**< Brake override */
     OVR_GEAR,       /**< PRND gear override */
     OVR_STEER,      /**< Steering override */
+    OVR_ARTIC,      /**< Articulation override */
     OVR_DUMP_BED,   /**< Dump bed override */
     OVR_ENGINE,     /**< Engine override */
     NUM_OVERRIDES   /**< Total number of driver overrides */
@@ -458,6 +469,7 @@ private:
     "brake",
     "PRND gear",
     "steering",
+    "articulation",
     "dump bed",
     "engine"
   };
@@ -472,6 +484,7 @@ private:
     "engine"
   };
 
+  bool ignores_[NUM_IGNORES];
   bool overrides_[NUM_OVERRIDES];
   bool faults_[NUM_FAULTS];
   bool enables_[NUM_ENABLES];
@@ -489,8 +502,12 @@ private:
 /** \brief Check for an active driver override.
  * \returns TRUE if there is any active driver override, FALSE otherwise
  */
-  inline bool override () {return overrides_[OVR_BRAKE] || overrides_[OVR_ACCEL] ||
-           overrides_[OVR_STEER] || overrides_[OVR_GEAR] || overrides_[OVR_DUMP_BED] ||
+  inline bool override () {return overrides_[OVR_BRAKE] ||
+           (!ignores_[IGNORE_ACCEL] && overrides_[OVR_ACCEL]) ||
+           (!ignores_[IGNORE_STEER] && overrides_[OVR_STEER]) ||
+           overrides_[OVR_GEAR] ||
+           (!ignores_[IGNORE_ARTIC] && overrides_[OVR_ARTIC]) ||
+           (!ignores_[IGNORE_DUMP_BED] && overrides_[OVR_DUMP_BED]) ||
            overrides_[OVR_ENGINE];}
 
 /** \brief Check for an active driver override.
@@ -518,8 +535,9 @@ private:
   /** \brief Set the specified override
    * \param[in] which_ovr Which override to set
    * \param[in] override The value to set the override to
+   * \param[in] ignore The value to skip the override
    */
-  void setOverride(ListOverrides which_ovr, bool override);
+  void setOverride(ListOverrides which_ovr, bool override, bool ignore);
 
   /** \brief Set the specified fault; these faults disable DBW control when active
    * \param[in] which_fault Which fault to set

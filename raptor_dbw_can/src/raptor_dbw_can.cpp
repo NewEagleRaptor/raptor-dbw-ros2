@@ -55,6 +55,9 @@ RaptorDbwCAN::RaptorDbwCAN(
   for (i = 0; i < NUM_OVERRIDES; i++) {
     overrides_[i] = false;
   }
+  for (i = 0; i < NUM_IGNORES; i++) {
+    ignores_[i] = false;
+  }
   for (i = 0; i < NUM_FAULTS; i++) {
     faults_[i] = false;
   }
@@ -356,7 +359,7 @@ void RaptorDbwCAN::recvBrakeRpt(const Frame::SharedPtr msg)
 
     setFault(FAULT_BRAKE, brakeSystemFault);
     faultWatchdog(dbwSystemFault, brakeSystemFault);
-    setOverride(OVR_BRAKE, driverActivity);
+    setOverride(OVR_BRAKE, driverActivity, false);
 
     brakeReport.header.stamp = msg->header.stamp;
     brakeReport.pedal_position = message->GetSignal("DBW_BrakePdlDriverInput")->GetResult();
@@ -404,8 +407,9 @@ void RaptorDbwCAN::recvAccelPedalRpt(const Frame::SharedPtr msg)
 
     setFault(FAULT_ACCEL, faultCh1 && faultCh2);
     faultWatchdog(dbwSystemFault, accelPdlSystemFault);
-
-    setOverride(OVR_ACCEL, message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult());
+    setOverride(
+      OVR_ACCEL, message->GetSignal("DBW_AccelPdlDriverActivity")->GetResult(),
+      ignores_[IGNORE_ACCEL]);
 
     AcceleratorPedalReport accelPedalReprt;
     accelPedalReprt.header.stamp = msg->header.stamp;
@@ -456,7 +460,7 @@ void RaptorDbwCAN::recvSteeringRpt(const Frame::SharedPtr msg)
 
     setFault(FAULT_STEER, steeringSystemFault);
     faultWatchdog(dbwSystemFault);
-    setOverride(OVR_STEER, driverActivity);
+    setOverride(OVR_STEER, driverActivity, ignores_[IGNORE_STEER]);
 
     SteeringReport steeringReport;
     steeringReport.header.stamp = msg->header.stamp;
@@ -507,7 +511,7 @@ void RaptorDbwCAN::recvGearRpt(const Frame::SharedPtr msg)
     bool driverActivity =
       message->GetSignal("DBW_PrndDriverActivity")->GetResult() ? true : false;
 
-    setOverride(OVR_GEAR, driverActivity);
+    setOverride(OVR_GEAR, driverActivity, false);
     GearReport out;
     out.header.stamp = msg->header.stamp;
 
@@ -1030,6 +1034,7 @@ void RaptorDbwCAN::recvArticulationRpt(const can_msgs::msg::Frame::SharedPtr msg
     out.rolling_counter = message->GetSignal(
       "DBW_ArticulationRollingCntr")->GetResult();
     setFault(FAULT_ARTIC, (out.fault.status > 0) ? true : false);
+    setOverride(OVR_ARTIC, out.driver_activity, ignores_[IGNORE_ARTIC]);
 
     pub_articulation_report_->publish(out);
   }
@@ -1071,7 +1076,7 @@ void RaptorDbwCAN::recvDumpBedRpt(const can_msgs::msg::Frame::SharedPtr msg)
     out.rolling_counter = message->GetSignal(
       "DBW_DumpBedRollingCntr")->GetResult();
     setFault(FAULT_DUMP_BED, (out.fault.status > 0) ? true : false);
-    setOverride(OVR_DUMP_BED, out.driver_activity);
+    setOverride(OVR_DUMP_BED, out.driver_activity, ignores_[IGNORE_DUMP_BED]);
 
     pub_dump_bed_report_->publish(out);
   }
@@ -1126,7 +1131,7 @@ void RaptorDbwCAN::recvEngineRpt(const can_msgs::msg::Frame::SharedPtr msg)
     out.rolling_counter = message->GetSignal(
       "DBW_EngineRollingCntr")->GetResult();
     setFault(FAULT_ENGINE, (out.fault.status > 0) ? true : false);
-    setOverride(OVR_ENGINE, out.driver_activity);
+    setOverride(OVR_ENGINE, out.driver_activity, false);
 
     pub_engine_report_->publish(out);
   }
@@ -1225,6 +1230,9 @@ void RaptorDbwCAN::recvAcceleratorPedalCmd(
 
   if (msg->ignore) {
     message->GetSignal("AKit_AccelPdlIgnoreDriverOvrd")->SetResult(1);
+    ignores_[IGNORE_ACCEL] = true;
+  } else {
+    ignores_[IGNORE_ACCEL] = false;
   }
 
   Frame frame = message->GetFrame();
@@ -1283,6 +1291,9 @@ void RaptorDbwCAN::recvSteeringCmd(const SteeringCmd::SharedPtr msg)
 
   if (msg->ignore) {
     message->GetSignal("AKit_SteeringWhlIgnoreDriverOvrd")->SetResult(1);
+    ignores_[IGNORE_STEER] = true;
+  } else {
+    ignores_[IGNORE_STEER] = false;
   }
 
   message->GetSignal("AKit_SteerRollingCntr")->SetResult(msg->rolling_counter);
@@ -1475,7 +1486,12 @@ void RaptorDbwCAN::recvArticulationCmd(const ArticulationCmd::SharedPtr msg)
 
     // Enables & limits
     message->GetSignal("AKit_ArticulationCtrlEnblReq")->SetResult(msg->enable);
-    message->GetSignal("AKit_ArticulationIgnoreDrvrOvrd")->SetResult(msg->ignore_driver);
+    if (msg->ignore_driver) {
+      message->GetSignal("AKit_ArticulationIgnoreDrvrOvrd")->SetResult(1);
+      ignores_[IGNORE_ARTIC] = true;
+    } else {
+      ignores_[IGNORE_ARTIC] = false;
+    }
     message->GetSignal("AKit_ArticulationVelocityLimit")->SetResult(msg->velocity_limit);
   }
 
@@ -1533,7 +1549,12 @@ void RaptorDbwCAN::recvDumpBedCmd(const DumpBedCmd::SharedPtr msg)
 
     // Enables & limits
     message->GetSignal("AKit_DumpBedCtrlEnblReq")->SetResult(msg->enable);
-    message->GetSignal("AKit_DumpBedIgnoreDriverOrvd")->SetResult(msg->ignore_driver);
+    if (msg->ignore_driver) {
+      message->GetSignal("AKit_DumpBedIgnoreDriverOrvd")->SetResult(1);
+      ignores_[IGNORE_DUMP_BED] = true;
+    } else {
+      ignores_[IGNORE_DUMP_BED] = false;
+    }
     message->GetSignal("AKit_DumpBedVelocityLimit")->SetResult(msg->velocity_limit);
   }
 
@@ -1610,7 +1631,7 @@ void RaptorDbwCAN::timerCallback()
       pub_can_->publish(message->GetFrame());
     }
 
-    if (overrides_[OVR_ACCEL]) {
+    if (overrides_[OVR_ACCEL] && !ignores_[IGNORE_ACCEL]) {
       // Might have an issue with WatchdogCntr when these are set.
       NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_AccelPdlRequest");
       message->GetSignal("AKit_AccelPdlReq")->SetResult(0);
@@ -1620,7 +1641,7 @@ void RaptorDbwCAN::timerCallback()
       pub_can_->publish(message->GetFrame());
     }
 
-    if (overrides_[OVR_STEER]) {
+    if (overrides_[OVR_STEER] && !ignores_[IGNORE_STEER]) {
       // Might have an issue with WatchdogCntr when these are set.
       NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_SteeringRequest");
       message->GetSignal("AKit_SteeringWhlAngleReq")->SetResult(0);
@@ -1640,7 +1661,17 @@ void RaptorDbwCAN::timerCallback()
       pub_can_->publish(message->GetFrame());
     }
 
-    if (overrides_[OVR_DUMP_BED]) {
+    if (overrides_[OVR_ARTIC] && !ignores_[IGNORE_ARTIC]) {
+      NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_ArticulationRequest");
+      message->GetSignal("AKit_ArticulationChecksum")->SetResult(0);
+      message->GetSignal("AKit_ArticulationCtrlEnblReq")->SetResult(0);
+      message->GetSignal("AKit_ArticulationReqType")->SetResult(0);
+      message->GetSignal("AKit_ArticulationAngleReq")->SetResult(0);
+      message->GetSignal("AKit_ArticulationIgnoreDrvrOvrd")->SetResult(0);
+      message->GetSignal("AKit_ArticulationVelocityLimit")->SetResult(0);
+    }
+
+    if (overrides_[OVR_DUMP_BED] && !ignores_[IGNORE_DUMP_BED]) {
       NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_DumpBedRequest");
       message->GetSignal("AKit_DumpBedChecksum")->SetResult(0);
       message->GetSignal("AKit_DumpBedCtrlEnblReq")->SetResult(0);
@@ -1704,19 +1735,25 @@ void RaptorDbwCAN::disableSystem()
   }
 }
 
-void RaptorDbwCAN::setOverride(ListOverrides which_ovr, bool override)
+void RaptorDbwCAN::setOverride(ListOverrides which_ovr, bool override, bool ignore)
 {
   if (which_ovr < NUM_OVERRIDES) {
     bool en = enabled();
-    if (override && en) {
+    if (override && en && !ignore) {
       enables_[EN_DBW] = false;
     }
     overrides_[which_ovr] = override;
     if (publishDbwEnabled()) {
-      if (en) {
+      if (en && !ignore) {
         std::string err_msg("DBW system disabled - ");
         err_msg = err_msg + OVR_SYSTEM[which_ovr];
         err_msg = err_msg + " override";
+        RCLCPP_WARN_THROTTLE(
+          this->get_logger(), m_clock, CLOCK_1_SEC, err_msg.c_str());
+      } else if (en && ignore) {
+        std::string err_msg("DBW system enabled - ");
+        err_msg = err_msg + OVR_SYSTEM[which_ovr];
+        err_msg = err_msg + " ignored";
         RCLCPP_WARN_THROTTLE(
           this->get_logger(), m_clock, CLOCK_1_SEC, err_msg.c_str());
       } else {
