@@ -2,6 +2,11 @@
 Changelog for package raptor_dbw_joystick
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update DBC to version 3.4
+* Contributors: neweagleraptor
+
 1.1.1 (2021-07-13)
 ------------------
 

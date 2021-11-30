@@ -2,6 +2,12 @@
 Changelog for package raptor_dbw_can
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update DBC to version 3.4
+* Fix accel and steer ignore to not disable the system on overrides (`#11 <https://github.com/NewEagleRaptor/raptor-dbw-ros2/issues/11>`_)
+* Contributors: Benjamin Gervan, neweagleraptor
+
 1.1.1 (2021-07-13)
 ------------------
 

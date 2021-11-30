@@ -2,6 +2,9 @@
 Changelog for package can_dbc_parser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.1.1 (2021-07-13)
 ------------------
 * Fix compile warnings
