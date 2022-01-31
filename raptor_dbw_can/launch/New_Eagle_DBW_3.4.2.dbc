@@ -221,6 +221,7 @@ BO_ 2147491594 DBW_ImuReport: 8 DBW
  SG_ DBW_ImuYawRate : 0|16@1+ (0.01,-327.68) [-327.68|327.66] "deg/sec" Vector__XXX
  SG_ DBW_ImuAccelX : 32|8@1+ (0.08,-10.24) [-10.24|10.08] "m/s/s" Vector__XXX
  SG_ DBW_ImuAccelY : 40|8@1+ (0.08,-10.24) [-10.24|10.08] "m/s/s" Vector__XXX
+ SG_ DBW_ImuAccelZ : 48|8@1+ (0.08,-10.24) [-10.24|10.08] "m/s/s" Vector__XXX
 
 BO_ 2147491595 DBW_WheelSpeedReport: 8 DBW
  SG_ DBW_WhlSpd_RR : 53|14@0- (0.0523599,0) [-428.932|428.827581] "rad/sec" Vector__XXX
@@ -376,6 +377,21 @@ BO_ 2147495688 AKit_Reserved_2F08: 8 AKit
 BO_ 2147495689 AKit_Reserved_2F09: 8 AKit
 
 BO_ 2147491621 DBW_Reserved_1F25: 8 DBW
+
+BO_ 2297441680 AKit_ACCS: 8 AKit
+ SG_ VerticalAccelerationExRange : 32|16@1+ (0.01,-320) [-320|322.55] "m/s/s" Vector__XXX
+ SG_ LateralAccelerationExRange : 0|16@1+ (0.01,-320) [-320|322.55] "m/s/s" Vector__XXX
+ SG_ LongitudinalAccelerationExRange : 16|16@1+ (0.01,-320) [-320|322.55] "m/s/s" Vector__XXX
+
+BO_ 2364549776 AKit_ARI: 8 AKit
+ SG_ AngularRateMeasurementLatency : 56|8@1+ (0.5,0) [0|125] "ms" Vector__XXX
+ SG_ YawRateExRange : 32|16@1+ (0.0078125,-250) [-250|250.992] "deg/sec" Vector__XXX
+ SG_ RollRateExRange : 16|16@1+ (0.0078125,-250) [-250|250.992] "deg/sec" Vector__XXX
+ SG_ PitchRateExRange : 0|16@1+ (0.0078125,-250) [-250|250.992] "deg/sec" Vector__XXX
+
+BO_ 2147491622 DBW_ImuReport_2: 8 DBW
+ SG_ DBW_ImuPitchRate : 0|16@1+ (0.01,-327.68) [-327.68|327.66] "deg/s" Vector__XXX
+ SG_ DBW_ImuRollRate : 16|16@1+ (0.01,-327.68) [-327.68|327.66] "deg/s" Vector__XXX
 
 
 
@@ -1074,6 +1090,7 @@ CM_ SG_ 2147491594 DBW_ImuAccelY "positive = left.
 
 ROS Attribute: linear_acceleration.y
 ";
+CM_ SG_ 2147491594 DBW_ImuAccelZ "positive = up";
 CM_ BO_ 2147491595 "Some vehicles send an RPM, others a speed in km/h. Both are multiplexed into this message so that a common DBC can be maintained for New Eagle DBW vehicles
 
 ROS Topic:";
@@ -1274,6 +1291,21 @@ CM_ SG_ 2147491620 DBW_Exit_DrvInCtrl "State of DriverInCtrl detection when the 
 CM_ SG_ 2147491620 DBW_Exit_AutonDsblNoBrakes "Index of Fault Action AutonDsblNoBrakes when the DBW kit disables.";
 CM_ SG_ 2147491620 DBW_Exit_AutonDsblAppyBrakes "Index of Fault Action AutonDsblApplyBrakes when the DBW kit disables.";
 CM_ SG_ 2147491620 DBW_Exit_Cntr "Counter of how many times the Auton mode has been exited. Resets upon key cycle.";
+CM_ BO_ 2297441680 "The acceleration sensor message shall provide a measurement of the vehicle's acceleration in the lateral, longitudinal,
+and vertical axes. Using Z-up orientation.";
+CM_ SG_ 2297441680 VerticalAccelerationExRange "Indicates vertical acceleration of the vehicle and the effect of gravity.
+
+Up is positive. Equivalent to acceleration in the z-direction.";
+CM_ SG_ 2297441680 LateralAccelerationExRange "Indicates lateral acceleration of the vehicle. Forward is positive. Equivalent to acceleration in the x-direction.";
+CM_ SG_ 2297441680 LongitudinalAccelerationExRange "Indicates longitudinal acceleration of the vehicle. Left is positive. Equivalent to acceleration in the y-direction.";
+CM_ BO_ 2364549776 "Angular Rate Information using Z-down axis system. Warning this axis system is opposite of the ACCS and IMUReport signals.";
+CM_ SG_ 2364549776 AngularRateMeasurementLatency "The estimated measurement latency of the measurement.";
+CM_ SG_ 2364549776 YawRateExRange "Yaw rate is the rate-of-change of the yaw angle over time. Clockwise is positive. Uses the Z-down orientation. Yaw is about the z-axis.";
+CM_ SG_ 2364549776 RollRateExRange "Roll rate is the rate-of-change of the roll angle over time. About the x-axis. The positive x-axis points to the forward since the Z-down orientation is used.";
+CM_ SG_ 2364549776 PitchRateExRange "Pitch rate is the rate-of-change of the pitch angle over time, where the pitch angle vector is in the direction of travel of the vehicle. Rotation about the y-axis, where the positive y-direction point to the right since the Z-down orientation is used.";
+CM_ BO_ 2147491622 "IMU = Intertial Measurement Unit";
+CM_ SG_ 2147491622 DBW_ImuPitchRate "Z-up axis system";
+CM_ SG_ 2147491622 DBW_ImuRollRate "Z-up axis system";
 VAL_ 2147491585 DBW_MiscByWireEnabled 0 "ManualMode" 1 "DriveByWireMode" ;
 VAL_ 2147491585 DBW_MiscByWireReady 0 "Not_Ready" 1 "Ready" ;
 VAL_ 2147491586 DBW_AccelCtrlType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Accelerator %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;

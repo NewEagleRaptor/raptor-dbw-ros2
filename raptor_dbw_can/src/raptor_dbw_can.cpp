@@ -155,6 +155,9 @@ RaptorDbwCAN::RaptorDbwCAN(
   sub_gear_ = this->create_subscription<GearCmd>(
     "gear_cmd", 1, std::bind(&RaptorDbwCAN::recvGearCmd, this, std::placeholders::_1));
 
+  sub_imu_ = this->create_subscription<ImuCmd>(
+    "imu_cmd", 1, std::bind(&RaptorDbwCAN::recvImuCmd, this, std::placeholders::_1));
+
   sub_misc_ = this->create_subscription<MiscCmd>(
     "misc_cmd", 1, std::bind(&RaptorDbwCAN::recvMiscCmd, this, std::placeholders::_1));
 
@@ -231,8 +234,12 @@ void RaptorDbwCAN::recvCAN(const Frame::SharedPtr msg)
         recvVinRpt(msg);
         break;
 
-      case ID_REPORT_IMU:
+      case ID_IMU_REPORT:
         recvImuRpt(msg);
+        break;
+
+      case ID_IMU_2_REPORT:
+        recvImu2Rpt(msg);
         break;
 
       case ID_REPORT_DRIVER_INPUT:
@@ -282,6 +289,10 @@ void RaptorDbwCAN::recvCAN(const Frame::SharedPtr msg)
       case ID_STEERING_CMD:
         break;
       case ID_GEAR_CMD:
+        break;
+      case ID_IMU_ACCEL_CMD:
+        break;
+      case ID_IMU_ROTATE_CMD:
         break;
       default:
         break;
@@ -606,24 +617,62 @@ void RaptorDbwCAN::recvVinRpt(const Frame::SharedPtr msg)
 
 void RaptorDbwCAN::recvImuRpt(const Frame::SharedPtr msg)
 {
-  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_REPORT_IMU);
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_IMU_REPORT);
 
   if (msg->dlc >= message->GetDlc()) {
     message->SetFrame(msg);
 
-    Imu out;
-    out.header.stamp = msg->header.stamp;
-    out.header.frame_id = frame_id_;
+    m_imu_rpt.header.stamp = msg->header.stamp;
+    m_imu_rpt.header.frame_id = frame_id_;
 
-    out.angular_velocity.z =
+    // We don't use the orientation variable
+    m_imu_rpt.orientation.w = 0.0F;
+    m_imu_rpt.orientation.x = 0.0F;
+    m_imu_rpt.orientation.y = 0.0F;
+    m_imu_rpt.orientation.z = 0.0F;
+
+    // We don't use the covariance variables
+    m_imu_rpt.orientation_covariance[0] = -1.0F;
+    m_imu_rpt.angular_velocity_covariance[0] = 0.0F;
+    m_imu_rpt.linear_acceleration_covariance[0] = 0.0F;
+
+    // ROS spec for their IMU message specifies angular velocity = rads/sec
+    // J1939 message spec requires deg/sec
+    m_imu_rpt.angular_velocity.z =
       static_cast<double>(message->GetSignal("DBW_ImuYawRate")->GetResult()) *
-      (M_PI / 180.0F);
-    out.linear_acceleration.x =
-      static_cast<double>(message->GetSignal("DBW_ImuAccelX")->GetResult());
-    out.linear_acceleration.y =
-      static_cast<double>(message->GetSignal("DBW_ImuAccelY")->GetResult());
+      DEG_TO_RAD;
 
-    pub_imu_->publish(out);
+    m_imu_rpt.linear_acceleration.x =
+      static_cast<double>(message->GetSignal("DBW_ImuAccelX")->GetResult());
+    m_imu_rpt.linear_acceleration.y =
+      static_cast<double>(message->GetSignal("DBW_ImuAccelY")->GetResult());
+    m_imu_rpt.linear_acceleration.z =
+      static_cast<double>(message->GetSignal("DBW_ImuAccelZ")->GetResult());
+
+    if (m_seen_imu2_rpt) {
+      m_seen_imu2_rpt = false;
+      pub_imu_->publish(m_imu_rpt);
+    }
+  }
+}
+
+void RaptorDbwCAN::recvImu2Rpt(const Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_IMU_2_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    // ROS spec for their IMU message specifies angular velocity = rads/sec
+    // J1939 message spec requires deg/sec
+    m_imu_rpt.angular_velocity.x =
+      static_cast<double>(message->GetSignal("DBW_ImuRollRate")->GetResult()) *
+      DEG_TO_RAD;
+    m_imu_rpt.angular_velocity.y =
+      static_cast<double>(message->GetSignal("DBW_ImuPitchRate")->GetResult()) *
+      DEG_TO_RAD;
+
+    m_seen_imu2_rpt = true;
   }
 }
 
@@ -1159,6 +1208,41 @@ void RaptorDbwCAN::recvGlobalEnableCmd(const GlobalEnableCmd::SharedPtr msg)
   Frame frame = message->GetFrame();
 
   pub_can_->publish(frame);
+}
+
+void RaptorDbwCAN::recvImuCmd(const ImuCmd::SharedPtr msg)
+{
+  NewEagle::DbcMessage * msg_accel = dbwDbc_.GetMessage("AKit_ACCS");
+  NewEagle::DbcMessage * msg_rotate = dbwDbc_.GetMessage("AKit_ARI");
+
+  msg_accel->GetSignal("VerticalAccelerationExRange")->SetResult(0);
+  msg_accel->GetSignal("LateralAccelerationExRange")->SetResult(0);
+  msg_accel->GetSignal("LongitudinalAccelerationExRange")->SetResult(0);
+
+  msg_rotate->GetSignal("AngularRateMeasurementLatency")->SetResult(0);
+  msg_rotate->GetSignal("YawRateExRange")->SetResult(0);
+  msg_rotate->GetSignal("RollRateExRange")->SetResult(0);
+  msg_rotate->GetSignal("PitchRateExRange")->SetResult(0);
+
+  if (enabled()) {
+    msg_accel->GetSignal("VerticalAccelerationExRange")->SetResult(
+      msg->imu_cmd.linear_acceleration.z);
+    msg_accel->GetSignal("LateralAccelerationExRange")->SetResult(msg->imu_cmd.linear_acceleration.y);
+    msg_accel->GetSignal("LongitudinalAccelerationExRange")->SetResult(
+      msg->imu_cmd.linear_acceleration.x);
+
+    msg_rotate->GetSignal("AngularRateMeasurementLatency")->SetResult(msg->imu_est_latency);
+    msg_rotate->GetSignal("YawRateExRange")->SetResult(msg->imu_cmd.angular_velocity.z * -1);
+    msg_rotate->GetSignal("RollRateExRange")->SetResult(msg->imu_cmd.angular_velocity.x);
+    msg_rotate->GetSignal("PitchRateExRange")->SetResult(msg->imu_cmd.angular_velocity.y * -1);
+  }
+
+  // Publish both messages
+  Frame frame1 = msg_accel->GetFrame();
+  pub_can_->publish(frame1);
+
+  Frame frame2 = msg_rotate->GetFrame();
+  pub_can_->publish(frame2);
 }
 
 void RaptorDbwCAN::recvMiscCmd(const MiscCmd::SharedPtr msg)

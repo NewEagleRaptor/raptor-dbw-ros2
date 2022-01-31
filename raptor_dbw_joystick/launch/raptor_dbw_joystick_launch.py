@@ -60,7 +60,7 @@ def generate_launch_description():
 
     # make sure the dbc file gets installed with the launch file
     dbc_file_path = get_package_share_directory('raptor_dbw_can') + \
-        '/launch/New_Eagle_DBW_3.4.dbc'
+        '/launch/New_Eagle_DBW_3.4.2.dbc'
 
     return LaunchDescription(
         [

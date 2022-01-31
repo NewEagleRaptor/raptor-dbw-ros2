@@ -19,6 +19,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_auto REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
@@ -47,6 +48,7 @@ set(msg_files
   "msg/HmiGlobalEnableReport.msg"
   "msg/HornState.msg"
   "msg/Ignition.msg"
+  "msg/ImuCmd.msg"
   "msg/LowBeam.msg"
   "msg/LowBeamState.msg"
   "msg/LowVoltageSystemReport.msg"
@@ -74,6 +76,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   ${msg_files}
   DEPENDENCIES
     std_msgs
+    sensor_msgs
     geometry_msgs
 )
 

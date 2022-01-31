@@ -54,31 +54,34 @@ typedef enum
 /** \brief Enumeration of CAN message IDs */
 enum ListMessageIDs
 {
-  ID_BRAKE_CMD                  = 0x2F04,   /**< Brake command ID */
-  ID_BRAKE_REPORT               = 0x1F04,   /**< Brake report ID */
-  ID_ACCELERATOR_PEDAL_CMD      = 0x2F01,   /**< Accelerator pedal command ID */
-  ID_ACCEL_PEDAL_REPORT         = 0x1F02,   /**< Accelerator pedal report ID */
-  ID_STEERING_CMD               = 0x2F03,   /**< Steering command ID */
-  ID_STEERING_REPORT            = 0x1F03,   /**< Steering report ID */
-  ID_GEAR_CMD                   = 0x2F05,   /**< PRND gear command ID */
-  ID_GEAR_REPORT                = 0x1F05,   /**< PRND gear report ID */
-  ID_REPORT_WHEEL_SPEED         = 0x1F0B,   /**< Wheel speed report ID */
-  ID_REPORT_IMU                 = 0x1F0A,   /**< IMU report ID */
-  ID_REPORT_TIRE_PRESSURE       = 0x1f07,   /**< Tire pressure report ID */
-  ID_REPORT_SURROUND            = 0x1f10,   /**< Surround report ID */
-  ID_VIN                        = 0x1F08,   /**< VIN report ID */
-  ID_REPORT_DRIVER_INPUT        = 0x1F0F,   /**< Driver input report ID */
-  ID_REPORT_WHEEL_POSITION      = 0x1F06,   /**< Wheel position report ID */
-  ID_MISC_REPORT                = 0x1F01,   /**< Misc. report ID */
-  ID_LOW_VOLTAGE_SYSTEM_REPORT  = 0x1F11,   /**< Low voltage system report ID */
-  ID_BRAKE_2_REPORT             = 0x1F12,   /**< Brake2 report ID */
-  ID_STEERING_2_REPORT          = 0x1F13,   /**< Steering2 report ID */
-  ID_OTHER_ACTUATORS_REPORT     = 0x1F14,   /**< Other actuators report ID */
-  ID_FAULT_ACTION_REPORT        = 0x1F15,   /**< Fault action report ID */
-  ID_GPS_REFERENCE_REPORT       = 0x1F16,   /**< GPS reference report ID */
-  ID_GPS_REMAINDER_REPORT       = 0x1F17,   /**< GPS remainder report ID */
-  ID_EXIT_REPORT                = 0x1F24,   /**< Exit report ID */
-  ID_HMI_GLOBAL_ENABLE_REPORT   = 0x3f01,   /**< HMI global enable report ID */
+  ID_BRAKE_CMD                  = 0x2F04,     /**< Brake command ID */
+  ID_BRAKE_REPORT               = 0x1F04,     /**< Brake report ID */
+  ID_ACCELERATOR_PEDAL_CMD      = 0x2F01,     /**< Accelerator pedal command ID */
+  ID_ACCEL_PEDAL_REPORT         = 0x1F02,     /**< Accelerator pedal report ID */
+  ID_STEERING_CMD               = 0x2F03,     /**< Steering command ID */
+  ID_STEERING_REPORT            = 0x1F03,     /**< Steering report ID */
+  ID_GEAR_CMD                   = 0x2F05,     /**< PRND gear command ID */
+  ID_GEAR_REPORT                = 0x1F05,     /**< PRND gear report ID */
+  ID_REPORT_WHEEL_SPEED         = 0x1F0B,     /**< Wheel speed report ID */
+  ID_IMU_ACCEL_CMD              = 0x08F02D90, /**< IMU Linear Acceleration Command ID */
+  ID_IMU_ROTATE_CMD             = 0x0CF02A90, /**< IMU Angular Rate Information Command ID */
+  ID_IMU_REPORT                 = 0x1F0A,     /**< IMU report ID */
+  ID_IMU_2_REPORT               = 0x1F26,     /**< IMU2 report ID */
+  ID_REPORT_TIRE_PRESSURE       = 0x1f07,     /**< Tire pressure report ID */
+  ID_REPORT_SURROUND            = 0x1f10,     /**< Surround report ID */
+  ID_VIN                        = 0x1F08,     /**< VIN report ID */
+  ID_REPORT_DRIVER_INPUT        = 0x1F0F,     /**< Driver input report ID */
+  ID_REPORT_WHEEL_POSITION      = 0x1F06,     /**< Wheel position report ID */
+  ID_MISC_REPORT                = 0x1F01,     /**< Misc. report ID */
+  ID_LOW_VOLTAGE_SYSTEM_REPORT  = 0x1F11,     /**< Low voltage system report ID */
+  ID_BRAKE_2_REPORT             = 0x1F12,     /**< Brake2 report ID */
+  ID_STEERING_2_REPORT          = 0x1F13,     /**< Steering2 report ID */
+  ID_OTHER_ACTUATORS_REPORT     = 0x1F14,     /**< Other actuators report ID */
+  ID_FAULT_ACTION_REPORT        = 0x1F15,     /**< Fault action report ID */
+  ID_GPS_REFERENCE_REPORT       = 0x1F16,     /**< GPS reference report ID */
+  ID_GPS_REMAINDER_REPORT       = 0x1F17,     /**< GPS remainder report ID */
+  ID_EXIT_REPORT                = 0x1F24,     /**< Exit report ID */
+  ID_HMI_GLOBAL_ENABLE_REPORT   = 0x3f01,     /**< HMI global enable report ID */
 };
 
 }  // namespace raptor_dbw_can
