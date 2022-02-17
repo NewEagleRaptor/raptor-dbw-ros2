@@ -155,7 +155,7 @@ RaptorDbwCAN::RaptorDbwCAN(
   sub_gear_ = this->create_subscription<GearCmd>(
     "gear_cmd", 1, std::bind(&RaptorDbwCAN::recvGearCmd, this, std::placeholders::_1));
 
-  sub_imu_ = this->create_subscription<ImuCmd>(
+  sub_imu_ = this->create_subscription<Imu>(
     "imu_cmd", 1, std::bind(&RaptorDbwCAN::recvImuCmd, this, std::placeholders::_1));
 
   sub_misc_ = this->create_subscription<MiscCmd>(
@@ -1210,7 +1210,7 @@ void RaptorDbwCAN::recvGlobalEnableCmd(const GlobalEnableCmd::SharedPtr msg)
   pub_can_->publish(frame);
 }
 
-void RaptorDbwCAN::recvImuCmd(const ImuCmd::SharedPtr msg)
+void RaptorDbwCAN::recvImuCmd(const Imu::SharedPtr msg)
 {
   NewEagle::DbcMessage * msg_accel = dbwDbc_.GetMessage("AKit_ACCS");
   NewEagle::DbcMessage * msg_rotate = dbwDbc_.GetMessage("AKit_ARI");
@@ -1226,15 +1226,25 @@ void RaptorDbwCAN::recvImuCmd(const ImuCmd::SharedPtr msg)
 
   if (enabled()) {
     msg_accel->GetSignal("VerticalAccelerationExRange")->SetResult(
-      msg->imu_cmd.linear_acceleration.z);
-    msg_accel->GetSignal("LateralAccelerationExRange")->SetResult(msg->imu_cmd.linear_acceleration.y);
+      msg->linear_acceleration.z);
+    msg_accel->GetSignal("LateralAccelerationExRange")->SetResult(msg->linear_acceleration.y);
     msg_accel->GetSignal("LongitudinalAccelerationExRange")->SetResult(
-      msg->imu_cmd.linear_acceleration.x);
+      msg->linear_acceleration.x);
 
-    msg_rotate->GetSignal("AngularRateMeasurementLatency")->SetResult(msg->imu_est_latency);
-    msg_rotate->GetSignal("YawRateExRange")->SetResult(msg->imu_cmd.angular_velocity.z * -1);
-    msg_rotate->GetSignal("RollRateExRange")->SetResult(msg->imu_cmd.angular_velocity.x);
-    msg_rotate->GetSignal("PitchRateExRange")->SetResult(msg->imu_cmd.angular_velocity.y * -1);
+    msg_rotate->GetSignal("YawRateExRange")->SetResult(msg->angular_velocity.z * -1);
+    msg_rotate->GetSignal("RollRateExRange")->SetResult(msg->angular_velocity.x);
+    msg_rotate->GetSignal("PitchRateExRange")->SetResult(msg->angular_velocity.y * -1);
+
+    // Calculate latency
+    rclcpp::Time curr_time = m_clock.now();
+    double latency_msec = 0.0F;
+
+    if (curr_time > msg->header.stamp) { // Check if header time is valid
+      rclcpp::Duration latency_nsec = curr_time - msg->header.stamp;
+      latency_msec = latency_nsec.nanoseconds() / 1000.0F;
+    }
+
+    msg_rotate->GetSignal("AngularRateMeasurementLatency")->SetResult(latency_msec);
   }
 
   // Publish both messages

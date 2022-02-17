@@ -48,7 +48,6 @@ set(msg_files
   "msg/HmiGlobalEnableReport.msg"
   "msg/HornState.msg"
   "msg/Ignition.msg"
-  "msg/ImuCmd.msg"
   "msg/LowBeam.msg"
   "msg/LowBeamState.msg"
   "msg/LowVoltageSystemReport.msg"

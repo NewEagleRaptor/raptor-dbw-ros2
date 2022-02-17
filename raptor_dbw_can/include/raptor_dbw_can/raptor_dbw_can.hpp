@@ -56,7 +56,6 @@
 #include <raptor_dbw_msgs/msg/gps_reference_report.hpp>
 #include <raptor_dbw_msgs/msg/gps_remainder_report.hpp>
 #include <raptor_dbw_msgs/msg/hmi_global_enable_report.hpp>
-#include <raptor_dbw_msgs/msg/imu_cmd.hpp>
 #include <raptor_dbw_msgs/msg/low_voltage_system_report.hpp>
 #include <raptor_dbw_msgs/msg/misc_cmd.hpp>
 #include <raptor_dbw_msgs/msg/misc_report.hpp>
@@ -121,7 +120,6 @@ using raptor_dbw_msgs::msg::HighBeamState;
 using raptor_dbw_msgs::msg::HmiGlobalEnableReport;
 using raptor_dbw_msgs::msg::HornState;
 using raptor_dbw_msgs::msg::Ignition;
-using raptor_dbw_msgs::msg::ImuCmd;
 using raptor_dbw_msgs::msg::LowBeam;
 using raptor_dbw_msgs::msg::LowBeamState;
 using raptor_dbw_msgs::msg::LowVoltageSystemReport;
@@ -310,7 +308,7 @@ private:
 /** \brief Convert an IMU Command sent as a ROS message into CAN messages.
  * \param[in] msg The message to send over CAN.
  */
-  void recvImuCmd(const ImuCmd::SharedPtr msg);
+  void recvImuCmd(const Imu::SharedPtr msg);
 
 /** \brief Convert a Misc. Command sent as a ROS message into a CAN message.
  * \param[in] msg The message to send over CAN.
@@ -522,7 +520,7 @@ private:
   rclcpp::Subscription<BrakeCmd>::SharedPtr sub_brake_;
   rclcpp::Subscription<GearCmd>::SharedPtr sub_gear_;
   rclcpp::Subscription<GlobalEnableCmd>::SharedPtr sub_global_enable_;
-  rclcpp::Subscription<ImuCmd>::SharedPtr sub_imu_;
+  rclcpp::Subscription<Imu>::SharedPtr sub_imu_;
   rclcpp::Subscription<MiscCmd>::SharedPtr sub_misc_;
   rclcpp::Subscription<SteeringCmd>::SharedPtr sub_steering_;
 
