@@ -306,6 +306,23 @@ private:
   void recvGlobalEnableCmd(const GlobalEnableCmd::SharedPtr msg);
 
 /** \brief Convert an IMU Command sent as a ROS message into CAN messages.
+ * 
+ * Uses Z-up axis system:
+ * +x = forward,
+ * +y = left,
+ * +z = up
+ * 
+ * roll = rotation around X axis
+ * pitch = rotation around Y axis
+ * yaw = rotation around Z axis
+ * longitudinal = +/- X axis
+ * lateral = +/- Y axis
+ * vertical = +/- Z axis
+ *
+ * Note:
+ * Yaw/Pitch/Roll commands are received in 
+ * Z-down orientation & converted to Z-up
+ *
  * \param[in] msg The message to send over CAN.
  */
   void recvImuCmd(const Imu::SharedPtr msg);
