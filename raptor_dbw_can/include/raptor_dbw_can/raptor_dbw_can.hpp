@@ -160,9 +160,14 @@ public:
 
 private:
 /** \brief If DBW is enabled && there are active driver overrides,
- *    do not send commands on the overridden system.
+ *    do not send commands on the overridden system. (200ms period)
  */
-  void timerCallback();
+  void timer_200ms_Callback();
+
+/** \brief If DBW is enabled && messages are timed out,
+ *    send error values. (10ms period)
+ */
+  void timer_10ms_Callback();
 
 /** \brief Attempt to enable the DBW system.
  * \param[in] msg Enable message (must not be null)
@@ -306,12 +311,12 @@ private:
   void recvGlobalEnableCmd(const GlobalEnableCmd::SharedPtr msg);
 
 /** \brief Convert an IMU Command sent as a ROS message into CAN messages.
- * 
+ *
  * Uses Z-up axis system:
  * +x = forward,
  * +y = left,
  * +z = up
- * 
+ *
  * roll = rotation around X axis
  * pitch = rotation around Y axis
  * yaw = rotation around Z axis
@@ -320,7 +325,7 @@ private:
  * vertical = +/- Z axis
  *
  * Note:
- * Yaw/Pitch/Roll commands are received in 
+ * Yaw/Pitch/Roll commands are received in
  * Z-down orientation & converted to Z-up
  *
  * \param[in] msg The message to send over CAN.
@@ -337,9 +342,17 @@ private:
  */
   void recvSteeringCmd(const SteeringCmd::SharedPtr msg);
 
-  rclcpp::TimerBase::SharedPtr timer_;
+  // Time-related variables
+  rclcpp::TimerBase::SharedPtr timer_200ms;
+  rclcpp::TimerBase::SharedPtr timer_10ms_;
   rclcpp::Clock m_clock;
   static constexpr int64_t CLOCK_1_SEC = 1000;  // duration in milliseconds
+  static constexpr double NSEC_TO_MSEC = 1000.0F;  // convert nanoseconds to milliseconds
+  static constexpr double IMU_TIMEOUT_MSEC = 15.0F;  // 15 ms
+
+  /* These timestamps are saved to detect timeouts
+   */
+  rclcpp::Time t_stamp_last_imu_cmd{};
 
   // Parameters from launch
   std::string dbw_dbc_file_;
@@ -352,7 +365,7 @@ private:
 
   bool m_seen_imu2_rpt{false};
 
-  // Other useful variables
+  // Other useful items
 
   // Constants
   static constexpr double DEG_TO_RAD = M_PI / 180.0F;
@@ -514,6 +527,14 @@ private:
   void publishJointStates(
     const rclcpp::Time stamp,
     const WheelSpeedReport wheels);
+
+  /** \brief Scale a message value to a real value using gain & offset
+   * \param[in] in_val input value
+   * \param[in] gain gain to apply
+   * \param[in] offset offset to apply
+   * \returns the scaled value as a double
+   */
+  double applyScaling(uint32_t in_val, double gain, double offset);
 
   // Licensing
   std::string vin_;
