@@ -61,6 +61,7 @@
 #include <raptor_dbw_msgs/msg/misc_report.hpp>
 #include <raptor_dbw_msgs/msg/other_actuators_report.hpp>
 #include <raptor_dbw_msgs/msg/steering2_report.hpp>
+#include <raptor_dbw_msgs/msg/steering3_report.hpp>
 #include <raptor_dbw_msgs/msg/steering_cmd.hpp>
 #include <raptor_dbw_msgs/msg/steering_report.hpp>
 #include <raptor_dbw_msgs/msg/surround_report.hpp>
@@ -129,6 +130,7 @@ using raptor_dbw_msgs::msg::OtherActuatorsReport;
 using raptor_dbw_msgs::msg::ParkingBrake;
 using raptor_dbw_msgs::msg::SonarArcNum;
 using raptor_dbw_msgs::msg::Steering2Report;
+using raptor_dbw_msgs::msg::Steering3Report;
 using raptor_dbw_msgs::msg::SteeringCmd;
 using raptor_dbw_msgs::msg::SteeringReport;
 using raptor_dbw_msgs::msg::SurroundReport;
@@ -263,6 +265,11 @@ private:
  * \param[in] msg The message received over CAN.
  */
   void recvSteering2Rpt(const Frame::SharedPtr msg);
+
+/** \brief Convert a Steering3 Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
+  void recvSteering3Rpt(const Frame::SharedPtr msg);
 
 /** \brief Convert a Surround Report received over CAN into a ROS message.
  * \param[in] msg The message received over CAN.
@@ -581,6 +588,7 @@ private:
   rclcpp::Publisher<OtherActuatorsReport>::SharedPtr pub_other_actuators_report_;
   rclcpp::Publisher<SteeringReport>::SharedPtr pub_steering_;
   rclcpp::Publisher<Steering2Report>::SharedPtr pub_steering_2_report_;
+  rclcpp::Publisher<Steering3Report>::SharedPtr pub_steering_3_report_;
   rclcpp::Publisher<SurroundReport>::SharedPtr pub_surround_;
   rclcpp::Publisher<TirePressureReport>::SharedPtr pub_tire_pressure_;
   rclcpp::Publisher<String>::SharedPtr pub_vin_;

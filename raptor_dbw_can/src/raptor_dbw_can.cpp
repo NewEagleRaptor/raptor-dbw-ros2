@@ -112,6 +112,8 @@ RaptorDbwCAN::RaptorDbwCAN(
     20);
   pub_steering_2_report_ = this->create_publisher<Steering2Report>(
     "steering_2_report", 20);
+  pub_steering_3_report_ = this->create_publisher<Steering3Report>(
+    "steering_3_report", 20);
   pub_exit_report_ = this->create_publisher<ExitReport>(
     "exit_report", 20);
   pub_fault_actions_report_ = this->create_publisher<FaultActionsReport>(
@@ -264,6 +266,10 @@ void RaptorDbwCAN::recvCAN(const Frame::SharedPtr msg)
 
       case ID_STEERING_2_REPORT:
         recvSteering2Rpt(msg);
+        break;
+
+      case ID_STEERING_3_REPORT:
+        recvSteering3Rpt(msg);
         break;
 
       case ID_FAULT_ACTION_REPORT:
@@ -841,6 +847,29 @@ void RaptorDbwCAN::recvSteering2Rpt(const Frame::SharedPtr msg)
       message->GetSignal("DBW_SteerTrq_DriverExpectedValue")->GetResult();
 
     pub_steering_2_report_->publish(steering2Report);
+  }
+}
+
+void RaptorDbwCAN::recvSteering3Rpt(const Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_STEERING_3_REPORT);
+
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
+
+    Steering3Report steering3Report;
+    steering3Report.header.stamp = msg->header.stamp;
+
+    steering3Report.steer_angle_act_2 = message->GetSignal(
+      "DBW_SteeringWhlAngleAct2")->GetResult();
+
+    steering3Report.rollover_cnt_1 =
+      message->GetSignal("DBW_SteeringWhlAngleRllvrCnt")->GetResult();
+
+    steering3Report.rollover_cnt_2 =
+      message->GetSignal("DBW_SteeringWhlAngleRllvrCnt2")->GetResult();
+
+    pub_steering_3_report_->publish(steering3Report);
   }
 }
 

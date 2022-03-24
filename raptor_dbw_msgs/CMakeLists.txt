@@ -57,6 +57,7 @@ set(msg_files
   "msg/ParkingBrake.msg"
   "msg/SonarArcNum.msg"  
   "msg/Steering2Report.msg"
+  "msg/Steering3Report.msg"
   "msg/SteeringCmd.msg"
   "msg/SteeringReport.msg"
   "msg/SurroundReport.msg"  

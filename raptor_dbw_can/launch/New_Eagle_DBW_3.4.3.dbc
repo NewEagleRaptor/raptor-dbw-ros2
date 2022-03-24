@@ -62,8 +62,8 @@ BO_ 2147491586 DBW_AccelPdlReport: 8 DBW
  SG_ DBW_AccelCtrlType : 46|2@1+ (1,0) [0|3] "Enum" Vector__XXX
 
 BO_ 2147491587 DBW_SteeringReport: 8 DBW
- SG_ DBW_SteeringWhlAngleAct : 0|14@1- (0.1,0) [-819.2|819.1] "deg" Vector__XXX
- SG_ DBW_SteeringWhlAngleDes : 16|14@1- (0.1,0) [-819.2|819.1] "deg" Vector__XXX
+ SG_ DBW_SteeringWhlAngleAct : 0|16@1- (0.1,0) [-1500|1500] "deg" Vector__XXX
+ SG_ DBW_SteeringWhlAngleDes : 16|16@1- (0.1,0) [-1500|1500] "deg" Vector__XXX
  SG_ DBW_SteeringWhlPcntTrqCmd : 32|14@1- (0.02,0) [-100|100] "%-torque" Vector__XXX
  SG_ DBW_SteeringEnabled : 48|1@1+ (1,0) [0|1] "Bool" Vector__XXX
  SG_ DBW_SteeringDriverActivity : 49|1@1+ (1,0) [0|1] "Bool" Vector__XXX
@@ -141,7 +141,7 @@ BO_ 2147495686 AKit_OtherActuators: 8 AKit
  SG_ AKit_DoorLockReq : 0|2@1+ (1,0) [0|2] "Enum" Vector__XXX
 
 BO_ 2147495683 AKit_SteeringRequest: 8 AKit
- SG_ AKit_SteeringWhlAngleReq m1 : 0|14@1- (0.1,0) [-819.2|819.1] "deg" Vector__XXX
+ SG_ AKit_SteeringWhlAngleReq m1 : 0|16@1- (0.1,0) [-1500|1500] "deg" Vector__XXX
  SG_ AKit_SteeringWhlAngleVelocityLim : 16|7@1+ (10,0) [0|1270] "deg/s" Vector__XXX
  SG_ AKit_SteerCtrlEnblReq : 52|1@1+ (1,0) [0|0] "" Vector__XXX
  SG_ AKit_SteerRollingCntr : 48|4@1+ (1,0) [0|15] "" Vector__XXX
@@ -392,6 +392,11 @@ BO_ 2364549776 AKit_ARI: 8 AKit
 BO_ 2147491622 DBW_ImuReport_2: 8 DBW
  SG_ DBW_ImuPitchRate : 0|16@1+ (0.01,-327.68) [-327.68|327.66] "deg/s" Vector__XXX
  SG_ DBW_ImuRollRate : 16|16@1+ (0.01,-327.68) [-327.68|327.66] "deg/s" Vector__XXX
+
+BO_ 2147491623 DBW_SteeringReport3: 8 DBW
+ SG_ DBW_SteeringWhlAngleAct2 : 0|16@1- (0.1,0) [-1500|1500] "deg" Vector__XXX
+ SG_ DBW_SteeringWhlAngleRllvrCnt : 16|4@1- (1,0) [-8|7] "" Vector__XXX
+ SG_ DBW_SteeringWhlAngleRllvrCnt2 : 24|4@1- (1,0) [-8|7] "" Vector__XXX
 
 
 
@@ -1306,6 +1311,10 @@ CM_ SG_ 2364549776 PitchRateExRange "Pitch rate is the rate-of-change of the pit
 CM_ BO_ 2147491622 "IMU = Intertial Measurement Unit";
 CM_ SG_ 2147491622 DBW_ImuPitchRate "Z-up axis system";
 CM_ SG_ 2147491622 DBW_ImuRollRate "Z-up axis system";
+CM_ BO_ 2147491623 "Additional steering information for relative SAS.";
+CM_ SG_ 2147491623 DBW_SteeringWhlAngleAct2 "Actual position of the steering wheel from secondary steer angle sensor. counterclockwise = positive. Note, only some vehicles have or report redundant steer angle sensors.";
+CM_ SG_ 2147491623 DBW_SteeringWhlAngleRllvrCnt "Rollover count for secondary steer angle sensor. clockwise = positive. Each count is 360 degrees. Not all vehicles report these values.";
+CM_ SG_ 2147491623 DBW_SteeringWhlAngleRllvrCnt2 "Rollover count for secondary steer angle sensor. clockwise = positive. Each count is 360 degrees. Not all vehicles report these values.";
 VAL_ 2147491585 DBW_MiscByWireEnabled 0 "ManualMode" 1 "DriveByWireMode" ;
 VAL_ 2147491585 DBW_MiscByWireReady 0 "Not_Ready" 1 "Ready" ;
 VAL_ 2147491586 DBW_AccelCtrlType 0 "Open Loop (Pedal %-Positon)" 1 "Actuator-Level Closed Loop (Accelerator %-Torque)" 2 "Vehicle-Level Closed Loop (Vehicle Speed)" ;
@@ -1357,4 +1366,3 @@ VAL_ 2147491604 DBW_DoorLockState 0 "Reserved" 1 "Unlock_Doors" 2 "Lock_Doors" 3
 VAL_ 2147491604 DBW_TurnSignalSyncBit 0 "Bulb Off or State Unknown" 1 "Bulb On" ;
 VAL_ 2147491605 DBW_EmgrStopBtnPrssd 1 "Pressed" 0 "Not Pressed" ;
 VAL_ 2147491605 DBW_RemoteEmgrStopBtnPrssd 0 "Not Pressed" 1 "Pressed" 3 "SNA" ;
-
