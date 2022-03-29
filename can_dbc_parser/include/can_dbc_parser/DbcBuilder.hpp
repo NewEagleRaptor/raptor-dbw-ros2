@@ -73,7 +73,7 @@ private:
 };
 
 
-static NewEagle::DbcSignalValueType ReadSignalValueType(NewEagle::LineParser parser)
+__attribute__((unused)) static NewEagle::DbcSignalValueType ReadSignalValueType(NewEagle::LineParser parser)
 {
   NewEagle::DbcSignalValueType signalValueType;
 
@@ -85,7 +85,7 @@ static NewEagle::DbcSignalValueType ReadSignalValueType(NewEagle::LineParser par
   return signalValueType;
 }
 
-static NewEagle::DbcAttribute ReadAttribute(NewEagle::LineParser parser)
+__attribute__((unused)) static NewEagle::DbcAttribute ReadAttribute(NewEagle::LineParser parser)
 {
   NewEagle::DbcAttribute attribute;
 
@@ -109,7 +109,7 @@ static NewEagle::DbcAttribute ReadAttribute(NewEagle::LineParser parser)
   return attribute;
 }
 
-static NewEagle::DbcMessageComment ReadMessageComment(NewEagle::LineParser parser)
+ __attribute__((unused)) static NewEagle::DbcMessageComment ReadMessageComment(NewEagle::LineParser parser)
 {
   NewEagle::DbcMessageComment comment;
   comment.Id = parser.ReadUInt("id");
@@ -118,7 +118,7 @@ static NewEagle::DbcMessageComment ReadMessageComment(NewEagle::LineParser parse
   return comment;
 }
 
-static NewEagle::DbcSignalComment ReadSignalComment(NewEagle::LineParser parser)
+__attribute__((unused)) static NewEagle::DbcSignalComment ReadSignalComment(NewEagle::LineParser parser)
 {
   NewEagle::DbcSignalComment comment;
   comment.Id = parser.ReadUInt("id");
@@ -128,7 +128,7 @@ static NewEagle::DbcSignalComment ReadSignalComment(NewEagle::LineParser parser)
   return comment;
 }
 
-static NewEagle::DbcMessage ReadMessage(NewEagle::LineParser parser)
+__attribute__((unused)) static  NewEagle::DbcMessage ReadMessage(NewEagle::LineParser parser)
 {
   uint32_t canId = parser.ReadUInt("message id");
   IdType idType = ((canId & 0x80000000u) > 0) ? NewEagle::EXT : NewEagle::STD;
@@ -142,7 +142,7 @@ static NewEagle::DbcMessage ReadMessage(NewEagle::LineParser parser)
   return msg;
 }
 
-static NewEagle::DbcSignal ReadSignal(NewEagle::LineParser parser)
+__attribute__((unused)) static NewEagle::DbcSignal ReadSignal(NewEagle::LineParser parser)
 {
   std::string name = parser.ReadCIdentifier();
   char mux = parser.ReadNextChar("mux");
