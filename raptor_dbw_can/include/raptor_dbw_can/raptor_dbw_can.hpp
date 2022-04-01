@@ -354,7 +354,7 @@ private:
   rclcpp::TimerBase::SharedPtr timer_10ms_;
   rclcpp::Clock m_clock;
   static constexpr int64_t CLOCK_1_SEC = 1000;  // duration in milliseconds
-  static constexpr double NSEC_TO_MSEC = 1000.0F;  // convert nanoseconds to milliseconds
+  static constexpr double NSEC_TO_MSEC = 1000000.0F;  // convert nanoseconds to milliseconds
   static constexpr double IMU_TIMEOUT_MSEC = 15.0F;  // 15 ms
 
   /* These timestamps are saved to detect timeouts
