@@ -1269,7 +1269,7 @@ void RaptorDbwCAN::recvImuCmd(const Imu::SharedPtr msg)
     msg_rotate->GetSignal("PitchRateExRange")->SetResult(msg->angular_velocity.y * -1);
 
     // Calculate latency
-    rclcpp::Time curr_time = m_clock.now();
+    rclcpp::Time curr_time = this->now();
     double latency_msec = 0.0F;
 
     if (curr_time > msg->header.stamp) { // Check if header time is valid
@@ -1364,7 +1364,7 @@ void RaptorDbwCAN::timer_10ms_Callback()
 {
   // Check for timeouts
   if (enabled()) {
-    rclcpp::Time curr_time = m_clock.now();
+    rclcpp::Time curr_time = this->now();
 
     // Check if IMU command has timed out
     rclcpp::Duration timeout_nsec = curr_time - t_stamp_last_imu_cmd;
