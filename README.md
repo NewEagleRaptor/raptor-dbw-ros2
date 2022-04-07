@@ -18,7 +18,8 @@ This repository contains a collection of ROS2 packages which allow DBW kit devel
 
 ## Official Releases
 raptor-dbw-ros2 is being officially released through the ROS Build Farm.  
-Latest release version is foxy-1.2.0.
+Latest release version is foxy-1.2.0.  
+See the "Tags" tab for other releases.
 
 ## Building from source
 raptor-dbw-ros2 can be built from source using colcon build. It also requires package kvaser-interface.
