@@ -20,7 +20,8 @@ This repository contains a collection of ROS2 packages which allow DBW kit devel
 
 ## Official Releases
 raptor-dbw-ros2 is being officially released through the ROS Build Farm for foxy and later distros.
-Dashing is not being released through the ROS Build Farm.
+Dashing is not being released through the ROS Build Farm.  
+See the "Tags" tab for other releases.
 
 ## Building from source
 raptor-dbw-ros2 can be built from source using colcon build. It also requires package kvaser-interface.
