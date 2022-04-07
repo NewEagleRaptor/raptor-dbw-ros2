@@ -1,7 +1,7 @@
 # raptor-dbw-ros2
 
-This is a continuation of the [raptor_dbw_ros repo](https://github.com/NewEagleRaptor/raptor-dbw-ros) but in ROS2
-This is the product of transferring the ROS1 codebase to ROS2
+This is a continuation of the [raptor_dbw_ros repo](https://github.com/NewEagleRaptor/raptor-dbw-ros) but in ROS2.  
+This is the product of transferring the ROS1 codebase to ROS2.
 
 This repository contains a collection of ROS2 packages which allow DBW kit developers to quickly implement a generic ROS2 node for interacting with the New Eagle Raptor controller.
 
@@ -17,7 +17,7 @@ This repository contains a collection of ROS2 packages which allow DBW kit devel
 # Installing and building
 
 ## Official Releases
-raptor-dbw-ros2 is being officially released through the ROS Build Farm.
+raptor-dbw-ros2 is being officially released through the ROS Build Farm.  
 Latest release version is foxy-1.2.0.
 
 ## Building from source
