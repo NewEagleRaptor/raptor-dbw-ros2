@@ -39,9 +39,9 @@ int main(int argc, char ** argv)
 
   // Get parameter values
   auto temp = std::make_shared<rclcpp::Node>("get_dbw_params_node", options);
-  temp->declare_parameter("dbw_dbc_file");
-  temp->declare_parameter("max_steer_angle");
-
+  temp->declare_parameter("dbw_dbc_file", rclcpp::PARAMETER_STRING);
+  temp->declare_parameter("max_steer_angle", rclcpp::PARAMETER_DOUBLE);
+  
   std::string n_dbw_dbc_file = temp->get_parameter("dbw_dbc_file").as_string();
   float n_max_steer_angle = temp->get_parameter("max_steer_angle").as_double();
 
