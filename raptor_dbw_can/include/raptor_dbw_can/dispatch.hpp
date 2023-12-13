@@ -77,7 +77,10 @@ enum ListMessageIDs
   ID_FAULT_ACTION_REPORT        = 0x1F15,   /**< Fault action report ID */
   ID_GPS_REFERENCE_REPORT       = 0x1F16,   /**< GPS reference report ID */
   ID_GPS_REMAINDER_REPORT       = 0x1F17,   /**< GPS remainder report ID */
-  ID_EXIT_REPORT                = 0x1F24,   /**< Exit report ID */
+  ID_MPDM_1_CMD                 = 0x2F29,   /**< MPDM 1 command ID*/
+  ID_MPDM_1_REPORT              = 0x1F29,   /**< MPDM 1 report ID*/
+  ID_MPDM_2_CMD                 = 0x2F2A,   /**< MPDM 2 command ID*/
+  ID_MPDM_2_REPORT              = 0x1F2A,   /**< MPDM 2 report ID*/
   ID_HMI_GLOBAL_ENABLE_REPORT   = 0x3f01,   /**< HMI global enable report ID */
 };
 

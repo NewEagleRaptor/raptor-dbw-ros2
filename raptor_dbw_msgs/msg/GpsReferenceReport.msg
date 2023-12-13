@@ -5,4 +5,3 @@ std_msgs/Header header
 # 0.005 deg ~= 555 meters
 float32 ref_latitude
 float32 ref_longitude
-float32 ref_heading

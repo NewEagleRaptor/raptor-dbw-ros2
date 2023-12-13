@@ -1,0 +1,16 @@
+uint8 mpdm_relay_cmd_01
+uint8 mpdm_relay_cmd_02
+uint8 mpdm_relay_cmd_03
+uint8 mpdm_relay_cmd_04
+uint8 mpdm_relay_cmd_05
+uint8 mpdm_relay_cmd_06
+uint8 mpdm_relay_cmd_07
+uint8 mpdm_relay_cmd_08
+uint8 mpdm_relay_cmd_09
+uint8 mpdm_relay_cmd_10
+uint8 mpdm_relay_cmd_11
+uint8 mpdm_relay_cmd_12
+
+MpdmReqType mpdm_relay_req_type
+uint8 rolling_counter
+uint8 checksum

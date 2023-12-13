@@ -47,8 +47,8 @@
 #include <raptor_dbw_msgs/msg/brake2_report.hpp>
 #include <raptor_dbw_msgs/msg/brake_cmd.hpp>
 #include <raptor_dbw_msgs/msg/brake_report.hpp>
+#include <raptor_dbw_msgs/msg/button_state.hpp>
 #include <raptor_dbw_msgs/msg/driver_input_report.hpp>
-#include <raptor_dbw_msgs/msg/exit_report.hpp>
 #include <raptor_dbw_msgs/msg/fault_actions_report.hpp>
 #include <raptor_dbw_msgs/msg/gear_cmd.hpp>
 #include <raptor_dbw_msgs/msg/gear_report.hpp>
@@ -59,6 +59,9 @@
 #include <raptor_dbw_msgs/msg/low_voltage_system_report.hpp>
 #include <raptor_dbw_msgs/msg/misc_cmd.hpp>
 #include <raptor_dbw_msgs/msg/misc_report.hpp>
+#include <raptor_dbw_msgs/msg/mpdm_cmd.hpp>
+#include <raptor_dbw_msgs/msg/mpdm_report.hpp>
+#include <raptor_dbw_msgs/msg/mpdm_req_type.hpp>
 #include <raptor_dbw_msgs/msg/other_actuators_report.hpp>
 #include <raptor_dbw_msgs/msg/steering2_report.hpp>
 #include <raptor_dbw_msgs/msg/steering_cmd.hpp>
@@ -107,7 +110,6 @@ using raptor_dbw_msgs::msg::DoorLock;
 using raptor_dbw_msgs::msg::DoorRequest;
 using raptor_dbw_msgs::msg::DoorState;
 using raptor_dbw_msgs::msg::DriverInputReport;
-using raptor_dbw_msgs::msg::ExitReport;
 using raptor_dbw_msgs::msg::FaultActionsReport;
 using raptor_dbw_msgs::msg::Gear;
 using raptor_dbw_msgs::msg::GearCmd;
@@ -125,6 +127,9 @@ using raptor_dbw_msgs::msg::LowBeamState;
 using raptor_dbw_msgs::msg::LowVoltageSystemReport;
 using raptor_dbw_msgs::msg::MiscCmd;
 using raptor_dbw_msgs::msg::MiscReport;
+using raptor_dbw_msgs::msg::MpdmCmd;
+using raptor_dbw_msgs::msg::MpdmReport;
+using raptor_dbw_msgs::msg::MpdmReqType;
 using raptor_dbw_msgs::msg::OtherActuatorsReport;
 using raptor_dbw_msgs::msg::ParkingBrake;
 using raptor_dbw_msgs::msg::SonarArcNum;
@@ -199,11 +204,6 @@ private:
  */
   void recvDriverInputRpt(const Frame::SharedPtr msg);
 
-/** \brief Convert an Exit Report received over CAN into a ROS message.
- * \param[in] msg The message received over CAN.
- */
-  void recvExitRpt(const Frame::SharedPtr msg);
-
 /** \brief Convert a Fault Action Report received over CAN into a ROS message.
  * \param[in] msg The message received over CAN.
  */
@@ -238,6 +238,16 @@ private:
  * \param[in] msg The message received over CAN.
  */
   void recvMiscRpt(const Frame::SharedPtr msg);
+
+/** \brief Convert an MPDM 1 Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
+  void recvMpdm1Rpt(const Frame::SharedPtr msg);
+
+/** \brief Convert an MPDM 2 Report received over CAN into a ROS message.
+ * \param[in] msg The message received over CAN.
+ */
+  void recvMpdm2Rpt(const Frame::SharedPtr msg);
 
 /** \brief Convert an Other Actuators Report received over CAN into a ROS message.
  * \param[in] msg The message received over CAN.
@@ -304,6 +314,16 @@ private:
  * \param[in] msg The message to send over CAN.
  */
   void recvMiscCmd(const MiscCmd::SharedPtr msg);
+
+/** \brief Convert an MPDM 1 Command sent as a ROS message into a CAN message.
+ * \param[in] msg The message to send over CAN.
+ */
+  void recvMpdm1Cmd(const MpdmCmd::SharedPtr msg);
+
+/** \brief Convert an MPDM 2 Command sent as a ROS message into a CAN message.
+ * \param[in] msg The message to send over CAN.
+ */
+  void recvMpdm2Cmd(const MpdmCmd::SharedPtr msg);
 
 /** \brief Convert a Steering Command sent as a ROS message into a CAN message.
  * \param[in] msg The message to send over CAN.
@@ -501,6 +521,8 @@ private:
   rclcpp::Subscription<GearCmd>::SharedPtr sub_gear_;
   rclcpp::Subscription<GlobalEnableCmd>::SharedPtr sub_global_enable_;
   rclcpp::Subscription<MiscCmd>::SharedPtr sub_misc_;
+  rclcpp::Subscription<MpdmCmd>::SharedPtr sub_mpdm_1_;
+  rclcpp::Subscription<MpdmCmd>::SharedPtr sub_mpdm_2_;
   rclcpp::Subscription<SteeringCmd>::SharedPtr sub_steering_;
 
   // Published topics
@@ -510,11 +532,12 @@ private:
   rclcpp::Publisher<BrakeReport>::SharedPtr pub_brake_;
   rclcpp::Publisher<Brake2Report>::SharedPtr pub_brake_2_report_;
   rclcpp::Publisher<DriverInputReport>::SharedPtr pub_driver_input_;
-  rclcpp::Publisher<ExitReport>::SharedPtr pub_exit_report_;
   rclcpp::Publisher<FaultActionsReport>::SharedPtr pub_fault_actions_report_;
   rclcpp::Publisher<GearReport>::SharedPtr pub_gear_;
   rclcpp::Publisher<GpsReferenceReport>::SharedPtr pub_gps_reference_report_;
   rclcpp::Publisher<GpsRemainderReport>::SharedPtr pub_gps_remainder_report_;
+  rclcpp::Publisher<MpdmReport>::SharedPtr pub_mpdm_1_report_;
+  rclcpp::Publisher<MpdmReport>::SharedPtr pub_mpdm_2_report_;
   rclcpp::Publisher<Imu>::SharedPtr pub_imu_;
   rclcpp::Publisher<JointState>::SharedPtr pub_joint_states_;
   rclcpp::Publisher<LowVoltageSystemReport>::SharedPtr pub_low_voltage_system_;

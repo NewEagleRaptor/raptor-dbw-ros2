@@ -112,8 +112,6 @@ RaptorDbwCAN::RaptorDbwCAN(
     20);
   pub_steering_2_report_ = this->create_publisher<Steering2Report>(
     "steering_2_report", 20);
-  pub_exit_report_ = this->create_publisher<ExitReport>(
-    "exit_report", 20);
   pub_fault_actions_report_ = this->create_publisher<FaultActionsReport>(
     "fault_actions_report", 20);
   pub_other_actuators_report_ = this->create_publisher<OtherActuatorsReport>(
@@ -122,6 +120,10 @@ RaptorDbwCAN::RaptorDbwCAN(
     "gps_reference_report", 20);
   pub_gps_remainder_report_ = this->create_publisher<GpsRemainderReport>(
     "gps_remainder_report", 20);
+  pub_mpdm_1_report_ = this->create_publisher<MpdmReport>(
+    "mpdm_1_report", 20);
+  pub_mpdm_2_report_ = this->create_publisher<MpdmReport>(
+    "mpdm_2_report", 20);
 
   pub_imu_ = this->create_publisher<Imu>("imu/data_raw", 10);
   pub_joint_states_ = this->create_publisher<JointState>("joint_states", 10);
@@ -157,6 +159,12 @@ RaptorDbwCAN::RaptorDbwCAN(
 
   sub_misc_ = this->create_subscription<MiscCmd>(
     "misc_cmd", 1, std::bind(&RaptorDbwCAN::recvMiscCmd, this, std::placeholders::_1));
+
+  sub_mpdm_1_ = this->create_subscription<MpdmCmd>(
+    "mpdm_1_cmd", 1, std::bind(&RaptorDbwCAN::recvMpdm1Cmd, this, std::placeholders::_1));
+
+  sub_mpdm_2_ = this->create_subscription<MpdmCmd>(
+    "mpdm_2_cmd", 1, std::bind(&RaptorDbwCAN::recvMpdm2Cmd, this, std::placeholders::_1));
 
   sub_global_enable_ = this->create_subscription<GlobalEnableCmd>(
     "global_enable_cmd", 1,
@@ -271,8 +279,12 @@ void RaptorDbwCAN::recvCAN(const Frame::SharedPtr msg)
         recvGpsRemainderRpt(msg);
         break;
 
-      case ID_EXIT_REPORT:
-        recvExitRpt(msg);
+      case ID_MPDM_1_REPORT:
+        recvMpdm1Rpt(msg);
+        break;
+
+      case ID_MPDM_2_REPORT:
+        recvMpdm2Rpt(msg);
         break;
 
       case ID_BRAKE_CMD:
@@ -282,6 +294,10 @@ void RaptorDbwCAN::recvCAN(const Frame::SharedPtr msg)
       case ID_STEERING_CMD:
         break;
       case ID_GEAR_CMD:
+        break;
+      case ID_MPDM_1_CMD:
+        break;
+      case ID_MPDM_2_CMD:
         break;
       default:
         break;
@@ -818,10 +834,6 @@ void RaptorDbwCAN::recvFaultActionRpt(const Frame::SharedPtr msg)
       message->GetSignal("DBW_FltAct_Chime_FcwBeeps")->GetResult();
     faultActionsReport.last_active_fault_idx =
       message->GetSignal("DBW_IdxOfLastActiveFault")->GetResult();
-    faultActionsReport.estop_btn_pressed =
-      message->GetSignal("DBW_EmgrStopBtnPrssd")->GetResult();
-    faultActionsReport.remote_estop_btn_pressed.value =
-      message->GetSignal("DBW_RemoteEmgrStopBtnPrssd")->GetResult();
 
     pub_fault_actions_report_->publish(faultActionsReport);
   }
@@ -885,9 +897,6 @@ void RaptorDbwCAN::recvGpsReferenceRpt(const Frame::SharedPtr msg)
     out.ref_longitude = message->GetSignal(
       "DBW_GpsRefLong")->GetResult();
 
-    out.ref_heading = message->GetSignal(
-      "Dbw_GpsHeading")->GetResult();
-
     pub_gps_reference_report_->publish(out);
   }
 }
@@ -912,32 +921,57 @@ void RaptorDbwCAN::recvGpsRemainderRpt(const Frame::SharedPtr msg)
   }
 }
 
-void RaptorDbwCAN::recvExitRpt(const Frame::SharedPtr msg)
+void RaptorDbwCAN::recvMpdm1Rpt(const Frame::SharedPtr msg)
 {
-  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_EXIT_REPORT);
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_MPDM_1_REPORT);
 
   if (msg->dlc >= message->GetDlc()) {
     message->SetFrame(msg);
 
-    ExitReport out;
+    MpdmReport out;
     out.header.stamp = msg->header.stamp;
 
-    out.akit_disable = message->GetSignal(
-      "DBW_Exit_AKitDsbl")->GetResult();
+    out.mpdm_relay_status_01 = message->GetSignal("DBW_Mpdm1RelayStatus1")->GetResult();
+    out.mpdm_relay_status_02 = message->GetSignal("DBW_Mpdm1RelayStatus2")->GetResult();
+    out.mpdm_relay_status_03 = message->GetSignal("DBW_Mpdm1RelayStatus3")->GetResult();
+    out.mpdm_relay_status_04 = message->GetSignal("DBW_Mpdm1RelayStatus4")->GetResult();
+    out.mpdm_relay_status_05 = message->GetSignal("DBW_Mpdm1RelayStatus5")->GetResult();
+    out.mpdm_relay_status_06 = message->GetSignal("DBW_Mpdm1RelayStatus6")->GetResult();
+    out.mpdm_relay_status_07 = message->GetSignal("DBW_Mpdm1RelayStatus7")->GetResult();
+    out.mpdm_relay_status_08 = message->GetSignal("DBW_Mpdm1RelayStatus8")->GetResult();
+    out.mpdm_relay_status_09 = message->GetSignal("DBW_Mpdm1RelayStatus9")->GetResult();
+    out.mpdm_relay_status_10 = message->GetSignal("DBW_Mpdm1RelayStatus10")->GetResult();
+    out.mpdm_relay_status_11 = message->GetSignal("DBW_Mpdm1RelayStatus11")->GetResult();
+    out.mpdm_relay_status_12 = message->GetSignal("DBW_Mpdm1RelayStatus12")->GetResult();
 
-    out.driver_in_control = message->GetSignal(
-      "DBW_Exit_DrvInCtrl")->GetResult();
+    pub_mpdm_1_report_->publish(out);
+  }
+}
 
-    out.idx_auton_disable_no_brakes = message->GetSignal(
-      "DBW_Exit_AutonDsblNoBrakes")->GetResult();
+void RaptorDbwCAN::recvMpdm2Rpt(const Frame::SharedPtr msg)
+{
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessageById(ID_MPDM_2_REPORT);
 
-    out.idx_auton_disable_apply_brakes = message->GetSignal(
-      "DBW_Exit_AutonDsblAppyBrakes")->GetResult();
+  if (msg->dlc >= message->GetDlc()) {
+    message->SetFrame(msg);
 
-    out.auton_counter = message->GetSignal(
-      "DBW_Exit_Cntr")->GetResult();
+    MpdmReport out;
+    out.header.stamp = msg->header.stamp;
 
-    pub_exit_report_->publish(out);
+    out.mpdm_relay_status_01 = message->GetSignal("DBW_Mpdm2RelayStatus1")->GetResult();
+    out.mpdm_relay_status_02 = message->GetSignal("DBW_Mpdm2RelayStatus2")->GetResult();
+    out.mpdm_relay_status_03 = message->GetSignal("DBW_Mpdm2RelayStatus3")->GetResult();
+    out.mpdm_relay_status_04 = message->GetSignal("DBW_Mpdm2RelayStatus4")->GetResult();
+    out.mpdm_relay_status_05 = message->GetSignal("DBW_Mpdm2RelayStatus5")->GetResult();
+    out.mpdm_relay_status_06 = message->GetSignal("DBW_Mpdm2RelayStatus6")->GetResult();
+    out.mpdm_relay_status_07 = message->GetSignal("DBW_Mpdm2RelayStatus7")->GetResult();
+    out.mpdm_relay_status_08 = message->GetSignal("DBW_Mpdm2RelayStatus8")->GetResult();
+    out.mpdm_relay_status_09 = message->GetSignal("DBW_Mpdm2RelayStatus9")->GetResult();
+    out.mpdm_relay_status_10 = message->GetSignal("DBW_Mpdm2RelayStatus10")->GetResult();
+    out.mpdm_relay_status_11 = message->GetSignal("DBW_Mpdm2RelayStatus11")->GetResult();
+    out.mpdm_relay_status_12 = message->GetSignal("DBW_Mpdm2RelayStatus12")->GetResult();
+
+    pub_mpdm_2_report_->publish(out);
   }
 }
 
@@ -1208,6 +1242,98 @@ void RaptorDbwCAN::recvMiscCmd(const MiscCmd::SharedPtr msg)
   }
 
   message->GetSignal("AKit_OtherRollingCntr")->SetResult(msg->rolling_counter);
+
+  Frame frame = message->GetFrame();
+
+  pub_can_->publish(frame);
+}
+
+void RaptorDbwCAN::recvMpdm1Cmd(const MpdmCmd::SharedPtr msg)
+{
+  // TODO(NERaptor): add checksum support
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_Mpdm1Control");
+
+  message->GetSignal("AKit_Mpdm1RelayCmd1")->SetResult(0);
+  message->GetSignal("AKit_Mpdm1RelayCmd2")->SetResult(0);
+  message->GetSignal("AKit_Mpdm1RelayCmd3")->SetResult(0);
+  message->GetSignal("AKit_Mpdm1RelayCmd4")->SetResult(0);
+  message->GetSignal("AKit_Mpdm1RelayCmd5")->SetResult(0);
+  message->GetSignal("AKit_Mpdm1RelayCmd6")->SetResult(0);
+  message->GetSignal("AKit_Mpdm1RelayCmd7")->SetResult(0);
+  message->GetSignal("AKit_Mpdm1RelayCmd8")->SetResult(0);
+  message->GetSignal("AKit_Mpdm1RelayCmd9")->SetResult(0);
+  message->GetSignal("AKit_Mpdm1RelayCmd10")->SetResult(0);
+  message->GetSignal("AKit_Mpdm1RelayCmd11")->SetResult(0);
+  message->GetSignal("AKit_Mpdm1RelayCmd12")->SetResult(0);
+  message->GetSignal("AKit_Mpdm1ReqType")->SetResult(0);
+  message->GetSignal("AKit_Mpdm1RollingCntr")->SetResult(0);
+  message->GetSignal("AKit_Mpdm1Checksum")->SetResult(0);
+
+  if (enabled()) {
+    message->GetSignal("AKit_Mpdm1RelayCmd1")->SetResult(msg->mpdm_relay_cmd_01);
+    message->GetSignal("AKit_Mpdm1RelayCmd2")->SetResult(msg->mpdm_relay_cmd_02);
+    message->GetSignal("AKit_Mpdm1RelayCmd3")->SetResult(msg->mpdm_relay_cmd_03);
+    message->GetSignal("AKit_Mpdm1RelayCmd4")->SetResult(msg->mpdm_relay_cmd_04);
+    message->GetSignal("AKit_Mpdm1RelayCmd5")->SetResult(msg->mpdm_relay_cmd_05);
+    message->GetSignal("AKit_Mpdm1RelayCmd6")->SetResult(msg->mpdm_relay_cmd_06);
+    message->GetSignal("AKit_Mpdm1RelayCmd7")->SetResult(msg->mpdm_relay_cmd_07);
+    message->GetSignal("AKit_Mpdm1RelayCmd8")->SetResult(msg->mpdm_relay_cmd_08);
+    message->GetSignal("AKit_Mpdm1RelayCmd9")->SetResult(msg->mpdm_relay_cmd_09);
+    message->GetSignal("AKit_Mpdm1RelayCmd10")->SetResult(msg->mpdm_relay_cmd_10);
+    message->GetSignal("AKit_Mpdm1RelayCmd11")->SetResult(msg->mpdm_relay_cmd_11);
+    message->GetSignal("AKit_Mpdm1RelayCmd12")->SetResult(msg->mpdm_relay_cmd_12);
+
+    message->GetSignal("AKit_Mpdm1ReqType")->SetResult(msg->mpdm_relay_req_type.value);
+    message->GetSignal("AKit_Mpdm1Checksum")->SetResult(msg->checksum);
+  }
+
+  message->GetSignal("AKit_Mpdm1RollingCntr")->SetResult(msg->rolling_counter);
+
+  Frame frame = message->GetFrame();
+
+  pub_can_->publish(frame);
+}
+
+void RaptorDbwCAN::recvMpdm2Cmd(const MpdmCmd::SharedPtr msg)
+{
+  // TODO(NERaptor): add checksum support
+  NewEagle::DbcMessage * message = dbwDbc_.GetMessage("AKit_Mpdm2Control");
+
+  message->GetSignal("AKit_Mpdm2RelayCmd1")->SetResult(0);
+  message->GetSignal("AKit_Mpdm2RelayCmd2")->SetResult(0);
+  message->GetSignal("AKit_Mpdm2RelayCmd3")->SetResult(0);
+  message->GetSignal("AKit_Mpdm2RelayCmd4")->SetResult(0);
+  message->GetSignal("AKit_Mpdm2RelayCmd5")->SetResult(0);
+  message->GetSignal("AKit_Mpdm2RelayCmd6")->SetResult(0);
+  message->GetSignal("AKit_Mpdm2RelayCmd7")->SetResult(0);
+  message->GetSignal("AKit_Mpdm2RelayCmd8")->SetResult(0);
+  message->GetSignal("AKit_Mpdm2RelayCmd9")->SetResult(0);
+  message->GetSignal("AKit_Mpdm2RelayCmd10")->SetResult(0);
+  message->GetSignal("AKit_Mpdm2RelayCmd11")->SetResult(0);
+  message->GetSignal("AKit_Mpdm2RelayCmd12")->SetResult(0);
+  message->GetSignal("AKit_Mpdm2ReqType")->SetResult(0);
+  message->GetSignal("AKit_Mpdm2RollingCntr")->SetResult(0);
+  message->GetSignal("AKit_Mpdm2Checksum")->SetResult(0);
+
+  if (enabled()) {
+    message->GetSignal("AKit_Mpdm2RelayCmd1")->SetResult(msg->mpdm_relay_cmd_01);
+    message->GetSignal("AKit_Mpdm2RelayCmd2")->SetResult(msg->mpdm_relay_cmd_02);
+    message->GetSignal("AKit_Mpdm2RelayCmd3")->SetResult(msg->mpdm_relay_cmd_03);
+    message->GetSignal("AKit_Mpdm2RelayCmd4")->SetResult(msg->mpdm_relay_cmd_04);
+    message->GetSignal("AKit_Mpdm2RelayCmd5")->SetResult(msg->mpdm_relay_cmd_05);
+    message->GetSignal("AKit_Mpdm2RelayCmd6")->SetResult(msg->mpdm_relay_cmd_06);
+    message->GetSignal("AKit_Mpdm2RelayCmd7")->SetResult(msg->mpdm_relay_cmd_07);
+    message->GetSignal("AKit_Mpdm2RelayCmd8")->SetResult(msg->mpdm_relay_cmd_08);
+    message->GetSignal("AKit_Mpdm2RelayCmd9")->SetResult(msg->mpdm_relay_cmd_09);
+    message->GetSignal("AKit_Mpdm2RelayCmd10")->SetResult(msg->mpdm_relay_cmd_10);
+    message->GetSignal("AKit_Mpdm2RelayCmd11")->SetResult(msg->mpdm_relay_cmd_11);
+    message->GetSignal("AKit_Mpdm2RelayCmd12")->SetResult(msg->mpdm_relay_cmd_12);
+
+    message->GetSignal("AKit_Mpdm2ReqType")->SetResult(msg->mpdm_relay_req_type.value);
+    message->GetSignal("AKit_Mpdm2Checksum")->SetResult(msg->checksum);
+  }
+
+  message->GetSignal("AKit_Mpdm2RollingCntr")->SetResult(msg->rolling_counter);
 
   Frame frame = message->GetFrame();
 

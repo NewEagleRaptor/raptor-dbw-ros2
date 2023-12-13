@@ -1,0 +1,14 @@
+std_msgs/Header header
+
+uint8 mpdm_relay_status_01
+uint8 mpdm_relay_status_02
+uint8 mpdm_relay_status_03
+uint8 mpdm_relay_status_04
+uint8 mpdm_relay_status_05
+uint8 mpdm_relay_status_06
+uint8 mpdm_relay_status_07
+uint8 mpdm_relay_status_08
+uint8 mpdm_relay_status_09
+uint8 mpdm_relay_status_10
+uint8 mpdm_relay_status_11
+uint8 mpdm_relay_status_12
