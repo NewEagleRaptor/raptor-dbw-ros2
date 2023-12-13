@@ -2,6 +2,11 @@
 Changelog for package raptor_dbw_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update DBW for NuPort
+* Contributors: neweagleraptor
+
 1.2.0 (2021-11-30)
 ------------------
 * Update DBC to version 3.4
