@@ -2,8 +2,8 @@
 Changelog for package raptor_dbw_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.2.1 (2023-12-13)
+------------------
 * Update DBW for NuPort
 * Contributors: neweagleraptor
 
