@@ -2,8 +2,8 @@
 Changelog for package raptor_dbw_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.2.2 (2023-12-13)
+------------------
 * Update signal enum values
 * Contributors: neweagleraptor
 
