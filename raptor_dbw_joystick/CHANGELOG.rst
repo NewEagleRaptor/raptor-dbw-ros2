@@ -2,6 +2,9 @@
 Changelog for package raptor_dbw_joystick
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.2.1 (2023-12-13)
 ------------------
 * Update DBW for NuPort
