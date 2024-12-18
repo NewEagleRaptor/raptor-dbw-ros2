@@ -29,6 +29,7 @@
 #ifndef CAN_DBC_PARSER__DBCSIGNAL_HPP_
 #define CAN_DBC_PARSER__DBCSIGNAL_HPP_
 
+#include <cstdint>
 #include <string>
 
 namespace NewEagle

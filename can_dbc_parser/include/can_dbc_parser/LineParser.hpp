@@ -30,6 +30,7 @@
 #define CAN_DBC_PARSER__LINEPARSER_HPP_
 
 #include <cctype>
+#include <cstdint>
 #include <stdexcept>
 #include <string>
 
