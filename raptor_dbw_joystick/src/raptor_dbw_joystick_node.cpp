@@ -39,15 +39,11 @@ int main(int argc, char ** argv)
 
   // Get parameter values
   auto temp = std::make_shared<rclcpp::Node>("get_joy_params_node", options);
-  temp->declare_parameter("ignore", rclcpp::PARAMETER_BOOL);
-  temp->declare_parameter("enable", rclcpp::PARAMETER_BOOL);
-  temp->declare_parameter("svel", rclcpp::PARAMETER_DOUBLE);
-  temp->declare_parameter("max_steer_angle", rclcpp::PARAMETER_DOUBLE);
-
-  bool n_ignore = temp->get_parameter("ignore").as_bool();
-  bool n_enable = temp->get_parameter("enable").as_bool();
-  double n_svel = temp->get_parameter("svel").as_double();
-  float n_max_steer_angle = temp->get_parameter("max_steer_angle").as_double();
+  bool n_ignore = temp->declare_parameter<bool>("ignore", false);
+  bool n_enable = temp->declare_parameter<bool>("enable", true);
+  double n_svel = temp->declare_parameter<double>("svel", 0.0);
+  float n_max_steer_angle =
+    static_cast<float>(temp->declare_parameter<double>("max_steer_angle", 470.0));
 
   // Create RaptorDbwJoystick class
   auto node = std::make_shared<raptor_dbw_joystick::RaptorDbwJoystick>(
