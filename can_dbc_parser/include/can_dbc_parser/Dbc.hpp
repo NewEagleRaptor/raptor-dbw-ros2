@@ -29,11 +29,11 @@
 #ifndef CAN_DBC_PARSER__DBC_HPP_
 #define CAN_DBC_PARSER__DBC_HPP_
 
-#include <can_dbc_parser/DbcMessage.hpp>
-
 #include <cctype>
 #include <map>
 #include <string>
+
+#include <can_dbc_parser/DbcMessage.hpp>
 
 namespace NewEagle
 {

@@ -147,12 +147,12 @@ void RaptorDbwJoystick::cmdCallback()
 void RaptorDbwJoystick::recvJoy(const Joy::SharedPtr msg)
 {
   // Check for expected sizes
-  if (msg->axes.size() != (size_t)AXIS_COUNT) {
+  if (msg->axes.size() != static_cast<size_t>(AXIS_COUNT)) {
     RCLCPP_ERROR_THROTTLE(
       this->get_logger(), m_clock, CLOCK_1_SEC,
       "Axis count is wrong.");
   }
-  if (msg->buttons.size() != (size_t)BTN_COUNT) {
+  if (msg->buttons.size() != static_cast<size_t>(BTN_COUNT)) {
     RCLCPP_ERROR_THROTTLE(
       this->get_logger(), m_clock, CLOCK_1_SEC,
       "Button count is wrong");

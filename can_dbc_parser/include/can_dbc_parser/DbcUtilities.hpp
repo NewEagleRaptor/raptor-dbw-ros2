@@ -29,13 +29,13 @@
 #ifndef CAN_DBC_PARSER__DBCUTILITIES_HPP_
 #define CAN_DBC_PARSER__DBCUTILITIES_HPP_
 
-#include <can_dbc_parser/DbcSignal.hpp>
-#include <can_dbc_parser/DbcMessage.hpp>
-
 #include <limits>
 #include <map>
 #include <sstream>
 #include <string>
+
+#include <can_dbc_parser/DbcSignal.hpp>
+#include <can_dbc_parser/DbcMessage.hpp>
 
 namespace NewEagle
 {

@@ -29,12 +29,12 @@
 #ifndef CAN_DBC_PARSER__DBCBUILDER_HPP_
 #define CAN_DBC_PARSER__DBCBUILDER_HPP_
 
-#include <can_dbc_parser/Dbc.hpp>
-#include <can_dbc_parser/LineParser.hpp>
-
 #include <sstream>
 #include <string>
 #include <fstream>
+
+#include <can_dbc_parser/Dbc.hpp>
+#include <can_dbc_parser/LineParser.hpp>
 
 namespace NewEagle
 {

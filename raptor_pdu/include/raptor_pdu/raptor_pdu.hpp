@@ -34,6 +34,8 @@
 #ifndef RAPTOR_PDU__RAPTOR_PDU_HPP_
 #define RAPTOR_PDU__RAPTOR_PDU_HPP_
 
+#include <string>
+
 #include <rclcpp/rclcpp.hpp>
 
 // ROS messages
@@ -50,8 +52,6 @@
 #include <can_dbc_parser/DbcMessage.hpp>
 #include <can_dbc_parser/DbcSignal.hpp>
 #include <can_dbc_parser/LineParser.hpp>
-
-#include <string>
 
 using can_msgs::msg::Frame;
 using raptor_pdu_msgs::msg::FuseReport;

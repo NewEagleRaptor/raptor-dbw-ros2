@@ -27,12 +27,13 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 #include <can_dbc_parser/DbcMessage.hpp>
-#include <can_dbc_parser/DbcUtilities.hpp>
 
 #include <cstring>
 #include <map>
 #include <string>
 #include <utility>
+
+#include <can_dbc_parser/DbcUtilities.hpp>
 
 namespace NewEagle
 {
