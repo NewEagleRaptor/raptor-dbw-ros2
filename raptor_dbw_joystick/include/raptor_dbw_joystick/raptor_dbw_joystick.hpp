@@ -34,6 +34,8 @@
 #ifndef RAPTOR_DBW_JOYSTICK__RAPTOR_DBW_JOYSTICK_HPP_
 #define RAPTOR_DBW_JOYSTICK__RAPTOR_DBW_JOYSTICK_HPP_
 
+#include <chrono>
+
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/joy.hpp>
 #include <std_msgs/msg/empty.hpp>
@@ -44,8 +46,6 @@
 #include <raptor_dbw_msgs/msg/global_enable_cmd.hpp>
 #include <raptor_dbw_msgs/msg/misc_cmd.hpp>
 #include <raptor_dbw_msgs/msg/steering_cmd.hpp>
-
-#include <chrono>
 
 using namespace std::chrono_literals;  // NOLINT
 

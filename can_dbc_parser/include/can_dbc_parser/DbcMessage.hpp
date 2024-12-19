@@ -29,11 +29,11 @@
 #ifndef CAN_DBC_PARSER__DBCMESSAGE_HPP_
 #define CAN_DBC_PARSER__DBCMESSAGE_HPP_
 
-#include <can_msgs/msg/frame.hpp>
-#include <can_dbc_parser/DbcSignal.hpp>
-
 #include <map>
 #include <string>
+
+#include <can_msgs/msg/frame.hpp>
+#include <can_dbc_parser/DbcSignal.hpp>
 
 using can_msgs::msg::Frame;
 

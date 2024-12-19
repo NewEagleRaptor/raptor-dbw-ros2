@@ -34,6 +34,10 @@
 #ifndef RAPTOR_DBW_CAN__RAPTOR_DBW_CAN_HPP_
 #define RAPTOR_DBW_CAN__RAPTOR_DBW_CAN_HPP_
 
+#include <cmath>
+#include <string>
+#include <vector>
+
 #include <rclcpp/rclcpp.hpp>
 
 // ROS messages
@@ -77,10 +81,6 @@
 #include <can_dbc_parser/DbcSignal.hpp>
 #include <can_dbc_parser/Dbc.hpp>
 #include <can_dbc_parser/DbcBuilder.hpp>
-
-#include <cmath>
-#include <string>
-#include <vector>
 
 #include "raptor_dbw_can/dispatch.hpp"
 
