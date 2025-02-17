@@ -164,8 +164,8 @@ static NewEagle::DbcSignal ReadSignal(NewEagle::LineParser parser)
       break;
     default:
       throw std::runtime_error(
-        "Syntax Error: Expected ':' but found '" + std::string(1, mux) +
-        "' at position " + std::to_string(parser.GetPosition()));
+              "Syntax Error: Expected ':' but found '" + std::string(1, mux) +
+              "' at position " + std::to_string(parser.GetPosition()));
   }
 
   int32_t startBit = parser.ReadUInt("start bit");
