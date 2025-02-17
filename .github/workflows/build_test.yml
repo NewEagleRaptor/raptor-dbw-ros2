@@ -22,7 +22,7 @@ jobs:
             ros_distribution: humble
             ros_version: 2
           # Jazzy Jalisco (https://dlu.github.io/ros_clock/index.html)
-          - docker_image: rostooling/setup-ros-docker:ubuntu-focal-ros-jazzy-ros-base-latest
+          - docker_image: rostooling/setup-ros-docker:ubuntu-noble-ros-jazzy-ros-base-latest
             ros_distribution: jazzy
             ros_version: 2
           # Rolling Ridley  (June 2020 - Present)
