@@ -598,9 +598,9 @@ void RaptorDbwCAN::recvVinRpt(const Frame::SharedPtr msg)
       vin_.push_back(message->GetSignal("DBW_VinDigit_15")->GetResult());
       vin_.push_back(message->GetSignal("DBW_VinDigit_16")->GetResult());
       vin_.push_back(message->GetSignal("DBW_VinDigit_17")->GetResult());
+    }
       String msg; msg.data = vin_;
       pub_vin_->publish(msg);
-    }
   }
 }
 
