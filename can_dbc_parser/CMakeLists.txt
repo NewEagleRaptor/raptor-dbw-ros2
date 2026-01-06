@@ -19,7 +19,7 @@ endif()
 find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 
-ament_auto_add_library(
+add_library(
   can_dbc_parser SHARED
   src/DbcMessage.cpp
   src/DbcSignal.cpp
@@ -27,8 +27,30 @@ ament_auto_add_library(
   src/LineParser.cpp
   src/DbcBuilder.cpp
 )
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
+target_link_libraries(
+  ${PROJECT_NAME} PUBLIC
+  ${can_msgs_TARGETS}
+  ${rclcpp_TARGETS}
+)
+target_compile_options(${PROJECT_NAME} PUBLIC
+  $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-function>
+)
 
-target_compile_options(can_dbc_parser PRIVATE -Wno-unused-function)
+install(
+  DIRECTORY include/
+  DESTINATION include/${PROJECT_NAME}
+)
+install(
+  TARGETS ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
 
 #run colcon test to run linters against code
 if(BUILD_TESTING)
@@ -36,4 +58,8 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-ament_auto_package()
+ament_export_targets(
+  export_${PROJECT_NAME}
+)
+
+ament_package()
