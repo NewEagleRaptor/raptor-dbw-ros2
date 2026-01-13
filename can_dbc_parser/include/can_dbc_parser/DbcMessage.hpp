@@ -31,6 +31,7 @@
 
 #include <map>
 #include <string>
+#include <cstdint>
 
 #include <can_msgs/msg/frame.hpp>
 #include <can_dbc_parser/DbcSignal.hpp>
