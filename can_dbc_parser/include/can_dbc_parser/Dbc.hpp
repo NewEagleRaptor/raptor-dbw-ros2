@@ -30,6 +30,7 @@
 #define CAN_DBC_PARSER__DBC_HPP_
 
 #include <cctype>
+#include <cstdint>
 #include <map>
 #include <string>
 
